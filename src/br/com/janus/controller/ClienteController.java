@@ -29,6 +29,7 @@ public class ClienteController {
 			System.out.println("st.getResultSet" + st.getResultSet());
 			Cliente cliente = new Cliente();
 			while(result.next()){
+				//comentarios
 				cliente.setIdCliente(result.getInt("idCliente"));
 				cliente.setNome(result.getString("nome"));
 				cliente.setCpf(result.getString("cpf"));
@@ -61,7 +62,7 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
@@ -83,7 +84,7 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
@@ -133,7 +134,7 @@ public class ClienteController {
 		    }
 		    		    
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
 			e.printStackTrace();
 		}
 		return "0";
@@ -179,7 +180,7 @@ public class ClienteController {
 				return endereco.getIdEndereco();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
 			e.printStackTrace();
 		}
 		return 0;
