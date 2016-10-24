@@ -3,6 +3,7 @@ package br.com.janus.view;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.text.ParseException;
 
 import javax.swing.JButton;
@@ -13,13 +14,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
+import br.com.janus.controller.ClienteController;
+import br.com.janus.controller.EnderecoController;
+
 public class CadastroVeiculo extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldMarca;
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
-	private JTextField textFieldPlaca;
+	private JFormattedTextField textFieldPlaca;
 
 	public CadastroVeiculo() throws ParseException {
 		setLayout(null);
@@ -88,10 +92,39 @@ public class CadastroVeiculo extends JPanel {
 		btnCancelar.setBounds(573, 484, 89, 23);
 		add(btnCancelar);
 	
-		JButton btnBuscar = new JButton("Buscar");
-		btnBuscar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		JButton btnBuscar = new JButton("Verificar");
+		btnBuscar.addActionListener(a -> {
+			
+			String placa = this.textFieldPlaca.getText();
+			placa = placa.replace("-", "");
+
+			System.out.println("Placa: " + placa);
+			System.out.println("Placa.isEmpty: " + placa.isEmpty());
+			System.out.println("Placa.equals: " + placa.equals(""));
+			System.out.println("Placa == null " + placa == null);
+
+			try{
+				Long.parseLong(placa);
+			}catch (Exception e) {
+				placa = "";
 			}
+			if (!placa.isEmpty()) {
+				try {
+					veiculoAtual = new VeiculoController().buscaDadosveiculo(placa);
+					if (veiculoAtual != null) {
+						this.preencheDadosVeiculo(veiculoAtual);
+						edicao = true;
+					} else {
+						limpaCampos();
+						edicao = false;
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else {
+				dadosInvalidos();
+			}
+			
 		});
 		btnBuscar.setBounds(448, 217, 89, 23);
 		add(btnBuscar);
