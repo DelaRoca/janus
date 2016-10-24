@@ -22,7 +22,7 @@ public class Frame extends JFrame {
 		JMenu menuServicos = new JMenu("Serviços");
 		JMenu menuOrdemServico = new JMenu("Ordem de Serviço");
 
-		JMenuItem cadastroCliente = new JMenuItem("Novo Cliente");
+		JMenuItem cadastroCliente = new JMenuItem("Cadastro Cliente");
 		cadastroCliente.addActionListener(a -> {
 			try {
 				GerenciadorDeInterface.setPanel(new CadastroCliente());
@@ -31,16 +31,7 @@ public class Frame extends JFrame {
 				e.printStackTrace();
 			}
 		});
-		JMenuItem editarCliente = new JMenuItem("Editar Cliente");
-		editarCliente.addActionListener(a -> {
-			try {
-				GerenciadorDeInterface.setPanel(new EditarCliente());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		JMenuItem cadastroVeiculo = new JMenuItem("Novo Veículo");
+		JMenuItem cadastroVeiculo = new JMenuItem("Cadastro Veículo");
 		cadastroVeiculo.addActionListener(a -> {
 			try {
 				GerenciadorDeInterface.setPanel(new CadastroVeiculo());
@@ -49,20 +40,11 @@ public class Frame extends JFrame {
 				e.printStackTrace();
 			}
 		});
-		JMenuItem editarVeiculo = new JMenuItem("Editar Veículo");
-		editarVeiculo.addActionListener(a -> {
-			try {
-				GerenciadorDeInterface.setPanel(new EditarVeiculo());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		JMenuItem cadastroProduto = new JMenuItem("Novo Produto");
+		JMenuItem cadastroProduto = new JMenuItem("Cadastro Produto");
 		cadastroProduto.addActionListener(a -> {
 			GerenciadorDeInterface.setPanel(new CadastroProduto());
 		});
-		JMenuItem cadastroServico = new JMenuItem("Novo Serviço");
+		JMenuItem cadastroServico = new JMenuItem("Cadastro Serviço");
 		cadastroServico.addActionListener(a -> {
 			GerenciadorDeInterface.setPanel(new CadastroServico());
 		});
@@ -95,9 +77,7 @@ public class Frame extends JFrame {
 		});
 
 		menuClientes.add(cadastroCliente);
-		menuClientes.add(editarCliente);
 		menuVeiculos.add(cadastroVeiculo);
-		menuVeiculos.add(editarVeiculo);
 		menuProdutos.add(cadastroProduto);
 		menuServicos.add(cadastroServico);
 		menuServicos.add(desabilitarServico);

@@ -22,7 +22,9 @@ import br.com.janus.model.Endereco;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
+import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 public class CadastroCliente extends JPanel {
@@ -41,7 +43,9 @@ public class CadastroCliente extends JPanel {
 	private JButton btnVerificar;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
-
+	
+	JLabel lblCadastroDeClientes;
+	
 	public boolean edicao = false;
 	private Cliente clienteAtual;
 	private Endereco enderecoAtual;
@@ -64,7 +68,7 @@ public class CadastroCliente extends JPanel {
 		label_2.setBounds(254, 74, 277, 74);
 		add(label_2);
 
-		JLabel lblCadastroDeClientes = new JLabel("Cadastro de Clientes");
+		lblCadastroDeClientes = new JLabel("Cadastro de Clientes");
 		lblCadastroDeClientes.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCadastroDeClientes.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblCadastroDeClientes.setBounds(10, 11, 980, 48);
@@ -195,17 +199,13 @@ public class CadastroCliente extends JPanel {
 		rdbtnCpf.setHorizontalAlignment(SwingConstants.RIGHT);
 		rdbtnCpf.setBounds(244, 81, 68, 23);
 		rdbtnCpf.addActionListener(a -> {
-			rdbtnCnpj.setSelected(false);
-			textFieldCNPJ.setText("");
-			textFieldCNPJ.setValue("");
-			textFieldCNPJ.repaint();
-			textFieldCNPJ.setEditable(false);
-			textFieldDtNasc.setEditable(true);
-			textFieldCPF.setEditable(true);
-			rdbtnCpf.setSelected(true);
-			textFieldTelefone.setValue("");
-			textFieldCelular.setValue("");
-			textFieldEstado.setValue("");
+				textFieldCNPJ.setText("");
+				textFieldCNPJ.setValue("");
+				textFieldCNPJ.repaint();
+				textFieldCNPJ.setEditable(false);
+				textFieldDtNasc.setEditable(true);
+				textFieldCPF.setEditable(true);
+				limpaCampos();
 		});
 		add(rdbtnCpf);
 
@@ -213,23 +213,20 @@ public class CadastroCliente extends JPanel {
 		rdbtnCnpj.setHorizontalAlignment(SwingConstants.RIGHT);
 		rdbtnCnpj.setBounds(235, 115, 78, 23);
 		rdbtnCnpj.addActionListener(a -> {
-			rdbtnCpf.setSelected(false);
 			textFieldCPF.setText("");
 			textFieldCPF.setValue("");
 			textFieldCPF.repaint();
-			textFieldCPF.setEditable(false);
-			textFieldDtNasc.setText("");
-			textFieldDtNasc.setValue("");
-			textFieldDtNasc.repaint();
-			textFieldTelefone.setValue("");
-			textFieldCelular.setValue("");
-			textFieldEstado.setValue("");
-			textFieldDtNasc.setEditable(false);
 			textFieldCNPJ.setEditable(true);
-			rdbtnCnpj.setSelected(true);
+			textFieldDtNasc.setEditable(false);
+			textFieldCPF.setEditable(false);
+			limpaCampos();
 		});
 		add(rdbtnCnpj);
 
+	    ButtonGroup grupoRadios = new ButtonGroup();
+	    grupoRadios.add(rdbtnCpf);
+	    grupoRadios.add(rdbtnCnpj);
+		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			if (verificaCamposValidos()) {
@@ -454,16 +451,29 @@ public class CadastroCliente extends JPanel {
 
 	private void limpaCampos() {
 		textFieldRua.setText("");
+		textFieldRua.repaint();
 		textFieldBairro.setText("");
+		textFieldBairro.repaint();
 		textFieldCidade.setText("");
+		textFieldCidade.repaint();
 		textFieldEstado.setText("");
-		// textFieldCPF.setText("");
-		// textFieldCNPJ.setText("");
+		textFieldEstado.setValue("");
+		textFieldEstado.repaint();
 		textFieldNome.setText("");
+		textFieldNome.repaint();
 		textFieldEmail.setText("");
+		textFieldEmail.repaint();
 		textFieldCelular.setText("");
+		textFieldCelular.setValue("");
+		textFieldCelular.repaint();
 		textFieldTelefone.setText("");
+		textFieldTelefone.setValue("");
+		textFieldTelefone.repaint();
 		textFieldDtNasc.setText("");
+		textFieldDtNasc.setValue("");
+		textFieldDtNasc.repaint();
+		lblCadastroDeClientes.setText("Cadastro de Clientes");
+		lblCadastroDeClientes.repaint();
 	}
 
 	private void dadosInvalidos() {
@@ -523,6 +533,9 @@ public class CadastroCliente extends JPanel {
 	public void preencheDadosCliente(Cliente cliente, Endereco endereco) {
 		System.out.println("Cliente : " + cliente.getIdCliente());
 		if (cliente != null) {
+			lblCadastroDeClientes.setText("Edição de Cliente");
+			lblCadastroDeClientes.repaint();
+			
 			this.clienteAtual = cliente;
 			textFieldCPF.setText(cliente.getCpf());
 			textFieldCNPJ.setText(cliente.getCnpj());
