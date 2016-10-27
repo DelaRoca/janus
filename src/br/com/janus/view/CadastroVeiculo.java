@@ -14,8 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
-import br.com.janus.controller.ClienteController;
-import br.com.janus.controller.EnderecoController;
+import br.com.janus.controller.VeiculoController;
+
 
 public class CadastroVeiculo extends JPanel {
 
@@ -108,22 +108,22 @@ public class CadastroVeiculo extends JPanel {
 			}catch (Exception e) {
 				placa = "";
 			}
-			if (!placa.isEmpty()) {
-				try {
-					veiculoAtual = new VeiculoController().buscaDadosveiculo(placa);
-					if (veiculoAtual != null) {
-						this.preencheDadosVeiculo(veiculoAtual);
-						edicao = true;
-					} else {
-						limpaCampos();
-						edicao = false;
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			} else {
-				dadosInvalidos();
-			}
+//			if (!placa.isEmpty()) {
+//				try {
+//					veiculoAtual = new VeiculoController().buscaDadosveiculo(placa);
+//					if (veiculoAtual != null) {
+//						this.preencheDadosVeiculo(veiculoAtual);
+//						edicao = true;
+//					} else {
+//						limpaCampos();
+//						edicao = false;
+//					}
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			} else {
+//				dadosInvalidos();
+//			}
 			
 		});
 		btnBuscar.setBounds(448, 217, 89, 23);
