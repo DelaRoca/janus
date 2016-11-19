@@ -2,8 +2,14 @@ package br.com.janus.view;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import br.com.janus.controller.ServicoController;
+import br.com.janus.model.Servico;
+
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -13,7 +19,8 @@ public class CadastroServico extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldValor;
 	private JTextField textFieldNome;
-	private JTextField textField;
+	private JTextField textFieldDescricao;
+	private JCheckBox chckbxPorHora;
 	
 	public CadastroServico() {
 		setLayout(null);
@@ -39,7 +46,7 @@ public class CadastroServico extends JPanel {
 		lblValor.setBounds(290, 273, 120, 25);
 		add(lblValor);
 		
-		JCheckBox chckbxPorHora = new JCheckBox("por hora");
+		chckbxPorHora = new JCheckBox("por hora");
 		chckbxPorHora.setBounds(532, 273, 95, 25);
 		add(chckbxPorHora);
 		
@@ -55,7 +62,11 @@ public class CadastroServico extends JPanel {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			// TODO implementar
+			if (verificaCamposValidos()) {
+				salvaServico();
+			} else {
+				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+			}
 		});
 		btnSalvar.setBounds(375, 522, 89, 23);
 		add(btnSalvar);
@@ -67,10 +78,10 @@ public class CadastroServico extends JPanel {
 		btnCancelar.setBounds(575, 522, 89, 23);
 		add(btnCancelar);
 		
-		textField = new JTextField();
-		textField.setBounds(420, 306, 285, 25);
-		add(textField);
-		textField.setColumns(10);
+		textFieldDescricao = new JTextField();
+		textFieldDescricao.setBounds(420, 306, 285, 25);
+		add(textFieldDescricao);
+		textFieldDescricao.setColumns(10);
 		
 		JLabel label = new JLabel("*");
 		label.setVerticalAlignment(SwingConstants.TOP);
@@ -82,4 +93,35 @@ public class CadastroServico extends JPanel {
 		label_1.setBounds(513, 273, 23, 25);
 		add(label_1);
 	}
+	
+	
+	private void salvaServico() {
+		System.out.println("salvar serviço");
+		Servico servico = constroiServico();
+		new ServicoController().salvaServico(servico);
+	}
+	
+
+	private Servico constroiServico() {
+		Servico servico = new Servico();
+		servico.setNome(this.textFieldNome.getText());
+		servico.setValor(this.textFieldValor.getText());
+		servico.setDescricao(this.textFieldDescricao.getText());
+		servico.setPorHora(this.chckbxPorHora.isSelected());
+		servico.setIdServico(0);
+		return servico;
+	}
+
+	
+	private boolean verificaCamposValidos() {
+		System.out.println("aqui nos verifica campos ");
+		System.out.println("this.textFieldNome" + this.textFieldNome.getText().equals(""));
+		System.out.println("this.textFieldValor " + this.textFieldValor.getText().equals(""));
+
+		if (this.textFieldNome.getText().equals("") || this.textFieldValor.getText().equals("")) {
+			return false;
+		}
+		return true;
+	}
+	
 }
