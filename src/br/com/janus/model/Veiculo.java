@@ -7,7 +7,7 @@ public class Veiculo {
 	private String fabricante;
 	private String modelo;
 	private String ano;
-
+	
 	public Integer getIdVeiculo() {
 		return idVeiculo;
 	}

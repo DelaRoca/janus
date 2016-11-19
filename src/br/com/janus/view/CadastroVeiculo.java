@@ -1,21 +1,20 @@
 package br.com.janus.view;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParseException;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
 import br.com.janus.controller.VeiculoController;
-
+import br.com.janus.model.Veiculo;
 
 public class CadastroVeiculo extends JPanel {
 
@@ -24,11 +23,14 @@ public class CadastroVeiculo extends JPanel {
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
 	private JFormattedTextField textFieldPlaca;
-
+	public boolean edicao = false;
+	private Veiculo veiculoAtual;
+	private JLabel lblCadastroVeiculo;
+	
 	public CadastroVeiculo() throws ParseException {
 		setLayout(null);
 		
-		JLabel lblCadastroVeiculo = new JLabel("Cadastro de Ve\u00EDculo");
+		lblCadastroVeiculo = new JLabel("Cadastro de Ve\u00EDculo");
 		lblCadastroVeiculo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCadastroVeiculo.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblCadastroVeiculo.setBounds(10, 11, 980, 48);
@@ -80,7 +82,15 @@ public class CadastroVeiculo extends JPanel {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			//TODO implementar
+			if (verificaCamposValidos()) {
+				if (edicao) {
+					atualizaVeiculo();
+				} else {
+					salvaVeiculo();
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+			}
 		});
 		btnSalvar.setBounds(411, 484, 89, 23);
 		add(btnSalvar);
@@ -94,45 +104,26 @@ public class CadastroVeiculo extends JPanel {
 	
 		JButton btnBuscar = new JButton("Verificar");
 		btnBuscar.addActionListener(a -> {
-			
-			String placa = this.textFieldPlaca.getText();
-			placa = placa.replace("-", "");
+			try {
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
+				if (veiculoAtual != null) {
+					this.preencheDadosVeiculo(veiculoAtual);
+					edicao = true;
 
-			System.out.println("Placa: " + placa);
-			System.out.println("Placa.isEmpty: " + placa.isEmpty());
-			System.out.println("Placa.equals: " + placa.equals(""));
-			System.out.println("Placa == null " + placa == null);
-
-			try{
-				Long.parseLong(placa);
-			}catch (Exception e) {
-				placa = "";
+				} else {
+					limpaCampos();
+					edicao = false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-//			if (!placa.isEmpty()) {
-//				try {
-//					veiculoAtual = new VeiculoController().buscaDadosveiculo(placa);
-//					if (veiculoAtual != null) {
-//						this.preencheDadosVeiculo(veiculoAtual);
-//						edicao = true;
-//					} else {
-//						limpaCampos();
-//						edicao = false;
-//					}
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//			} else {
-//				dadosInvalidos();
-//			}
-			
 		});
-		btnBuscar.setBounds(448, 217, 89, 23);
+		btnBuscar.setBounds(448,217,89,23);
 		add(btnBuscar);
-		
-		JLabel label = new JLabel("*");
-		label.setVerticalAlignment(SwingConstants.TOP);
-		label.setBounds(430, 215, 23, 25);
-		add(label);
+
+	JLabel label = new JLabel("*");label.setVerticalAlignment(SwingConstants.TOP);label.setBounds(430,215,23,25);
+
+	add(label);
 		
 		JLabel label_1 = new JLabel("*");
 		label_1.setVerticalAlignment(SwingConstants.TOP);
@@ -149,4 +140,67 @@ public class CadastroVeiculo extends JPanel {
 		label_3.setBounds(430, 340, 23, 25);
 		add(label_3);
 	}
+
+	private void atualizaVeiculo() {
+		Veiculo veiculo = constroiVeiculo();
+		new VeiculoController().atualizaVeiculo(veiculo);
+	}
+
+	private void salvaVeiculo() {
+		System.out.println("salvar veiculo");
+		Veiculo veiculo = constroiVeiculo();
+		new VeiculoController().salvaVeiculo(veiculo);
+	}
+
+	private Veiculo constroiVeiculo() {
+		if (veiculoAtual != null) {
+			veiculoAtual.setPlaca(this.textFieldPlaca.getText());
+			veiculoAtual.setFabricante(this.textFieldMarca.getText());
+			veiculoAtual.setModelo(this.textFieldModelo.getText());
+			veiculoAtual.setAno(this.textFieldAno.getText());
+			return veiculoAtual;
+		}
+		Veiculo veiculo = new Veiculo();
+		veiculo.setPlaca(this.textFieldPlaca.getText());
+		veiculo.setFabricante(this.textFieldMarca.getText());
+		veiculo.setModelo(this.textFieldModelo.getText());
+		veiculo.setAno(this.textFieldAno.getText());
+		veiculo.setIdVeiculo(0);
+		return veiculo;
+	}
+
+	private boolean verificaCamposValidos() {
+		System.out.println("aqui nos verifica campos ");
+		System.out.println("this.textFieldPlaca" + this.textFieldPlaca.getText().equals(""));
+
+		if (this.textFieldPlaca.getText().equals("")) {
+			return false;
+		}
+		return true;
+	}
+
+	public void preencheDadosVeiculo(Veiculo veiculo) {
+		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
+		if (veiculo != null) {
+			lblCadastroVeiculo.setText("Edição de Veículo");
+			lblCadastroVeiculo.repaint();
+			
+			this.veiculoAtual = veiculo;
+			textFieldPlaca.setText(veiculo.getPlaca());
+			textFieldMarca.setText(veiculo.getFabricante());
+			textFieldModelo.setText(veiculo.getModelo());
+			textFieldAno.setText(veiculo.getAno());
+		}
+
+	}
+	
+	private void limpaCampos() {
+		textFieldMarca.setText("");
+		textFieldMarca.repaint();
+		textFieldModelo.setText("");
+		textFieldModelo.repaint();
+		textFieldAno.setText("");
+		textFieldAno.repaint();
+	}
+	
 }
