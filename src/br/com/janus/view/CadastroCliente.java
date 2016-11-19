@@ -148,7 +148,7 @@ public class CadastroCliente extends JPanel {
 		textFieldTelefone.setBounds(321, 272, 468, 25);
 		add(textFieldTelefone);
 
-		textFieldCelular = new JFormattedTextField(new MaskFormatter("(##) ####-####"));
+		textFieldCelular = new JFormattedTextField(new MaskFormatter("(##) #####-####"));
 		textFieldCelular.setColumns(10);
 		textFieldCelular.setBounds(321, 313, 468, 25);
 		add(textFieldCelular);
@@ -342,7 +342,7 @@ public class CadastroCliente extends JPanel {
 		System.out.println("idEndereco: " + enderecoAtual);
 		Endereco endereco = constroiEndereco();
 		Integer idEndereco = new ClienteController().atualizaEndereco(endereco);
-		System.out.println("idEnderec" + idEndereco);
+		System.out.println("idEndereco" + idEndereco);
 		if (idEndereco != 0) {
 			Cliente cliente = constroiCliente(idEndereco);
 			new ClienteController().atualizaCliente(cliente, idEndereco);

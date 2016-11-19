@@ -71,8 +71,8 @@ public class ClienteController {
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
 	                "set cpf= ?,cnpj= ?,nome= ?,dataNascimento= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
-	                "where nome = '"+cliente.getNome()+"'");
-	    	st.setString(1, cliente.getCpf());
+	                "where cpf = '"+cliente.getCpf()+"'");
+	    	st.setString(1,cliente.getCpf());
 			st.setString(2,cliente.getCnpj());
 			st.setString(3,cliente.getNome());
 		    st.setString(4,cliente.getDataNascimento());
