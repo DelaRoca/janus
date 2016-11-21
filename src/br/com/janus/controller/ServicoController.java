@@ -3,6 +3,7 @@ package br.com.janus.controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 
@@ -83,5 +84,32 @@ public class ServicoController {
 		return null;
 		
 	}
+
+	public void atualizaServicos(ArrayList<Servico> servicos) {
+		for (Servico servico : servicos) {
+			try {
+		    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update servico " +
+		                "set estaAtivo = ? " +
+		                "where idservico = ?");
+		    	if(servico.getEstaAtivo()){
+		    		st.setString(1,"1");
+		    	}else{
+		    		st.setString(1,"0");
+		    	}
+				st.setInt(2,servico.getIdServico());
+				st.execute();
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, "--->((VER MENSAGEM CORRETA EA))<---Não foi possível salvar alterações, por favor tente novamente");
+				GerenciadorDeInterface.setPanel(new Principal());
+				e.printStackTrace();
+				
+			}
+		}
+		JOptionPane.showMessageDialog(null, " --->((VER MENSAGEM CORRETA EA))<---Serviços alterados com sucesso!");
+		GerenciadorDeInterface.setPanel(new Principal());
+		
+	}
+
+	
 
 }

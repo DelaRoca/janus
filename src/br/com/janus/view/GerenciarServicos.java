@@ -17,9 +17,12 @@ import br.com.janus.model.Servico;
 public class GerenciarServicos extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	
 	private DefaultTableModel tabelaModelo = new DefaultTableModel();
 	private JTable tabelaServico;
+	
 
+	private ArrayList<Servico> servicos = new ArrayList<Servico>();
 	public GerenciarServicos() {
 		setLayout(null);
 		
@@ -37,7 +40,7 @@ public class GerenciarServicos extends JPanel {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			// TODO implementar
+			salvaServicos();
 		});
 		btnSalvar.setBounds(411, 484, 89, 23);
 		add(btnSalvar);
@@ -51,15 +54,20 @@ public class GerenciarServicos extends JPanel {
 
 	}
 
+	private void salvaServicos() {
+		System.out.println(tabelaModelo.getRowCount());
+		for (int count = 0; count < tabelaModelo.getRowCount(); count++){
+			boolean estaAtivo = Boolean.parseBoolean(tabelaModelo.getValueAt(count, 0).toString());
+			servicos.get(count).setEstaAtivo(estaAtivo);
+		}
+		new ServicoController().atualizaServicos(servicos);
+	}
+
 	private void populaTabela() {
 		tabelaServico = new JTable(tabelaModelo){
 
             private static final long serialVersionUID = 1L;
 
-            /*@Override
-            public Class getColumnClass(int column) {
-            return getValueAt(0, column).getClass();
-            }*/
             @Override
             public Class getColumnClass(int column) {
                 switch (column) {
@@ -85,16 +93,16 @@ public class GerenciarServicos extends JPanel {
 		tabelaModelo.addColumn("Descrição");
 		
 		tabelaModelo.setNumRows(0);
-		ArrayList<Servico> servicos = new ServicoController().buscaServicos();
+		servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
-			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), servico.getPorHora(), servico.getDescricao()});
-//			if(servico.getPorHora()){
-//				System.out.println("Estou no ifs");
-//				tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), "Sim", servico.getDescricao()});
-//			}else				
-//				tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), "N�o", servico.getDescricao()});
+			String porHora = "";
+			if(servico.getPorHora()){
+				porHora = "Sim";
+			}else{
+				porHora = "Não";
+			}
+			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), porHora, servico.getDescricao()});
 		}
-		
 		tabelaServico.getTableHeader().setReorderingAllowed(false);
 		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(40);
 		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(245); 
