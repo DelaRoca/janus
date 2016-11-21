@@ -108,6 +108,7 @@ public class CadastroServico extends JPanel {
 		servico.setValor(this.textFieldValor.getText());
 		servico.setDescricao(this.textFieldDescricao.getText());
 		servico.setPorHora(this.chckbxPorHora.isSelected());
+		servico.setEstaAtivo(true);
 		servico.setIdServico(0);
 		return servico;
 	}

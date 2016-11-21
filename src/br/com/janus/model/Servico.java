@@ -7,8 +7,14 @@ public class Servico {
 	private String nome;
 	private Boolean porHora;
 	private String valor;
+	private Boolean estaAtivo;
 	
-	
+	public Boolean getEstaAtivo() {
+		return estaAtivo;
+	}
+	public void setEstaAtivo(Boolean estaAtivo) {
+		this.estaAtivo = estaAtivo;
+	}
 	public Integer getIdServico() {
 		return idServico;
 	}

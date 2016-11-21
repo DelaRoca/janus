@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import com.mysql.fabric.xmlrpc.base.Array;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import br.com.janus.Conecta;
@@ -21,12 +20,13 @@ public class ServicoController {
 	public void salvaServico(Servico servico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into servico " +
-	                "(descricao,nome,porHora,valor) " +
-	                "values (?,?,?,?)");
+	                "(descricao,nome,porHora,valor,estaAtivo) " +
+	                "values (?,?,?,?,?)");
 	    	st.setString(1,servico.getDescricao());
 			st.setString(2,servico.getNome());
 			st.setString(3,setPortHora(servico));
 			st.setString(4,servico.getValor());
+			st.setString(5,setEstatAtivo(servico));
 			st.execute();
 			JOptionPane.showMessageDialog(null, "serviço cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
@@ -38,6 +38,13 @@ public class ServicoController {
 
 	private String setPortHora(Servico servico) {
 		if(servico.getPorHora()){
+			return "1";
+		}
+		return "0";
+	}
+	
+	private String setEstatAtivo(Servico servico) {
+		if(servico.getEstaAtivo()){
 			return "1";
 		}
 		return "0";
@@ -56,10 +63,15 @@ public class ServicoController {
 					servico.setNome(result.getString("nome"));
 					servico.setDescricao(result.getString("descricao"));
 					servico.setValor(result.getString("valor"));
-					if(result.getString("porHora") == "1"){
+					if(result.getString("porHora").equals("1") ){
 						servico.setPorHora(true);
-					}else{
+					} else{
 						servico.setPorHora(false);
+					}
+					if(result.getString("estaAtivo").equals("1") ){
+						servico.setEstaAtivo(true);
+					} else{
+						servico.setEstaAtivo(false);
 					}
 					servicos.add(servico);
 				}

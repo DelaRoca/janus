@@ -7,10 +7,8 @@ import javax.swing.JOptionPane;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
 
 import br.com.janus.Conecta;
-import br.com.janus.model.Cliente;
 import br.com.janus.model.Veiculo;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
