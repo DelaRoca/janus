@@ -19,7 +19,7 @@ public class GerenciarOrdemServico extends JPanel {
 	public GerenciarOrdemServico(){
 		setLayout(null);
 		
-		String[] colunas = { "N�mero da OS", "Cliente"};
+		String[] colunas = { "Número da OS", "Cliente"};
 		Object[][] dados = { { "010", "Ciclano da Silva" }, { "013", "Beltrano da Silva" } };
 		tabelaAprovados = new JTable(dados, colunas);
 		tabelaAprovados.getTableHeader().setReorderingAllowed(false);
@@ -30,7 +30,7 @@ public class GerenciarOrdemServico extends JPanel {
 		scroll.setBounds(564, 178, 373, 291);
 		add(scroll);
 		
-		String[] colunasS ={ "N�mero da OS", "Cliente"};
+		String[] colunasS ={ "Número da OS", "Cliente"};
 		Object[][] dadosS = { { "003", "Josefano Dela Roca" }, { "002", "Josefina Crocetta"} };
 		tabelaExecucao = new JTable(dadosS, colunasS);
 		tabelaExecucao.getTableHeader().setReorderingAllowed(false);
@@ -47,13 +47,13 @@ public class GerenciarOrdemServico extends JPanel {
 		lblAprovados.setBounds(66, 143, 373, 25);
 		add(lblAprovados);
 		
-		JLabel lblExecucao = new JLabel("Em Execu\u00E7\u00E3o");
+		JLabel lblExecucao = new JLabel("Em Execução");
 		lblExecucao.setHorizontalAlignment(SwingConstants.CENTER);
 		lblExecucao.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblExecucao.setBounds(564, 143, 373, 25);
 		add(lblExecucao);
 		
-		JLabel lblGerenciarOrdemDe = new JLabel("Gerenciar Ordem de Servi\u00E7o");
+		JLabel lblGerenciarOrdemDe = new JLabel("Gerenciar Ordem de Serviço");
 		lblGerenciarOrdemDe.setHorizontalAlignment(SwingConstants.CENTER);
 		lblGerenciarOrdemDe.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblGerenciarOrdemDe.setBounds(10, 11, 980, 50);
