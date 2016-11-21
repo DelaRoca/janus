@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
 
 import br.com.janus.Conecta;
 import br.com.janus.model.Cliente;
@@ -29,7 +28,6 @@ public class ClienteController {
 			System.out.println("st.getResultSet" + st.getResultSet());
 			Cliente cliente = new Cliente();
 			while(result.next()){
-				//comentarios
 				cliente.setIdCliente(result.getInt("idCliente"));
 				cliente.setNome(result.getString("nome"));
 				cliente.setCpf(result.getString("cpf"));
@@ -37,7 +35,31 @@ public class ClienteController {
 				cliente.setEmail(result.getString("email"));
 				cliente.setTelefone(result.getString("telefone"));
 				cliente.setCelular(result.getString("celular"));
-				cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
+				cliente.setEndereco(Integer.parseInt(result.getString("idEndereco")));
+				return cliente;
+			}
+		}
+		return null;
+	}
+	
+	public Cliente buscaDadosClienteCnpj(String cnpj) throws SQLException{
+		System.out.println("aqui no busca dados do cliente, cnpj : "+ cnpj);
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
+		st.setString(1, cnpj);
+		ResultSet result = st.executeQuery();
+		System.out.println("result set : " +result == null);
+		if (result != null){
+			System.out.println("st.getResultSet" + st.getResultSet());
+			Cliente cliente = new Cliente();
+			while(result.next()){
+				cliente.setIdCliente(Integer.parseInt(result.getString("idCliente")));
+				cliente.setNome(result.getString("nome"));
+				cliente.setCnpj(result.getString("cnpj"));
+				cliente.setDataNascimento(result.getString("dataNascimento"));
+				cliente.setEmail(result.getString("email"));
+				cliente.setTelefone(result.getString("telefone"));
+				cliente.setCelular(result.getString("celular"));
+				cliente.setEndereco(Integer.parseInt(result.getString("idEndereco")));
 				return cliente;
 			}
 		}
@@ -89,41 +111,16 @@ public class ClienteController {
 		}
 	}
 	
-	private Integer buscaMaiorIdEndereco() throws SQLException{
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select Max(idEndereco) as maiorId from endereco;");
-		ResultSet result = st.executeQuery();
-		while(result.next()){
-			String maiorId = result.getString("maiorId");
-			if(maiorId == null){
-				maiorId = "0";
-			}
-			System.out.println("maiorId" + maiorId);
-			return Integer.parseInt(maiorId) + 1;
-		}
-		return 99999;
-	}
-	
-	private Integer buscaMaiorIdCliente() throws SQLException{
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select Max(idCliente) as maiorId from cliente;");
-		ResultSet result = st.executeQuery();
-		while(result.next()){
-			return Integer.parseInt(result.getString("maiorId")) + 1;
-		}
-		return 99999;
-	}
-	
 	public String salvaEndereco(Endereco endereco) {
 		
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into endereco " +
-			        "(idEndereco,rua,bairro,cidade,estado) " +
-			        "values (?,?,?,?,?)");
-			st.setString(1, buscaMaiorIdEndereco().toString());
-			st.setString(2, endereco.getRua());
-			st.setString(3,endereco.getBairro());
-			st.setString(4,endereco.getCidade()); 
-		    st.setString(5,endereco.getEstado());
-		    
+					"(rua,bairro,cidade,estado) " +
+			        "values (?,?,?,?)");
+			st.setString(1, endereco.getRua());
+			st.setString(2,endereco.getBairro());
+			st.setString(3,endereco.getCidade()); 
+		    st.setString(4,endereco.getEstado());		    
 		    int result = st.executeUpdate();
 		    if(result == 1){
 		    	PreparedStatement ps = (PreparedStatement) conexao.prepareStatement("select max(idEndereco) as max from endereco; ");
@@ -138,30 +135,6 @@ public class ClienteController {
 			e.printStackTrace();
 		}
 		return "0";
-	}
-
-	public Cliente buscaDadosClienteCnpj(String cnpj) throws SQLException{
-		System.out.println("aqui no busca dados do cliente, cnpj : "+ cnpj);
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
-		st.setString(1, cnpj);
-		ResultSet result = st.executeQuery();
-		System.out.println("result set : " +result == null);
-		if (result != null){
-			System.out.println("st.getResultSet" + st.getResultSet());
-			Cliente cliente = new Cliente();
-			while(result.next()){
-				cliente.setIdCliente(Integer.parseInt(result.getString("idCliente")));
-				cliente.setNome(result.getString("nome"));
-				cliente.setCnpj(result.getString("cnpj"));
-				cliente.setDataNascimento(result.getString("dataNascimento"));
-				cliente.setEmail(result.getString("email"));
-				cliente.setTelefone(result.getString("telefone"));
-				cliente.setCelular(result.getString("celular"));
-				cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
-				return cliente;
-			}
-		}
-		return null;
 	}
 
 	public Integer atualizaEndereco(Endereco endereco) {

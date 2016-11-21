@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.InputMismatchException;
+//import java.util.InputMismatchException;
 
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -24,7 +24,6 @@ import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
-import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 public class CadastroCliente extends JPanel {
@@ -249,17 +248,19 @@ public class CadastroCliente extends JPanel {
 			String cpf = this.textFieldCPF.getText();
 			cpf = cpf.replace(".", "");
 			cpf = cpf.replace("-", "");
+			cpf = cpf.replace(" ", "");
 
 			String cnpj = this.textFieldCNPJ.getText();
 			cnpj = cnpj.replace(".", "");
 			cnpj = cnpj.replace("/", "");
 			cnpj = cnpj.replace("-", "");
+			cnpj = cnpj.replace(" ", "");
 			System.out.println("Cpf: " + cpf);
 			System.out.println("Cpf.isEmpty: " + cpf.isEmpty());
 			System.out.println("Cpf.equals: " + cpf.equals(""));
 			System.out.println("Cpf == null " + cpf == null);
 			System.out.println("cnpj: " + cnpj);
-			System.out.println("cnpj: " + cnpj.isEmpty());
+			System.out.println("cnpj.isEmpty: " + cnpj.isEmpty());
 			System.out.println("cnpj.equals: " + cnpj.equals(""));
 			System.out.println("cnpj null: " + cnpj == null);
 			try{
@@ -558,106 +559,106 @@ public class CadastroCliente extends JPanel {
 
 	}
 
-	private boolean isCnpjValido(String cnpj) {
-		if (!cnpj.substring(0, 1).equals("")) {
-			try {
-				cnpj = cnpj.replace('.', ' ');// onde há ponto coloca espaço
-				cnpj = cnpj.replace('/', ' ');// onde há barra coloca espaço
-				cnpj = cnpj.replace('-', ' ');// onde há traço coloca espaço
-				cnpj = cnpj.replaceAll(" ", "");// retira espaço
-				int soma = 0, dig;
-				String cnpj_calc = cnpj.substring(0, 12);
-				if (cnpj.length() != 14) {
-					return false;
-				}
-				char[] chr_cnpj = cnpj.toCharArray();
-				/* Primeira parte */
-				for (int i = 0; i < 4; i++) {
-					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
-						soma += (chr_cnpj[i] - 48) * (6 - (i + 1));
-					}
-				}
-				for (int i = 0; i < 8; i++) {
-					if (chr_cnpj[i + 4] - 48 >= 0 && chr_cnpj[i + 4] - 48 <= 9) {
-						soma += (chr_cnpj[i + 4] - 48) * (10 - (i + 1));
-					}
-				}
-				dig = 11 - (soma % 11);
-				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
-				/* Segunda parte */
-				soma = 0;
-				for (int i = 0; i < 5; i++) {
-					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
-						soma += (chr_cnpj[i] - 48) * (7 - (i + 1));
-					}
-				}
-				for (int i = 0; i < 8; i++) {
-					if (chr_cnpj[i + 5] - 48 >= 0 && chr_cnpj[i + 5] - 48 <= 9) {
-						soma += (chr_cnpj[i + 5] - 48) * (10 - (i + 1));
-					}
-				}
-				dig = 11 - (soma % 11);
-				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
-				return cnpj.equals(cnpj_calc);
-			} catch (Exception e) {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	private boolean cnpjValid(String cnpj) {
-		// considera-se erro CNPJ's formados por uma sequencia de numeros iguais
-		if (cnpj == null || cnpj.length() != 14
-				|| cnpj.matches("^(0{14}|1{14}|2{14}|3{14}|4{14}|5{14}|6{14}|7{14}|8{14}|9{14})$"))
-			return (false);
-		char dig13, dig14;
-		int sm, i, r, num, peso;
-		// "try" - protege o código para eventuais erros de conversao de tipo
-		// (int)
-		try {
-			// Calculo do 1o. Digito Verificador
-			sm = 0;
-			peso = 2;
-			for (i = 11; i >= 0; i--) {
-				// converte o i-ésimo caractere do CNPJ em um número:
-				// por exemplo, transforma o caractere '0' no inteiro 0
-				// (48 eh a posição de '0' na tabela ASCII)
-				num = (int) (cnpj.charAt(i) - 48);
-				sm = sm + (num * peso);
-				peso = peso + 1;
-				if (peso == 10)
-					peso = 2;
-			}
-			r = sm % 11;
-			if ((r == 0) || (r == 1))
-				dig13 = '0';
-			else
-				dig13 = (char) ((11 - r) + 48);
-			// Calculo do 2o. Digito Verificador
-			sm = 0;
-			peso = 2;
-			for (i = 12; i >= 0; i--) {
-				num = (int) (cnpj.charAt(i) - 48);
-				sm = sm + (num * peso);
-				peso = peso + 1;
-				if (peso == 10)
-					peso = 2;
-			}
-			r = sm % 11;
-			if ((r == 0) || (r == 1))
-				dig14 = '0';
-			else
-				dig14 = (char) ((11 - r) + 48);
-			// Verifica se os dígitos calculados conferem com os dígitos
-			// informados.
-			if ((dig13 == cnpj.charAt(12)) && (dig14 == cnpj.charAt(13)))
-				return (true);
-			else
-				return (false);
-		} catch (InputMismatchException erro) {
-			return (false);
-		}
-	}
+//	private boolean isCnpjValido(String cnpj) {
+//		if (!cnpj.substring(0, 1).equals("")) {
+//			try {
+//				cnpj = cnpj.replace('.', ' ');// onde há ponto coloca espaço
+//				cnpj = cnpj.replace('/', ' ');// onde há barra coloca espaço
+//				cnpj = cnpj.replace('-', ' ');// onde há traço coloca espaço
+//				cnpj = cnpj.replaceAll(" ", "");// retira espaço
+//				int soma = 0, dig;
+//				String cnpj_calc = cnpj.substring(0, 12);
+//				if (cnpj.length() != 14) {
+//					return false;
+//				}
+//				char[] chr_cnpj = cnpj.toCharArray();
+//				/* Primeira parte */
+//				for (int i = 0; i < 4; i++) {
+//					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
+//						soma += (chr_cnpj[i] - 48) * (6 - (i + 1));
+//					}
+//				}
+//				for (int i = 0; i < 8; i++) {
+//					if (chr_cnpj[i + 4] - 48 >= 0 && chr_cnpj[i + 4] - 48 <= 9) {
+//						soma += (chr_cnpj[i + 4] - 48) * (10 - (i + 1));
+//					}
+//				}
+//				dig = 11 - (soma % 11);
+//				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
+//				/* Segunda parte */
+//				soma = 0;
+//				for (int i = 0; i < 5; i++) {
+//					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
+//						soma += (chr_cnpj[i] - 48) * (7 - (i + 1));
+//					}
+//				}
+//				for (int i = 0; i < 8; i++) {
+//					if (chr_cnpj[i + 5] - 48 >= 0 && chr_cnpj[i + 5] - 48 <= 9) {
+//						soma += (chr_cnpj[i + 5] - 48) * (10 - (i + 1));
+//					}
+//				}
+//				dig = 11 - (soma % 11);
+//				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
+//				return cnpj.equals(cnpj_calc);
+//			} catch (Exception e) {
+//				return false;
+//			}
+//		} else {
+//			return false;
+//		}
+//	}
+//
+//	private boolean cnpjValid(String cnpj) {
+//		// considera-se erro CNPJ's formados por uma sequencia de numeros iguais
+//		if (cnpj == null || cnpj.length() != 14
+//				|| cnpj.matches("^(0{14}|1{14}|2{14}|3{14}|4{14}|5{14}|6{14}|7{14}|8{14}|9{14})$"))
+//			return (false);
+//		char dig13, dig14;
+//		int sm, i, r, num, peso;
+//		// "try" - protege o código para eventuais erros de conversao de tipo
+//		// (int)
+//		try {
+//			// Calculo do 1o. Digito Verificador
+//			sm = 0;
+//			peso = 2;
+//			for (i = 11; i >= 0; i--) {
+//				// converte o i-ésimo caractere do CNPJ em um número:
+//				// por exemplo, transforma o caractere '0' no inteiro 0
+//				// (48 eh a posição de '0' na tabela ASCII)
+//				num = (int) (cnpj.charAt(i) - 48);
+//				sm = sm + (num * peso);
+//				peso = peso + 1;
+//				if (peso == 10)
+//					peso = 2;
+//			}
+//			r = sm % 11;
+//			if ((r == 0) || (r == 1))
+//				dig13 = '0';
+//			else
+//				dig13 = (char) ((11 - r) + 48);
+//			// Calculo do 2o. Digito Verificador
+//			sm = 0;
+//			peso = 2;
+//			for (i = 12; i >= 0; i--) {
+//				num = (int) (cnpj.charAt(i) - 48);
+//				sm = sm + (num * peso);
+//				peso = peso + 1;
+//				if (peso == 10)
+//					peso = 2;
+//			}
+//			r = sm % 11;
+//			if ((r == 0) || (r == 1))
+//				dig14 = '0';
+//			else
+//				dig14 = (char) ((11 - r) + 48);
+//			// Verifica se os dígitos calculados conferem com os dígitos
+//			// informados.
+//			if ((dig13 == cnpj.charAt(12)) && (dig14 == cnpj.charAt(13)))
+//				return (true);
+//			else
+//				return (false);
+//		} catch (InputMismatchException erro) {
+//			return (false);
+//		}
+//	}
 }

@@ -2,8 +2,10 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.sql.SQLException;
 import java.text.ParseException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -15,22 +17,30 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.text.MaskFormatter;
+import br.com.janus.controller.ClienteController;
+import br.com.janus.model.Cliente;
+import br.com.janus.controller.VeiculoController;
+import br.com.janus.model.Veiculo;
 
 public class CadastroOrdemServico extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldNome;
-	private JTextField textFieldCPF;
-	private JTextField textFieldCNPJ;
+	private JFormattedTextField textFieldCpf;
+	private JFormattedTextField textFieldCnpj;
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
-	private JTextField textFieldPlaca;
-	private JTextField textFieldData;
-	private JTextField textField_1;
+	private JFormattedTextField textFieldPlaca;
+	private JFormattedTextField textFieldData;
+	private JFormattedTextField textFieldTelefone;
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
 	private JTextField textFieldTotal;
-
+	private Cliente clienteAtual;
+	private Veiculo veiculoAtual;
+	private JRadioButton rdbtnCpf;
+	private JRadioButton rdbtnCnpj;
+	
 	public CadastroOrdemServico() throws ParseException {
 
 		setLayout(null);
@@ -93,30 +103,86 @@ public class CadastroOrdemServico extends JPanel {
 		add(textFieldData);
 		textFieldData.setColumns(10);
 		
-				JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
-				lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
-				lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
-				lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
-				add(lblRegistroOrdemServico);
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
+		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
+		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
+		add(lblRegistroOrdemServico);
 
 		JLabel lblCliente = new JLabel("Cliente:");
 		lblCliente.setBounds(46, 101, 46, 14);
 		add(lblCliente);
 
-		JButton btnBuscar_1 = new JButton("Buscar");
-		btnBuscar_1.setBounds(329, 149, 90, 25);
-		add(btnBuscar_1);
+		JButton btnBuscarCliente = new JButton("Buscar");
+		btnBuscarCliente.setBounds(329, 149, 90, 25);
+		btnBuscarCliente.addActionListener(a -> {
+			String cpf = this.textFieldCpf.getText();
+			cpf = cpf.replace(".", "");
+			cpf = cpf.replace("-", "");
+			cpf = cpf.replace(" ", "");
+			
+			String cnpj = this.textFieldCnpj.getText();
+			cnpj = cnpj.replace(".", "");
+			cnpj = cnpj.replace("/", "");
+			cnpj = cnpj.replace("-", "");
+			cnpj = cnpj.replace(" ", "");
+			System.out.println("Cpf: " + cpf);
+			System.out.println("Cpf.isEmpty: " + cpf.isEmpty());
+			System.out.println("Cpf.equals: " + cpf.equals(""));
+			System.out.println("Cpf == null " + cpf == null);
+			System.out.println("cnpj: " + cnpj);
+			System.out.println("cnpj.isEmpty: " + cnpj.isEmpty());
+			System.out.println("cnpj.equals: " + cnpj.equals(""));
+			System.out.println("cnpj null: " + cnpj == null);
+			try{
+				Long.parseLong(cpf);
+			}catch (Exception e) {
+				cpf = "";
+			}
+			if (!cpf.isEmpty()) {
+						try {
+							clienteAtual = new ClienteController().buscaDadosClienteCpf(cpf);
+							if (clienteAtual != null) {
+								this.preencheDadosCliente(clienteAtual);
+							} else {
+								textFieldTelefone.setText("");
+								textFieldTelefone.setValue("");
+								textFieldTelefone.repaint();
+								textFieldNome.setText("");
+								textFieldNome.repaint();
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			} else if (!cnpj.isEmpty()) {
+					try {
+						clienteAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
+						if (clienteAtual != null) {
+							this.preencheDadosCliente(clienteAtual);
+						} else {
+							textFieldTelefone.setText("");
+							textFieldTelefone.setValue("");
+							textFieldTelefone.repaint();
+							textFieldNome.setText("");
+							textFieldNome.repaint();
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+			} 
+		});
+		add(btnBuscarCliente);
 
 		JLabel lblTelefone = new JLabel("Telefone:");
 		lblTelefone.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblTelefone.setBounds(70, 232, 60, 25);
 		add(lblTelefone);
 
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setBounds(141, 232, 205, 25);
-		add(textField_1);
-		textField_1.setColumns(10);
+		textFieldTelefone = new JFormattedTextField(new MaskFormatter("(##) ####-####"));
+		textFieldTelefone.setEditable(false);
+		textFieldTelefone.setBounds(141, 232, 205, 25);
+		add(textFieldTelefone);
+		textFieldTelefone.setColumns(10);
 
 		JLabel lblCaixaCliente = new JLabel("");
 		lblCaixaCliente.setBounds(46, 118, 415, 150);
@@ -193,29 +259,95 @@ public class CadastroOrdemServico extends JPanel {
 		btnCancelar.setBounds(541, 560, 89, 23);
 		add(btnCancelar);
 
-		JButton btnBuscar = new JButton("Buscar");
-		btnBuscar.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnBuscar.setBounds(774, 150, 88, 25);
-		add(btnBuscar);
+		JButton btnBuscarVeiculo = new JButton("Buscar");
+		btnBuscarVeiculo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnBuscarVeiculo.setBounds(774, 150, 88, 25);
+		btnBuscarVeiculo.addActionListener(a -> {
+			try {
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
+				if (veiculoAtual != null) {
+					this.preencheDadosVeiculo(veiculoAtual);
+				} else {
+					textFieldModelo.setText("");
+					textFieldModelo.repaint();
+					textFieldAno.setText("");
+					textFieldAno.repaint();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+		add(btnBuscarVeiculo);
 		
-		textFieldCNPJ = new JFormattedTextField(new MaskFormatter("##.###.###/####-##"));
-		textFieldCNPJ.setBounds(140, 165, 179, 25);
-		add(textFieldCNPJ);
-		textFieldCNPJ.setColumns(10);
+		textFieldCnpj = new JFormattedTextField(new MaskFormatter("##.###.###/####-##"));
+		textFieldCnpj.setBounds(140, 165, 179, 25);
+		add(textFieldCnpj);
+		textFieldCnpj.setColumns(10);
 
-		textFieldCPF = new JFormattedTextField(new MaskFormatter("###.###.###-##"));
-		textFieldCPF.setColumns(10);
-		textFieldCPF.setBounds(139, 131, 180, 25);
-		add(textFieldCPF);
+		textFieldCpf = new JFormattedTextField(new MaskFormatter("###.###.###-##"));
+		textFieldCpf.setColumns(10);
+		textFieldCpf.setBounds(139, 131, 180, 25);
+		add(textFieldCpf);
 		
-		JRadioButton rdbtnCpf = new JRadioButton("CPF:");
+		rdbtnCpf = new JRadioButton("CPF:");
 		rdbtnCpf.setHorizontalAlignment(SwingConstants.RIGHT);
 		rdbtnCpf.setBounds(65, 131, 68, 23);
+		rdbtnCpf.addActionListener(a -> {
+			textFieldCnpj.setText("");
+			textFieldCnpj.setValue("");
+			textFieldCnpj.repaint();
+			textFieldCnpj.setEditable(false);
+			textFieldCpf.setEditable(true);
+			textFieldTelefone.setText("");
+			textFieldTelefone.setValue("");
+			textFieldTelefone.repaint();
+			textFieldNome.setText("");
+			textFieldNome.repaint();
+		});
 		add(rdbtnCpf);
 
-		JRadioButton rdbtnCnpj = new JRadioButton("CNPJ:");
+		rdbtnCnpj = new JRadioButton("CNPJ:");
 		rdbtnCnpj.setHorizontalAlignment(SwingConstants.RIGHT);
 		rdbtnCnpj.setBounds(56, 165, 78, 23);
+		rdbtnCnpj.addActionListener(a -> {
+			textFieldCpf.setText("");
+			textFieldCpf.setValue("");
+			textFieldCpf.repaint();
+			textFieldCnpj.setEditable(true);
+			textFieldCpf.setEditable(false);
+			textFieldTelefone.setText("");
+			textFieldTelefone.setValue("");
+			textFieldTelefone.repaint();
+			textFieldNome.setText("");
+			textFieldNome.repaint();
+		});
 		add(rdbtnCnpj);
+		
+	    ButtonGroup grupoRadios = new ButtonGroup();
+	    grupoRadios.add(rdbtnCpf);
+	    grupoRadios.add(rdbtnCnpj);
 	}
+	
+	public void preencheDadosCliente(Cliente cliente) {
+		System.out.println("Cliente : " + cliente.getIdCliente());
+		if (cliente != null) {
+			this.clienteAtual = cliente;
+			textFieldCpf.setText(cliente.getCpf());
+			textFieldCnpj.setText(cliente.getCnpj());
+			textFieldNome.setText(cliente.getNome());
+			textFieldTelefone.setText(cliente.getTelefone());
+		}
+	}
+	
+	public void preencheDadosVeiculo(Veiculo veiculo) {
+		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
+		if (veiculo != null) {
+			this.veiculoAtual = veiculo;
+			textFieldPlaca.setText(veiculo.getPlaca());
+			textFieldModelo.setText(veiculo.getModelo());
+			textFieldAno.setText(veiculo.getAno());
+		}
+
+	}
+	
 }
