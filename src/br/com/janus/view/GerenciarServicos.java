@@ -18,10 +18,16 @@ public class GerenciarServicos extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-	private DefaultTableModel tabelaModelo = new DefaultTableModel();
+	private DefaultTableModel tabelaModelo = new DefaultTableModel() {
+        boolean[] canEdit = new boolean[]{true, false, false, false, false};
+        
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return canEdit[columnIndex];
+        }
+	};
+			
 	private JTable tabelaServico;
 	
-
 	private ArrayList<Servico> servicos = new ArrayList<Servico>();
 	public GerenciarServicos() {
 		setLayout(null);

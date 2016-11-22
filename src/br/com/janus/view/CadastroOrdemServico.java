@@ -25,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableCellEditor;
 import javax.swing.text.MaskFormatter;
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.ProdutoController;
@@ -34,6 +36,8 @@ import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Veiculo;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 public class CadastroOrdemServico extends JPanel {
 
@@ -51,10 +55,120 @@ public class CadastroOrdemServico extends JPanel {
 	private Veiculo veiculoAtual;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
+	private Integer parcialServico;
+	private Integer parcialProduto;
+	private Integer valorTotal = 0;
 	
-	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel();
+	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
+            	return selecionado[columnIndex];
+            else
+            	setValueAt("0", rowIndex, 3);
+            	return naoSelecionado[columnIndex];
+        }
+        
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 4) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
+
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace("R$ ", "");
+                	Integer valor = Integer.parseInt(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
+                    Integer resultado = 0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    resultado = valor * quantidade;
+                    return ("R$ " +resultado.toString());
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column); //linha original (não apagar)
+            fireTableCellUpdated(row, 4); //linha original (não apagar)
+
+//            try {
+	            for(int i=0; i < tabelaServico.getRowCount(); i++){
+	    			String parcialStrServico = tabelaServico.getValueAt(i, 5).toString();
+	    			parcialStrServico = parcialStrServico.replace("R$ ", "");
+	    			parcialServico += Integer.parseInt(parcialStrServico);
+				}
+				for(int i=0; i < tabelaProduto.getRowCount(); i++){
+					String parcialStrProduto = tabelaProduto.getValueAt(i, 4).toString();
+					parcialStrProduto = parcialStrProduto.replace("R$ ", "");
+					parcialProduto += Integer.parseInt(parcialStrProduto);
+				}
+				valorTotal = parcialProduto + parcialServico;
+				textFieldTotal.setText("R$ " + valorTotal.toString());
+//			} catch (???) {
+//				e.printStackTrace();
+//			}
+        }
+        
+//		for(int i=0; i < tabelaServico.getRowCount(); i++){
+//            String parcialStrServico = tabelaServico.getValueAt(i, 5).toString();
+//            parcialServico += Integer.parseInt(parcialStrServico);
+//		}
+//		for(int i=0; i < tabelaProduto.getRowCount(); i++){
+//            String parcialStrProduto = tabelaProduto.getValueAt(i, 4).toString();
+//            parcialProduto += Integer.parseInt(parcialStrProduto);
+//		}
+//		valorTotal = parcialProduto + parcialServico;
+//		textFieldTotal.setText(valorTotal.toString());
+        
+	};
 	private JTable tabelaProduto;
-	private DefaultTableModel tabelaModeloServico = new DefaultTableModel();
+	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
+            	return selecionado[columnIndex];
+            else
+            	setValueAt("0", rowIndex, 4);
+            	return naoSelecionado[columnIndex];
+        }
+	
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 5) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 4).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
+
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace("R$ ", "");
+                	Integer valor = Integer.parseInt(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
+                    Integer resultado = 0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    resultado = valor * quantidade;
+                    return ("R$ " +resultado.toString());
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column);
+            fireTableCellUpdated(row, 5);
+        }
+	};
 	private JTable tabelaServico;
 	
 	private ArrayList<Produto> produtos;
@@ -245,7 +359,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldTotal.setBounds(478, 525, 86, 25);
 		add(textFieldTotal);
 		textFieldTotal.setColumns(10);
-
+		
 		JButton btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(a -> {
 			GerenciadorDeInterface.setPanel(new Principal());
@@ -339,6 +453,8 @@ public class CadastroOrdemServico extends JPanel {
                     case 3:
                         return String.class;
                     case 4:
+                        return Integer.class;
+                    case 5:
                         return String.class;
                     default:
                         return Boolean.class;
@@ -347,43 +463,16 @@ public class CadastroOrdemServico extends JPanel {
         };
         tabelaModeloServico.addColumn("Selecione");
         tabelaModeloServico.addColumn("Nome");
-        tabelaModeloServico.addColumn("Valor/h");
-        tabelaModeloServico.addColumn("Quantidade/h");
+        tabelaModeloServico.addColumn("Valor");
+        tabelaModeloServico.addColumn("Por Hora");
+        tabelaModeloServico.addColumn("Quantidade");
         tabelaModeloServico.addColumn("Valor total");
         
-//        tabelaServico.addMouseListener(new MouseAdapter() {
-//        	 public void mouseClicked(MouseEvent e) {
-//        		      int column = tabelaServico.getSelectedColumn();
-//        		      System.out.println("oi");
-//        		      System.out.println(column);
-//        	 }
-//		});
-        tabelaServico.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-            	System.out.println("focusGained");
-            	if(tabelaServico.getSelectedColumn() == 3){
-            		Float total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 4).toString());
-            		total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 2).toString()) * Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 3).toString());
-            	}
-            }
-
-            // this function successfully provides cell editing stop
-            // on cell losts focus (but another cell doesn't gain focus)
-            public void focusLost(FocusEvent e) {
-            	System.out.println("focusLosti");
-//            	if(tabelaServico.getSelectedColumn() == 3){
-//            		Float total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 4).toString());
-//            		total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 2).toString()) * Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 3).toString());
-//            	}
-//                
-            }
-        });
-
         tabelaModeloServico.setNumRows(0);
 		
         servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
-			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), "0", ""});
+			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), ("R$ " + servico.getValor() ), servico.getPorHora(), "0", ""});
 		}
 	}
 
@@ -402,7 +491,7 @@ public class CadastroOrdemServico extends JPanel {
                     case 2:
                         return String.class;
                     case 3:
-                        return String.class;
+                        return Integer.class;
                     case 4:
                         return String.class;
                     default:
@@ -419,12 +508,11 @@ public class CadastroOrdemServico extends JPanel {
 		
         produtos = new ProdutoController().buscaProdutos();
 		for (Produto produto : produtos) {
-			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "", ""});
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), ("R$ " + produto.getValor()), "0", ""});
 		}
 		tabelaProduto.getTableHeader().setReorderingAllowed(false);
 		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(40);
 		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(165); 
-//		tabelaProduto.getColumnModel().getColumn(1).set
 		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(140);
 		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(75);
@@ -451,5 +539,6 @@ public class CadastroOrdemServico extends JPanel {
 		}
 
 	}
+	
 	
 }
