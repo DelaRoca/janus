@@ -3,7 +3,9 @@ package br.com.janus.view;
 import java.awt.Color;
 import java.awt.Font;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -102,6 +104,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setBounds(101, 65, 85, 25);
 		add(textFieldData);
 		textFieldData.setColumns(10);
+		textFieldData.setText(java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
 		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
