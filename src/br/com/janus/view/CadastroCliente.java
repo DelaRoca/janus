@@ -40,6 +40,7 @@ public class CadastroCliente extends JPanel {
 	private JFormattedTextField textFieldEstado;
 	private JFormattedTextField textFieldCNPJ;
 	private JButton btnVerificar;
+	private JButton btnSalvar;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
 	
@@ -204,6 +205,7 @@ public class CadastroCliente extends JPanel {
 				textFieldCNPJ.setEditable(false);
 				textFieldDtNasc.setEditable(true);
 				textFieldCPF.setEditable(true);
+				btnSalvar.setEnabled(false);
 				limpaCampos();
 		});
 		add(rdbtnCpf);
@@ -218,6 +220,7 @@ public class CadastroCliente extends JPanel {
 			textFieldCNPJ.setEditable(true);
 			textFieldDtNasc.setEditable(false);
 			textFieldCPF.setEditable(false);
+			btnSalvar.setEnabled(false);
 			limpaCampos();
 		});
 		add(rdbtnCnpj);
@@ -226,7 +229,7 @@ public class CadastroCliente extends JPanel {
 	    grupoRadios.add(rdbtnCpf);
 	    grupoRadios.add(rdbtnCnpj);
 		
-		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			if (verificaCamposValidos()) {
 				if (edicao) {
@@ -238,8 +241,8 @@ public class CadastroCliente extends JPanel {
 				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
 			}
 		});
-
 		btnSalvar.setBounds(412, 529, 89, 23);
+		btnSalvar.setEnabled(false);
 		add(btnSalvar);
 
 		this.btnVerificar = new JButton("Verificar");
@@ -270,8 +273,10 @@ public class CadastroCliente extends JPanel {
 			}
 			if (!cpf.isEmpty()) {
 				cpfValido(cpf);
+				btnSalvar.setEnabled(true);
 			} else if (!cnpj.isEmpty()) {
 				if (novo(cnpj)) {
+					btnSalvar.setEnabled(true);
 					try {
 						clienteAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
 						if (clienteAtual != null) {
