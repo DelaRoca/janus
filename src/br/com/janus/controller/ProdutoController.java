@@ -1,9 +1,14 @@
 package br.com.janus.controller;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+
 import br.com.janus.Conecta;
 import br.com.janus.model.Produto;
 import br.com.janus.view.GerenciadorDeInterface;
@@ -25,9 +30,33 @@ public class ProdutoController {
 			JOptionPane.showMessageDialog(null, "produto cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inv�lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<Produto> buscaProdutos() {
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from produto");
+			ResultSet result = st.executeQuery();
+			System.out.println("result set : " +result == null);
+			if (result != null){
+				ArrayList<Produto> produtos = new ArrayList<Produto>();
+				while(result.next()){
+					System.out.println("next");
+					Produto produto = new Produto();
+					produto.setIdProduto(result.getInt("idproduto"));
+					produto.setNome(result.getString("nome"));
+					produto.setDescricao(result.getString("descricao"));
+					produto.setValor(result.getString("valor"));
+					produtos.add(produto);
+				}
+				return produtos;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

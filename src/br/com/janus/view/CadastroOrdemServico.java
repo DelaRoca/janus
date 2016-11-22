@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
@@ -18,9 +19,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import br.com.janus.controller.ClienteController;
+import br.com.janus.controller.ProdutoController;
+import br.com.janus.controller.ServicoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.Produto;
+import br.com.janus.model.Servico;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Veiculo;
 
@@ -35,14 +41,20 @@ public class CadastroOrdemServico extends JPanel {
 	private JFormattedTextField textFieldPlaca;
 	private JFormattedTextField textFieldData;
 	private JFormattedTextField textFieldTelefone;
-	private JTable tabelaProduto;
-	private JTable tabelaServico;
 	private JTextField textFieldTotal;
 	private Cliente clienteAtual;
 	private Veiculo veiculoAtual;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
 	
+	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel();
+	private JTable tabelaProduto;
+	private DefaultTableModel tabelaModeloServico = new DefaultTableModel();
+	private JTable tabelaServico;
+	
+	private ArrayList<Produto> produtos;
+	private ArrayList<Servico> servicos;
+
 	public CadastroOrdemServico() throws ParseException {
 
 		setLayout(null);
@@ -106,7 +118,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setColumns(10);
 		textFieldData.setText(java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviï¿½o");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -129,14 +141,6 @@ public class CadastroOrdemServico extends JPanel {
 			cnpj = cnpj.replace("/", "");
 			cnpj = cnpj.replace("-", "");
 			cnpj = cnpj.replace(" ", "");
-			System.out.println("Cpf: " + cpf);
-			System.out.println("Cpf.isEmpty: " + cpf.isEmpty());
-			System.out.println("Cpf.equals: " + cpf.equals(""));
-			System.out.println("Cpf == null " + cpf == null);
-			System.out.println("cnpj: " + cnpj);
-			System.out.println("cnpj.isEmpty: " + cnpj.isEmpty());
-			System.out.println("cnpj.equals: " + cnpj.equals(""));
-			System.out.println("cnpj null: " + cnpj == null);
 			try{
 				Long.parseLong(cpf);
 			}catch (Exception e) {
@@ -212,30 +216,12 @@ public class CadastroOrdemServico extends JPanel {
 		lblProduto.setBounds(10, 297, 67, 14);
 		add(lblProduto);
 
-		String[] colunasP = { "", "Nome", "Valor", "Quantidade", "Valor Total" };
-		Object[][] dadosP = { { "", "", "", "", "" } };
-		tabelaProduto = new JTable(dadosP, colunasP);
-		tabelaProduto.getTableHeader().setReorderingAllowed(false);
-		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(40);
-		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(165); 
-		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(60);
-		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(140);
-		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
-
+		populaTabelaProduto();
 		JScrollPane scrollP = new JScrollPane(tabelaProduto);
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
-
-		String[] colunasS = { "", "Nome", "Valor/h", "Quantidade/h", "Valor Total" };
-		Object[][] dadosS = { { "", "", "", "", "" } };
-		tabelaServico = new JTable(dadosS, colunasS);
-		tabelaServico.getTableHeader().setReorderingAllowed(false);
-		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(40);
-		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(165); 
-		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(60);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(140);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(75);
-
+		
+		populaTabelaServicos();
 		JScrollPane scrollS = new JScrollPane(tabelaServico);
 		scrollS.setBounds(510, 315, 480, 196);
 		add(scrollS);
@@ -245,7 +231,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblTotal.setBounds(422, 525, 46, 25);
 		add(lblTotal);
 
-		JLabel lblServico = new JLabel("Servi\u00E7os:");
+		JLabel lblServico = new JLabel("ServiÃ§os:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 
@@ -329,6 +315,84 @@ public class CadastroOrdemServico extends JPanel {
 	    ButtonGroup grupoRadios = new ButtonGroup();
 	    grupoRadios.add(rdbtnCpf);
 	    grupoRadios.add(rdbtnCnpj);
+	}
+
+	private void populaTabelaServicos() {
+		tabelaServico = new JTable(tabelaModeloServico){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return String.class;
+                    case 4:
+                        return String.class;
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloServico.addColumn("Selecione");
+        tabelaModeloServico.addColumn("Nome");
+        tabelaModeloServico.addColumn("Valor/h");
+        tabelaModeloServico.addColumn("Quantidade/h");
+        tabelaModeloServico.addColumn("Valor total");
+        tabelaModeloServico.setNumRows(0);
+		
+        servicos = new ServicoController().buscaServicos();
+		for (Servico servico : servicos) {
+			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), "", ""});
+		}
+	}
+
+	private void populaTabelaProduto() {
+		tabelaProduto = new JTable(tabelaModeloProduto){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return String.class;
+                    case 4:
+                        return String.class;
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloProduto.addColumn("Selecione");
+        tabelaModeloProduto.addColumn("Nome");
+        tabelaModeloProduto.addColumn("Valor");
+        tabelaModeloProduto.addColumn("Quantidade");
+        tabelaModeloProduto.addColumn("Valor total");
+        tabelaModeloProduto.setNumRows(0);
+		
+        produtos = new ProdutoController().buscaProdutos();
+		for (Produto produto : produtos) {
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "", ""});
+		}
+		tabelaProduto.getTableHeader().setReorderingAllowed(false);
+		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(40);
+		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(165); 
+		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(60);
+		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(140);
+		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(75);
 	}
 	
 	public void preencheDadosCliente(Cliente cliente) {
