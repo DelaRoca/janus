@@ -2,6 +2,10 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
+import javax.swing.CellEditor;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -345,11 +350,40 @@ public class CadastroOrdemServico extends JPanel {
         tabelaModeloServico.addColumn("Valor/h");
         tabelaModeloServico.addColumn("Quantidade/h");
         tabelaModeloServico.addColumn("Valor total");
+        
+//        tabelaServico.addMouseListener(new MouseAdapter() {
+//        	 public void mouseClicked(MouseEvent e) {
+//        		      int column = tabelaServico.getSelectedColumn();
+//        		      System.out.println("oi");
+//        		      System.out.println(column);
+//        	 }
+//		});
+        tabelaServico.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+            	System.out.println("focusGained");
+            	if(tabelaServico.getSelectedColumn() == 3){
+            		Float total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 4).toString());
+            		total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 2).toString()) * Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 3).toString());
+            	}
+            }
+
+            // this function successfully provides cell editing stop
+            // on cell losts focus (but another cell doesn't gain focus)
+            public void focusLost(FocusEvent e) {
+            	System.out.println("focusLosti");
+//            	if(tabelaServico.getSelectedColumn() == 3){
+//            		Float total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 4).toString());
+//            		total = Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 2).toString()) * Float.parseFloat(tabelaModeloServico.getValueAt(tabelaServico.getSelectedRow(), 3).toString());
+//            	}
+//                
+            }
+        });
+
         tabelaModeloServico.setNumRows(0);
 		
         servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
-			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), "", ""});
+			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), "0", ""});
 		}
 	}
 
@@ -390,6 +424,7 @@ public class CadastroOrdemServico extends JPanel {
 		tabelaProduto.getTableHeader().setReorderingAllowed(false);
 		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(40);
 		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(165); 
+//		tabelaProduto.getColumnModel().getColumn(1).set
 		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(140);
 		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(75);
