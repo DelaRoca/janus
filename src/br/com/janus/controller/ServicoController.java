@@ -99,13 +99,13 @@ public class ServicoController {
 				st.setInt(2,servico.getIdServico());
 				st.execute();
 			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(null, "--->((VER MENSAGEM CORRETA EA))<---NÃ£o foi possÃ­vel salvar alteraÃ§Ãµes, por favor tente novamente");
+				JOptionPane.showMessageDialog(null, "Não foi possível salvar as alterações. Por favor, tente novamente");
 				GerenciadorDeInterface.setPanel(new Principal());
 				e.printStackTrace();
 				
 			}
 		}
-		JOptionPane.showMessageDialog(null, " --->((VER MENSAGEM CORRETA EA))<---ServiÃ§os alterados com sucesso!");
+		JOptionPane.showMessageDialog(null, "Alteração salva com sucesso");
 		GerenciadorDeInterface.setPanel(new Principal());
 		
 	}

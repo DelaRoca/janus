@@ -19,16 +19,16 @@ public class GerenciarServicos extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private DefaultTableModel tabelaModelo = new DefaultTableModel() {
-        boolean[] canEdit = new boolean[]{true, false, false, false, false};
-        
+        boolean[] chckbxAtivos = new boolean[]{true, false, false, false, false};
+
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return canEdit[columnIndex];
+            	return chckbxAtivos[columnIndex];
         }
 	};
 			
 	private JTable tabelaServico;
-	
 	private ArrayList<Servico> servicos = new ArrayList<Servico>();
+	
 	public GerenciarServicos() {
 		setLayout(null);
 		
@@ -57,7 +57,6 @@ public class GerenciarServicos extends JPanel {
 		});
 		btnCancelar.setBounds(573, 484, 89, 23);
 		add(btnCancelar);
-
 	}
 
 	private void salvaServicos() {
@@ -92,12 +91,11 @@ public class GerenciarServicos extends JPanel {
                 }
             }
         };
-		tabelaModelo.addColumn("Ativado");
+		tabelaModelo.addColumn("Ativo");
 		tabelaModelo.addColumn("Nome");
-		tabelaModelo.addColumn("Valor/h");
+		tabelaModelo.addColumn("Valor (R$)");
 		tabelaModelo.addColumn("Por Hora");
-		tabelaModelo.addColumn("DescriÃ§Ã£o");
-		
+		tabelaModelo.addColumn("Descrição");
 		tabelaModelo.setNumRows(0);
 		servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
@@ -105,16 +103,15 @@ public class GerenciarServicos extends JPanel {
 			if(servico.getPorHora()){
 				porHora = "Sim";
 			}else{
-				porHora = "NÃ£o";
+				porHora = "Não";
 			}
 			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), porHora, servico.getDescricao()});
 		}
 		tabelaServico.getTableHeader().setReorderingAllowed(false);
-		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(40);
-		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(245); 
-		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(45);
+		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(30);
+		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(225); 
+		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(50);
-		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(220);
+		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(235);
 	}
-	
 }
