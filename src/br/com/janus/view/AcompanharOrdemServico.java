@@ -3,16 +3,27 @@ package br.com.janus.view;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
+
+import br.com.janus.controller.ProdutoController;
+import br.com.janus.controller.ServicoController;
+import br.com.janus.model.Cliente;
+import br.com.janus.model.Produto;
+import br.com.janus.model.Servico;
+import br.com.janus.model.Veiculo;
+
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 
@@ -20,17 +31,106 @@ public class AcompanharOrdemServico extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldNome;
-	private JTextField textFieldCPF;
+	private JTextField textFieldCpfCnpj;
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
 	private JTextField textFieldPlaca;
 	private JTextField textFieldData;
-	private JTextField textField_1;
-	private JTable tabelaProduto;
-	private JTable tabelaServico;
+	private JTextField textFieldTelefone;
 	private JTextField textFieldTotal;
 	private JTextField textField;
+	private Cliente clienteAtual;
+	private Veiculo veiculoAtual;
+	private Integer parcialServico;
+	private Integer parcialProduto;
+	private Integer valorTotal = 0;
+	
+	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
+            	return selecionado[columnIndex];
+            else
+            	setValueAt("0", rowIndex, 3);
+            	return naoSelecionado[columnIndex];
+        }
+        
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 4) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
 
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace("R$ ", "");
+                	Integer valor = Integer.parseInt(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
+                    Integer resultado = 0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    resultado = valor * quantidade;
+                    return resultado.toString();
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column); //linha original (não apagar)
+            fireTableCellUpdated(row, 4); //linha original (não apagar)
+        }
+	};
+	private JTable tabelaProduto;
+	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
+            	return selecionado[columnIndex];
+            else
+            	setValueAt("0", rowIndex, 4);
+            	return naoSelecionado[columnIndex];
+        }
+	
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 5) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 4).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
+
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace("R$ ", "");
+                	Integer valor = Integer.parseInt(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
+                    Integer resultado = 0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    resultado = valor * quantidade;
+                    return resultado.toString();
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column);
+            fireTableCellUpdated(row, 5);
+        }
+	};
+	private JTable tabelaServico;
+	
+	private ArrayList<Produto> produtos;
+	private ArrayList<Servico> servicos;
+	
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
 
@@ -76,11 +176,11 @@ public class AcompanharOrdemServico extends JPanel {
 		add(textFieldNome);
 		textFieldNome.setColumns(10);
 
-		textFieldCPF = new JTextField();
-		textFieldCPF.setEditable(false);
-		textFieldCPF.setColumns(10);
-		textFieldCPF.setBounds(151, 171, 205, 25);
-		add(textFieldCPF);
+		textFieldCpfCnpj = new JTextField();
+		textFieldCpfCnpj.setEditable(false);
+		textFieldCpfCnpj.setColumns(10);
+		textFieldCpfCnpj.setBounds(151, 171, 205, 25);
+		add(textFieldCpfCnpj);
 
 		textFieldModelo = new JTextField();
 		textFieldModelo.setEditable(false);
@@ -120,11 +220,11 @@ public class AcompanharOrdemServico extends JPanel {
 		lblTelefone.setBounds(81, 234, 60, 25);
 		add(lblTelefone);
 
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setBounds(151, 234, 205, 25);
-		add(textField_1);
-		textField_1.setColumns(10);
+		textFieldTelefone = new JTextField();
+		textFieldTelefone.setEditable(false);
+		textFieldTelefone.setBounds(151, 234, 205, 25);
+		add(textFieldTelefone);
+		textFieldTelefone.setColumns(10);
 
 		JLabel lblCaixaCliente = new JLabel("");
 		lblCaixaCliente.setBounds(46, 160, 416, 108);
@@ -140,53 +240,50 @@ public class AcompanharOrdemServico extends JPanel {
 		label.setBounds(532, 160, 416, 108);
 		add(label);
 
+
 		JLabel lblProduto = new JLabel("Produtos:");
 		lblProduto.setBounds(10, 297, 67, 14);
 		add(lblProduto);
 
-		String[] colunasP = { "", "Nome", "Valor", "Quantidade", "Valor Total" };
-		Object[][] dadosP = { { "", "", "", "", "" } };
-		tabelaProduto = new JTable(dadosP, colunasP);
-		tabelaProduto.getTableHeader().setReorderingAllowed(false);
-		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(40);
-		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(165); 
-		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(60);
-		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(140);
-		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
-
+		populaTabelaProduto();
 		JScrollPane scrollP = new JScrollPane(tabelaProduto);
-		scrollP.setBounds(10, 315, 480, 175);
+		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
-
-		String[] colunasS = { "", "Nome", "Valor/h", "Quantidade/h", "Valor Total" };
-		Object[][] dadosS = { { "", "", "", "", "" } };
-		tabelaServico = new JTable(dadosS, colunasS);
-		tabelaServico.getTableHeader().setReorderingAllowed(false);
-		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(40);
-		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(165); 
-		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(60);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(140);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(75);
-
+		
+		JLabel lblServico = new JLabel("ServiÃ§os:");
+		lblServico.setBounds(509, 297, 67, 14);
+		add(lblServico);
+		
+		populaTabelaServicos();
 		JScrollPane scrollS = new JScrollPane(tabelaServico);
-		scrollS.setBounds(510, 315, 480, 175);
+		scrollS.setBounds(510, 315, 480, 196);
 		add(scrollS);
 
 		JLabel lblTotal = new JLabel("Total:");
 		lblTotal.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblTotal.setBounds(434, 515, 46, 25);
+		lblTotal.setBounds(422, 525, 46, 25);
 		add(lblTotal);
-
-		JLabel lblServio = new JLabel("Servi\u00E7os:");
-		lblServio.setBounds(509, 297, 67, 14);
-		add(lblServio);
 
 		textFieldTotal = new JTextField();
 		textFieldTotal.setEditable(false);
-		textFieldTotal.setBounds(490, 515, 86, 25);
+		textFieldTotal.setBounds(478, 525, 86, 25);
 		add(textFieldTotal);
 		textFieldTotal.setColumns(10);
-
+		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.addActionListener(a -> {
+			//TODO implementar
+		});
+		btnSalvar.setBounds(373, 560, 89, 23);
+		add(btnSalvar);
+		
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(a -> {
+			GerenciadorDeInterface.setPanel(new Principal());
+		});
+		btnCancelar.setBounds(541, 560, 89, 23);
+		add(btnCancelar);
+		
 		JLabel lblStatus = new JLabel("Status:");
 		lblStatus.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblStatus.setBounds(20, 106, 58, 25);
@@ -215,19 +312,123 @@ public class AcompanharOrdemServico extends JPanel {
 		lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblExpirado.setBounds(325, 106, 106, 25);
 		add(lblExpirado);
-
-		JButton btnCancelar = new JButton("Cancelar");
-		btnCancelar.addActionListener(a -> {
-			GerenciadorDeInterface.setPanel(new Principal());
-		});
-		btnCancelar.setBounds(541, 551, 89, 23);
-		add(btnCancelar);
-
-		JButton btnSalvar = new JButton("Salvar");
-		btnSalvar.addActionListener(a -> {
-			//TODO implementar
-		});
-		btnSalvar.setBounds(384, 551, 89, 23);
-		add(btnSalvar);
 	}
+	
+	private void populaTabelaServicos() {
+		tabelaServico = new JTable(tabelaModeloServico){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return String.class;
+                    case 4:
+                        return Integer.class;
+                    case 5:
+                        return String.class;
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloServico.addColumn("Selecione");
+        tabelaModeloServico.addColumn("Nome");
+        tabelaModeloServico.addColumn("Valor (R$)");
+        tabelaModeloServico.addColumn("Por Hora");
+        tabelaModeloServico.addColumn("Quantidade");
+        tabelaModeloServico.addColumn("Total (R$)");
+        
+        tabelaModeloServico.setNumRows(0);
+        servicos = new ServicoController().buscaServicos();
+		for (Servico servico : servicos) {
+			String porHora = "";
+			if(servico.getPorHora()){
+				porHora = "Sim";
+			}else{
+				porHora = "Não";
+			}
+			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
+		}
+		tabelaServico.getTableHeader().setReorderingAllowed(false);
+		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
+		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(75);
+		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
+	}
+
+	private void populaTabelaProduto() {
+		tabelaProduto = new JTable(tabelaModeloProduto){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return Integer.class;
+                    case 4:
+                        return String.class;
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloProduto.addColumn("Selecione");
+        tabelaModeloProduto.addColumn("Nome");
+        tabelaModeloProduto.addColumn("Valor (R$)");
+        tabelaModeloProduto.addColumn("Quantidade");
+        tabelaModeloProduto.addColumn("Total (R$)");
+        tabelaModeloProduto.setNumRows(0);
+		
+        produtos = new ProdutoController().buscaProdutos();
+		for (Produto produto : produtos) {
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0"});
+		}
+		tabelaProduto.getTableHeader().setReorderingAllowed(false);
+		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(70);
+		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(195); 
+		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
+		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(70);
+	}
+	
+	public void preencheDadosCliente(Cliente cliente) {
+		System.out.println("Cliente : " + cliente.getIdCliente());
+		if (cliente != null) {
+			this.clienteAtual = cliente;
+			if (cliente.getCpf().equals(""))
+				textFieldCpfCnpj.setText(cliente.getCnpj());
+			else if (cliente.getCnpj().equals(""))
+				textFieldCpfCnpj.setText(cliente.getCpf());
+			textFieldNome.setText(cliente.getNome());
+			textFieldTelefone.setText(cliente.getTelefone());
+		}
+	}
+	
+	public void preencheDadosVeiculo(Veiculo veiculo) {
+		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
+		if (veiculo != null) {
+			this.veiculoAtual = veiculo;
+			textFieldPlaca.setText(veiculo.getPlaca());
+			textFieldModelo.setText(veiculo.getModelo());
+			textFieldAno.setText(veiculo.getAno());
+		}
+	}
+
 }
