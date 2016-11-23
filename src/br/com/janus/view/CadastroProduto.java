@@ -40,7 +40,7 @@ public class CadastroProduto extends JPanel {
 		add(textFieldNome);
 		textFieldNome.setColumns(10);
 		
-		JLabel lblPreco = new JLabel("Pre\u00E7o:");
+		JLabel lblPreco = new JLabel("Valor (R$):");
 		lblPreco.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblPreco.setBounds(318, 280, 120, 25);
 		add(lblPreco);
@@ -64,10 +64,17 @@ public class CadastroProduto extends JPanel {
 
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			if (verificaCamposValidos()) {
-				salvaProduto();
-			} else {
-				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+			try{
+				if(!textFieldValor.getText().contains("0987654321")) {
+					Double.parseDouble(textFieldValor.getText());
+				}
+				if (verificaCamposValidos()) {
+					salvaProduto();
+				} else {
+					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+				}
+			} catch( Exception e){
+				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 			}
 		});
 		btnSalvar.setBounds(384, 551, 89, 23);
@@ -111,7 +118,6 @@ public class CadastroProduto extends JPanel {
 		System.out.println("aqui nos verifica campos ");
 		System.out.println("this.textFieldNome" + this.textFieldNome.getText().equals(""));
 		System.out.println("this.textFieldValor " + this.textFieldValor.getText().equals(""));
-
 		if (this.textFieldNome.getText().equals("") || this.textFieldValor.getText().equals("")) {
 			return false;
 		}

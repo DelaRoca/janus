@@ -41,30 +41,32 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textField;
 	private Cliente clienteAtual;
 	private Veiculo veiculoAtual;
-	private Integer parcialServico;
-	private Integer parcialProduto;
-	private Integer valorTotal = 0;
+	private Integer parcialIntServico = 0;
+	private Integer parcialIntProduto = 0;
+	private Integer valorIntTotal = 0;
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
+            if (((Boolean) tabelaModeloProduto.getValueAt(rowIndex, 0)).booleanValue()) {
             	return selecionado[columnIndex];
-            else
+            }
+            else {
             	setValueAt("0", rowIndex, 3);
             	return naoSelecionado[columnIndex];
+            }
         }
         
         @Override
         public Object getValueAt(int row, int column) {
             if (column == 4) {
-                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
+                if (tabelaModeloProduto.getValueAt(row, 2).equals("") && tabelaModeloProduto.getValueAt(row, 3).equals("")){
                     return super.getValueAt(row, column);
                 } else {
 
-                	String valorStr = getValueAt(row, 2).toString();
+                	String valorStr = tabelaModeloProduto.getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace("R$ ", "");
                 	Integer valor = Integer.parseInt(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
@@ -81,21 +83,52 @@ public class AcompanharOrdemServico extends JPanel {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column); //linha original (não apagar)
-            fireTableCellUpdated(row, 4); //linha original (não apagar)
+            super.setValueAt(aValue, row, column);
+
+			//Metodo Calcula Total (criar)
+			valorIntTotal = 0;
+			for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+				if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+					parcialIntProduto = Integer.parseInt(tabelaModeloProduto.getValueAt(i, 4).toString());
+					System.out.println("aqui no produto");
+					System.out.println("parcial: " + parcialIntProduto);
+					valorIntTotal += parcialIntProduto;
+				}
+			}
+
+			for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+				if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+					parcialIntServico = Integer.parseInt(tabelaModeloServico.getValueAt(i, 5).toString());
+					System.out.println("aqui no servico");
+					System.out.println("parcial: " + parcialIntServico);
+					valorIntTotal += parcialIntServico;	
+				}
+			}
+			textFieldTotal.setText(valorIntTotal.toString());
+			//Acaba Metodo Calcula Total
+			
+            tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
 	private JTable tabelaProduto;
+	
 	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
+        boolean[] selecionadoPorHora = new boolean[]{true, false, false, true, true, false};
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) 
-            	return selecionado[columnIndex];
-            else
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
+            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
+            		return selecionadoPorHora[columnIndex];
+            	} else {
+            		return selecionado[columnIndex];
+            	}
+            }
+            else {
             	setValueAt("0", rowIndex, 4);
             	return naoSelecionado[columnIndex];
+            }
         }
 	
         @Override
@@ -104,16 +137,19 @@ public class AcompanharOrdemServico extends JPanel {
                 if (getValueAt(row, 2).equals("") && getValueAt(row, 4).equals("")){
                     return super.getValueAt(row, column);
                 } else {
-
                 	String valorStr = getValueAt(row, 2).toString();
-                	valorStr = valorStr.replace("R$ ", "");
                 	Integer valor = Integer.parseInt(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
+                	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
                     Integer resultado = 0;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
-                    resultado = valor * quantidade;
+                    if (valorPorHora > 0) {
+                    	resultado = (valor * quantidade) * valorPorHora;	
+                    } else {
+                    	resultado = valor * quantidade;
+                    }
                     return resultado.toString();
                 }
             }
@@ -123,8 +159,38 @@ public class AcompanharOrdemServico extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
-            fireTableCellUpdated(row, 5);
-        }
+            
+            if (column == 3) {
+            	int testePorHora = Integer.parseInt(aValue.toString());
+            	if (testePorHora < 1){
+            		setValueAt("1", row, column);
+            	}
+            }
+            
+			//Metodo Calcula Total (criar)
+			valorIntTotal = 0;
+			for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+				if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+					parcialIntProduto = Integer.parseInt(tabelaModeloProduto.getValueAt(i, 4).toString());
+					System.out.println("aqui no produto");
+					System.out.println("parcial: " + parcialIntProduto);
+					valorIntTotal += parcialIntProduto;
+				}
+			}
+
+			for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+				if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+					parcialIntServico = Integer.parseInt(tabelaModeloServico.getValueAt(i, 5).toString());
+					System.out.println("aqui no servico");
+					System.out.println("parcial: " + parcialIntServico);
+					valorIntTotal += parcialIntServico;	
+				}
+			}
+			textFieldTotal.setText(valorIntTotal.toString());
+			//Acaba Metodo Calcula Total
+			
+           	fireTableCellUpdated(row, 5);
+        }   
 	};
 	private JTable tabelaServico;
 	
@@ -329,7 +395,7 @@ public class AcompanharOrdemServico extends JPanel {
                     case 2:
                         return String.class;
                     case 3:
-                        return String.class;
+                        return Integer.class;
                     case 4:
                         return Integer.class;
                     case 5:
@@ -349,11 +415,9 @@ public class AcompanharOrdemServico extends JPanel {
         tabelaModeloServico.setNumRows(0);
         servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
-			String porHora = "";
+			int porHora = 0;
 			if(servico.getPorHora()){
-				porHora = "Sim";
-			}else{
-				porHora = "Não";
+				porHora = 1;
 			}
 			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
 		}

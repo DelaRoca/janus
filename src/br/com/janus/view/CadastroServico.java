@@ -41,7 +41,7 @@ public class CadastroServico extends JPanel {
 		lblDescrio.setBounds(290, 309, 120, 25);
 		add(lblDescrio);
 		
-		JLabel lblValor = new JLabel("Valor:");
+		JLabel lblValor = new JLabel("Valor (R$):");
 		lblValor.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblValor.setBounds(290, 273, 120, 25);
 		add(lblValor);
@@ -62,10 +62,17 @@ public class CadastroServico extends JPanel {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			if (verificaCamposValidos()) {
-				salvaServico();
-			} else {
-				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+			try{
+				if(!textFieldValor.getText().contains("0987654321")) {
+					Double.parseDouble(textFieldValor.getText());
+				}
+				if (verificaCamposValidos()) {
+					salvaServico();
+				} else {
+					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+				}
+			} catch( Exception e){
+				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 			}
 		});
 		btnSalvar.setBounds(375, 522, 89, 23);
