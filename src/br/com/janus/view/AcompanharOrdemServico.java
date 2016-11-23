@@ -383,8 +383,11 @@ public class AcompanharOrdemServico extends JPanel {
 			if(servico.getPorHora()){
 				porHora = 1;
 			}
-			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
+			if (servico.getEstaAtivo())
+				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
 		}
+		
+		
 		tabelaServico.getTableHeader().setReorderingAllowed(false);
 		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
 		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
