@@ -63,13 +63,14 @@ public class CadastroServico extends JPanel {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			try{
-				if(!textFieldValor.getText().contains("0987654321")) {
-					Double.parseDouble(textFieldValor.getText());
-				}
-				if (verificaCamposValidos()) {
-					salvaServico();
+				if (!verificarCampoValor()) {
+					 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 				} else {
-					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+					if (verificaCamposValidos()) {
+						salvaServico();
+					} else {
+						JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+					}
 				}
 			} catch( Exception e){
 				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
@@ -132,4 +133,17 @@ public class CadastroServico extends JPanel {
 		return true;
 	}
 	
+    private boolean verificarCampoValor() {
+        String[] valoresPartidos = textFieldValor.getText().split(",", 2);
+		try {
+			Long.parseLong (valoresPartidos[0]);
+			Long.parseLong (valoresPartidos[1]);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		if (!(valoresPartidos[1].length() == 2) && !(valoresPartidos[1].length() == 1)){
+			return false;
+		}
+		return true;
+    }
 }

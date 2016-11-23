@@ -41,16 +41,16 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textField;
 	private Cliente clienteAtual;
 	private Veiculo veiculoAtual;
-	private Integer parcialIntServico = 0;
-	private Integer parcialIntProduto = 0;
-	private Integer valorIntTotal = 0;
+	private Double parcialDoubleServico = 0.0;
+	private Double parcialDoubleProduto = 0.0;
+	private Double valorDoubleTotal = 0.0;
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) tabelaModeloProduto.getValueAt(rowIndex, 0)).booleanValue()) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
             	return selecionado[columnIndex];
             }
             else {
@@ -62,20 +62,21 @@ public class AcompanharOrdemServico extends JPanel {
         @Override
         public Object getValueAt(int row, int column) {
             if (column == 4) {
-                if (tabelaModeloProduto.getValueAt(row, 2).equals("") && tabelaModeloProduto.getValueAt(row, 3).equals("")){
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
                     return super.getValueAt(row, column);
                 } else {
-
-                	String valorStr = tabelaModeloProduto.getValueAt(row, 2).toString();
-                	valorStr = valorStr.replace("R$ ", "");
-                	Integer valor = Integer.parseInt(valorStr);
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace(",", ".");
+                	double valor = Double.parseDouble(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
-                    Integer resultado = 0;
+                    double resultado = 0.0;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
                     resultado = valor * quantidade;
-                    return resultado.toString();
+                    String resultadoStr = String.valueOf(resultado);
+                    resultadoStr = resultadoStr.replace(".", ",");
+                    return resultadoStr;
                 }
             }
             return super.getValueAt(row, column);
@@ -84,28 +85,8 @@ public class AcompanharOrdemServico extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
-
-			//Metodo Calcula Total (criar)
-			valorIntTotal = 0;
-			for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
-				if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
-					parcialIntProduto = Integer.parseInt(tabelaModeloProduto.getValueAt(i, 4).toString());
-					System.out.println("aqui no produto");
-					System.out.println("parcial: " + parcialIntProduto);
-					valorIntTotal += parcialIntProduto;
-				}
-			}
-
-			for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
-				if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
-					parcialIntServico = Integer.parseInt(tabelaModeloServico.getValueAt(i, 5).toString());
-					System.out.println("aqui no servico");
-					System.out.println("parcial: " + parcialIntServico);
-					valorIntTotal += parcialIntServico;	
-				}
-			}
-			textFieldTotal.setText(valorIntTotal.toString());
-			//Acaba Metodo Calcula Total
+            
+            preencheValorTotalOrdemServico();
 			
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
@@ -138,10 +119,11 @@ public class AcompanharOrdemServico extends JPanel {
                     return super.getValueAt(row, column);
                 } else {
                 	String valorStr = getValueAt(row, 2).toString();
-                	Integer valor = Integer.parseInt(valorStr);
+                	valorStr = valorStr.replace(",", ".");
+                	double valor = Double.parseDouble(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
                 	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
-                    Integer resultado = 0;
+                    double resultado = 0.0;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
@@ -150,7 +132,9 @@ public class AcompanharOrdemServico extends JPanel {
                     } else {
                     	resultado = valor * quantidade;
                     }
-                    return resultado.toString();
+                    String resultadoStr = String.valueOf(resultado);
+                    resultadoStr = resultadoStr.replace(".", ",");
+                    return resultadoStr;
                 }
             }
             return super.getValueAt(row, column);
@@ -167,27 +151,7 @@ public class AcompanharOrdemServico extends JPanel {
             	}
             }
             
-			//Metodo Calcula Total (criar)
-			valorIntTotal = 0;
-			for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
-				if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
-					parcialIntProduto = Integer.parseInt(tabelaModeloProduto.getValueAt(i, 4).toString());
-					System.out.println("aqui no produto");
-					System.out.println("parcial: " + parcialIntProduto);
-					valorIntTotal += parcialIntProduto;
-				}
-			}
-
-			for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
-				if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
-					parcialIntServico = Integer.parseInt(tabelaModeloServico.getValueAt(i, 5).toString());
-					System.out.println("aqui no servico");
-					System.out.println("parcial: " + parcialIntServico);
-					valorIntTotal += parcialIntServico;	
-				}
-			}
-			textFieldTotal.setText(valorIntTotal.toString());
-			//Acaba Metodo Calcula Total
+            preencheValorTotalOrdemServico();
 			
            	fireTableCellUpdated(row, 5);
         }   
@@ -495,4 +459,33 @@ public class AcompanharOrdemServico extends JPanel {
 		}
 	}
 
+	public void preencheValorTotalOrdemServico() {
+		//Metodo Calcula Total (criar)
+        valorDoubleTotal = 0.0;
+		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
+				parcialStrProd = parcialStrProd.replace(",", ".");
+				parcialDoubleProduto = Double.parseDouble(parcialStrProd);
+				System.out.println("aqui no produto");
+				System.out.println("parcial: " + parcialDoubleProduto);
+				valorDoubleTotal += parcialDoubleProduto;
+			}
+		}
+
+		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
+				parcialStrServ = parcialStrServ.replace(",", ".");
+				parcialDoubleServico = Double.parseDouble(parcialStrServ);
+				System.out.println("aqui no servico");
+				System.out.println("parcial: " + parcialDoubleServico);
+				valorDoubleTotal += parcialDoubleServico;	
+			}
+		}
+		String valorStrTotal = valorDoubleTotal.toString();
+		valorStrTotal = valorStrTotal.replace(".", ",");
+		textFieldTotal.setText(valorStrTotal);
+		//Acaba Metodo Calcula Total
+	}
 }

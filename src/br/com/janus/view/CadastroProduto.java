@@ -1,6 +1,12 @@
 package br.com.janus.view;
 
 import java.awt.Font;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,7 +25,8 @@ public class CadastroProduto extends JPanel {
 	private JTextField textFieldNome;
 	private JTextField textFieldValor;
 	private JTextField textFieldDescricao;
-		
+	JLabel lblValor;
+	
 	public CadastroProduto() {
 
 		setLayout(null);
@@ -40,13 +47,13 @@ public class CadastroProduto extends JPanel {
 		add(textFieldNome);
 		textFieldNome.setColumns(10);
 		
-		JLabel lblPreco = new JLabel("Valor (R$):");
-		lblPreco.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPreco.setBounds(318, 280, 120, 25);
-		add(lblPreco);
+		lblValor = new JLabel("Valor (R$):");
+		lblValor.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblValor.setBounds(318, 279, 120, 30);
+		add(lblValor);
 		
 		textFieldValor = new JTextField();
-		textFieldValor.setBounds(448, 280, 254, 25);
+		textFieldValor.setBounds(448, 279, 254, 30);
 		add(textFieldValor);
 		textFieldValor.setColumns(10);
 		
@@ -65,13 +72,14 @@ public class CadastroProduto extends JPanel {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			try{
-				if(!textFieldValor.getText().contains("0987654321")) {
-					Double.parseDouble(textFieldValor.getText());
-				}
-				if (verificaCamposValidos()) {
-					salvaProduto();
+				if (!verificarCampoValor()) {
+					 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 				} else {
-					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+					if (verificaCamposValidos()) {
+						salvaProduto();
+					} else {
+						JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+					}
 				}
 			} catch( Exception e){
 				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
@@ -124,4 +132,18 @@ public class CadastroProduto extends JPanel {
 		return true;
 	}
 
+	 
+    private boolean verificarCampoValor() {
+        String[] valoresPartidos = textFieldValor.getText().split(",", 2);
+		try {
+			Long.parseLong (valoresPartidos[0]);
+			Long.parseLong (valoresPartidos[1]);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		if (!(valoresPartidos[1].length() == 2) && !(valoresPartidos[1].length() == 1)){
+			return false;
+		}
+		return true;
+    }
 }
