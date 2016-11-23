@@ -2,10 +2,6 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
-import javax.swing.CellEditor;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -25,19 +20,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableCellEditor;
 import javax.swing.text.MaskFormatter;
+
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.ProdutoController;
 import br.com.janus.controller.ServicoController;
+import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
-import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Veiculo;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 public class CadastroOrdemServico extends JPanel {
 
@@ -55,9 +47,9 @@ public class CadastroOrdemServico extends JPanel {
 	private Veiculo veiculoAtual;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
-	private Integer parcialServico;
-	private Integer parcialProduto;
-	private Integer valorTotal = 0;
+	private String parcialServico;
+	private String parcialProduto;
+	private String valorTotal ="oi";
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
@@ -95,21 +87,21 @@ public class CadastroOrdemServico extends JPanel {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column); //linha original (não apagar)
-            fireTableCellUpdated(row, 4); //linha original (não apagar)
+            super.setValueAt(aValue, row, column); //linha original (nï¿½o apagar)
+            fireTableCellUpdated(row, 4); //linha original (nï¿½o apagar)
 
-//	            for(int i=0; i < tabelaServico.getRowCount(); i++){
-//	    			String parcialStrServico = tabelaServico.getValueAt(i, 5).toString();
-//	    			parcialStrServico = parcialStrServico.replace("R$ ", "");
-//	    			parcialServico += Integer.parseInt(parcialStrServico);
-//				}
-//				for(int i=0; i < tabelaProduto.getRowCount(); i++){
-//					String parcialStrProduto = tabelaProduto.getValueAt(i, 4).toString();
-//					parcialStrProduto = parcialStrProduto.replace("R$ ", "");
-//					parcialProduto += Integer.parseInt(parcialStrProduto);
-//				}
-//				valorTotal = parcialProduto + parcialServico;
-//				textFieldTotal.setText("R$ " + valorTotal.toString());
+				for(int i=0; i < tabelaProduto.getRowCount(); i++){
+					String parcialStrProduto = tabelaProduto.getValueAt(i, 4).toString();
+					System.out.println("aqui no produto");
+					System.out.println("parcial: " + parcialStrProduto);
+//	    			if(parcialStrServico != "0")
+	    			parcialServico = parcialServico.concat(parcialStrProduto);
+	    			//					parcialStrProduto = parcialStrProduto.replace("R$ ", "");
+//					if(parcialStrProduto != null)
+//						parcialProduto += Float.parseFloat(parcialStrProduto);
+				}
+				valorTotal = parcialProduto + parcialServico;
+				textFieldTotal.setText("R$ " + valorTotal.toString());
             
         }
 	};
@@ -150,8 +142,19 @@ public class CadastroOrdemServico extends JPanel {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column);
-            fireTableCellUpdated(row, 5);
+            super.setValueAt(aValue, row, column); //linha original (nï¿½o apagar)
+            fireTableCellUpdated(row, 5); //linha original (nï¿½o apagar)
+
+	            for(int i=0; i < tabelaServico.getRowCount(); i++){
+	    			String parcialStrServico = tabelaServico.getValueAt(i, 5).toString();
+	    			parcialStrServico = parcialStrServico.replace("R$ ", "");
+	    			System.out.println("parcial: " + parcialStrServico);
+//	    			if(parcialStrServico != "0")
+	    			parcialServico = parcialServico.concat(parcialStrServico);
+				}
+//				valorTotal = parcialProduto + parcialServico;
+				textFieldTotal.setText("R$ " + valorTotal.toString());
+            
         }
 	};
 	private JTable tabelaServico;
@@ -460,7 +463,7 @@ public class CadastroOrdemServico extends JPanel {
 			if(servico.getPorHora()){
 				porHora = "Sim";
 			}else{
-				porHora = "Não";
+				porHora = "Nï¿½o";
 			}
 			tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
 		}
