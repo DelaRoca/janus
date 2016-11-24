@@ -14,6 +14,7 @@ import br.com.janus.model.Cliente;
 import br.com.janus.model.OrdemServico;
 import br.com.janus.model.OsProdutos;
 import br.com.janus.model.OsServicos;
+import br.com.janus.model.Produto;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
 
@@ -114,6 +115,23 @@ public class OrdemServicoController {
 		}
 		return null;
 		
+	}
+
+	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemServico) throws SQLException {
+		ArrayList<OsProdutos> produtos = new ArrayList<OsProdutos>();
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idOrdemDeServico = ?;");
+		st.setInt(1, idOrdemServico);
+		ResultSet result = st.executeQuery();
+		System.out.println("result set : " +result == null);
+		if (result != null){
+			while(result.next()){
+				OsProdutos os = new OsProdutos();
+				os.setIdProduto(result.getInt("idProduto"));
+				os.setQuantidade(result.getInt("quantidade"));
+				produtos.add(os);
+			}
+		}
+		return produtos;
 	}
 
 }

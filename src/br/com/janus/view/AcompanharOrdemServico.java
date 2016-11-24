@@ -36,15 +36,17 @@ import javax.swing.JFormattedTextField;
 public class AcompanharOrdemServico extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField textFieldNome;
+	private JTextField textFieldOrdemServico;
+	private JTextField textFieldData;
+	private JComboBox<String> comboBoxStatus;
 	private JTextField textFieldCpfCnpj;
+	private JTextField textFieldNome;
+	private JTextField textFieldTelefone;
+	private JTextField textFieldPlaca;
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
-	private JTextField textFieldPlaca;
-	private JTextField textFieldData;
-	private JTextField textFieldTelefone;
 	private JTextField textFieldTotal;
-	private JTextField textFieldOrdemServico;
+	
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
 
@@ -327,16 +329,17 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
-		JComboBox<String> comboBox = new JComboBox<String>();
-		comboBox.removeAllItems();
-		comboBox.addItem("");
-		comboBox.addItem(StatusENUM.ABERTO.getNome());
-		comboBox.addItem(StatusENUM.APROVADO.getNome());
-		comboBox.addItem(StatusENUM.EXECUCAO.getNome());
-		comboBox.addItem(StatusENUM.FINALIZADO.getNome());
-		comboBox.addItem(StatusENUM.CANCELADO.getNome());
-		comboBox.setBounds(85, 106, 225, 25);
-		add(comboBox);
+		comboBoxStatus = new JComboBox<String>();
+		comboBoxStatus.removeAllItems();
+		comboBoxStatus.addItem(StatusENUM.ABERTO.getNome());
+		comboBoxStatus.addItem(StatusENUM.APROVADO.getNome());
+		comboBoxStatus.addItem(StatusENUM.EXECUCAO.getNome());
+		comboBoxStatus.addItem(StatusENUM.FINALIZADO.getNome());
+		comboBoxStatus.addItem(StatusENUM.CANCELADO.getNome());
+		comboBoxStatus.addItem("");
+		comboBoxStatus.setSelectedItem("");
+		comboBoxStatus.setBounds(85, 106, 225, 25);
+		add(comboBoxStatus);
 
 		//if status desativado, bloquear combobox e todos os outros campos...
 		
@@ -353,14 +356,6 @@ public class AcompanharOrdemServico extends JPanel {
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(a -> {
 			buscaOrdemServico();
-			if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
-				JLabel lblExpirado = new JLabel("Expirado!");
-				lblExpirado.setForeground(Color.RED);
-				lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
-				lblExpirado.setBounds(325, 106, 106, 25);
-				add(lblExpirado);
-				//------>>>>> bloquear tudo e todos !!!! <<<-------
-			}
 			preencheDados();
 		});
 		btnBuscar.setBounds(221, 70, 90, 25);
@@ -368,8 +363,40 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void preencheDados() {
-		// go horse
+	
+		//ORDEM DE SERVIÇO
+		textFieldData.setText(ordemServico.getData());
+		textFieldTotal.setText(ordemServico.getTotal());
 		
+//		//CLIENTE
+		if ( !clienteAtual.getCnpj().equals("") ) {
+			textFieldCpfCnpj.setText(clienteAtual.getCnpj());
+		} else {
+			textFieldCpfCnpj.setText(clienteAtual.getCpf());
+		}
+		textFieldNome.setText(clienteAtual.getNome());
+		textFieldTelefone.setText(clienteAtual.getTelefone());
+		
+		//VEICULO
+		textFieldPlaca.setText(veiculoAtual.getPlaca());
+		textFieldModelo.setText(veiculoAtual.getModelo());
+		textFieldAno.setText(veiculoAtual.getAno());
+
+		if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
+			comboBoxStatus.setSelectedItem(StatusENUM.ABERTO.getValor());
+			
+			JLabel lblExpirado = new JLabel("Expirado!");
+			lblExpirado.setForeground(Color.RED);
+			lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
+			lblExpirado.setBounds(325, 106, 106, 25);
+			add(lblExpirado);
+
+			//TODO ------>>>>> bloquear tudo e todos !!!! <<<-------
+		
+		} else {
+			comboBoxStatus.setSelectedItem(ordemServico.getStatus());
+		}
+
 	}
 
 	private void buscaOrdemServico() {
