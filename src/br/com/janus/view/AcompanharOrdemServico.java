@@ -2,6 +2,7 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -17,9 +18,14 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
+import br.com.janus.StatusENUM;
+import br.com.janus.controller.ClienteController;
+import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.controller.ProdutoController;
 import br.com.janus.controller.ServicoController;
+import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.OrdemServico;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.model.Veiculo;
@@ -38,12 +44,19 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textFieldData;
 	private JTextField textFieldTelefone;
 	private JTextField textFieldTotal;
-	private JTextField textField;
-	private Cliente clienteAtual;
-	private Veiculo veiculoAtual;
+	private JTextField textFieldOrdemServico;
+	private JTable tabelaProduto;
+	private JTable tabelaServico;
+
 	private Double parcialDoubleServico = 0.0;
 	private Double parcialDoubleProduto = 0.0;
 	private Double valorDoubleTotal = 0.0;
+	
+	private OrdemServico ordemServico;
+	private Cliente clienteAtual;
+	private Veiculo veiculoAtual;
+	private ArrayList<Produto> produtos;
+	private ArrayList<Servico> servicos;
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
@@ -91,7 +104,6 @@ public class AcompanharOrdemServico extends JPanel {
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
-	private JTable tabelaProduto;
 	
 	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
@@ -156,11 +168,7 @@ public class AcompanharOrdemServico extends JPanel {
            	fireTableCellUpdated(row, 5);
         }   
 	};
-	private JTable tabelaServico;
-	
-	private ArrayList<Produto> produtos;
-	private ArrayList<Servico> servicos;
-	
+
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
 
@@ -261,7 +269,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("Ve\u00EDculo:");
+		JLabel lblVeiculo = new JLabel("Veículo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -319,31 +327,62 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
-		JComboBox comboBox = new JComboBox();
+		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.removeAllItems();
+		comboBox.addItem("");
+		comboBox.addItem(StatusENUM.ABERTO.getNome());
+		comboBox.addItem(StatusENUM.APROVADO.getNome());
+		comboBox.addItem(StatusENUM.EXECUCAO.getNome());
+		comboBox.addItem(StatusENUM.FINALIZADO.getNome());
+		comboBox.addItem(StatusENUM.CANCELADO.getNome());
 		comboBox.setBounds(85, 106, 225, 25);
 		add(comboBox);
 
+		//if status desativado, bloquear combobox e todos os outros campos...
+		
 		JLabel lblNDaOs = new JLabel("N\u00BA da OS:");
 		lblNDaOs.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNDaOs.setBounds(20, 70, 60, 25);
 		add(lblNDaOs);
 
-		textField = new JTextField();
-		textField.setBounds(85, 70, 126, 25);
-		add(textField);
-		textField.setColumns(10);
+		textFieldOrdemServico = new JTextField();
+		textFieldOrdemServico.setBounds(85, 70, 126, 25);
+		add(textFieldOrdemServico);
+		textFieldOrdemServico.setColumns(10);
 
 		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(a -> {
+			buscaOrdemServico();
+			if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
+				JLabel lblExpirado = new JLabel("Expirado!");
+				lblExpirado.setForeground(Color.RED);
+				lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
+				lblExpirado.setBounds(325, 106, 106, 25);
+				add(lblExpirado);
+				//------>>>>> bloquear tudo e todos !!!! <<<-------
+			}
+			preencheDados();
+		});
 		btnBuscar.setBounds(221, 70, 90, 25);
 		add(btnBuscar);
-
-		JLabel lblExpirado = new JLabel("Expirado!");
-		lblExpirado.setForeground(Color.RED);
-		lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblExpirado.setBounds(325, 106, 106, 25);
-		add(lblExpirado);
 	}
 	
+	private void preencheDados() {
+		// go horse
+		
+	}
+
+	private void buscaOrdemServico() {
+		try {
+			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
+			clienteAtual = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
+			veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());
+		} catch (Exception e) {
+			//pensar em mensagem default
+			e.printStackTrace();
+		}
+	}
+
 	private void populaTabelaServicos() {
 		tabelaServico = new JTable(tabelaModeloServico){
 

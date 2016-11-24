@@ -20,15 +20,30 @@ public class VeiculoController {
 	public boolean verificaVeiculo (String placa) throws Exception {
 		return buscaDadosVeiculoPlaca(placa) != null;
 	}
+
+	public Veiculo buscaDadosVeiculoId(Integer idVeiculo) throws SQLException {
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from veiculo where idveiculo = ?;");
+		st.setInt(1, idVeiculo);
+		ResultSet result = st.executeQuery();
+		if (result != null) {
+			Veiculo veiculo = new Veiculo();
+			while (result.next()) {
+				veiculo.setIdVeiculo(result.getInt("idVeiculo"));
+				veiculo.setPlaca(result.getString("placa"));
+				veiculo.setFabricante(result.getString("fabricante"));
+				veiculo.setModelo(result.getString("modelo"));
+				veiculo.setAno(result.getString("ano"));
+				return veiculo;
+			}
+		}
+		return null;
+	}
 	
 	public Veiculo buscaDadosVeiculoPlaca(String placa) throws SQLException {
-		System.out.println("aqui no busca dados do veiculo, placa : " + placa);
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from veiculo where placa = ?;");
 		st.setString(1, placa);
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " + result == null);
 		if (result != null) {
-			System.out.println("st.getResultSet" + st.getResultSet());
 			Veiculo veiculo = new Veiculo();
 			while (result.next()) {
 				veiculo.setIdVeiculo(result.getInt("idVeiculo"));
@@ -55,7 +70,7 @@ public class VeiculoController {
 			JOptionPane.showMessageDialog(null, "Veiculo cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
@@ -78,5 +93,4 @@ public class VeiculoController {
 		}
 	
 	}
-
 }

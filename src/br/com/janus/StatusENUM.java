@@ -8,20 +8,20 @@ public enum StatusENUM {
 	CANCELADO("Cancelado",4),
 	EXPIRADO("Expirado",5);
 	
-	private String nome;
 	private Integer valor;
+	private String nome;
 	
 	private StatusENUM(String nome, Integer valor){
 		this.nome = nome;
 		this.valor = valor;
 	}
 	
-	public String getNome(){
-		return this.getNome();
-	}
 	
 	public Integer getValor(){
 		return this.valor;
+	}
+	public String getNome(){
+		return this.nome;
 	}
 
 }

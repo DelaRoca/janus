@@ -17,9 +17,26 @@ import br.com.janus.view.Principal;
 public class ClienteController {
 	
 	private Connection conexao = new Conecta().getConnection();
+
+	public Cliente buscaDadosclienteId(Integer idCliente) throws SQLException {
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
+		st.setInt(1, idCliente);
+		ResultSet result = st.executeQuery();
+		if (result != null){
+			Cliente cliente = new Cliente();
+			while(result.next()){
+				cliente.setIdCliente(result.getInt("idCliente"));
+				cliente.setNome(result.getString("nome"));
+				cliente.setCpf(result.getString("cpf"));
+				cliente.setCnpj(result.getString("cnpj"));
+				cliente.setTelefone(result.getString("telefone"));
+				return cliente;
+			}
+		}
+		return null;
+	}
 	
 	public Cliente buscaDadosClienteCpf(String cpf) throws SQLException{
-		System.out.println("aqui no busca dados do cliente, cpf : "+ cpf);
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cpf = ?;");
 		st.setString(1, cpf);
 		ResultSet result = st.executeQuery();

@@ -94,4 +94,26 @@ public class OrdemServicoController {
 		}
 	}
 
+	public OrdemServico buscaOrdemServico(int idOrdemServico) throws SQLException {
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemDeServico = ?;");
+		st.setInt(1, idOrdemServico);
+		ResultSet result = st.executeQuery();
+		System.out.println("result set : " +result == null);
+		if (result != null){
+			System.out.println("st.getResultSet" + st.getResultSet());
+			OrdemServico os = new OrdemServico();
+			while(result.next()){
+				os.setIdOrdemServico(result.getInt("idordemDeServico"));
+				os.setIdCliente(result.getInt("idCliente"));
+				os.setIdVeiculo(result.getInt("idVeiculo"));
+				os.setData(result.getString("data"));
+				os.setStatus(result.getInt("status"));
+				os.setTotal(result.getString("total"));
+				return os;
+			}
+		}
+		return null;
+		
+	}
+
 }
