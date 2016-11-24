@@ -30,6 +30,8 @@ import br.com.janus.controller.ServicoController;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
 import br.com.janus.model.OrdemServico;
+import br.com.janus.model.OsProdutos;
+import br.com.janus.model.OsServicos;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.model.Veiculo;
@@ -436,27 +438,34 @@ public class CadastroOrdemServico extends JPanel {
 
 	private void salvaOrdemServico() {
 		OrdemServico ordemServico =constroiOrdemServico();
-		ArrayList<Integer> osServicos = constroiServicos();
-		ArrayList<Integer> osProdutos = constroiProdutos();
+		ArrayList<OsServicos> osServicos = constroiServicos();
+		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
 		
 	}
 
-	private ArrayList<Integer> constroiProdutos() {
-		 ArrayList<Integer> osProdutos = new ArrayList<Integer>();
+	private ArrayList<OsProdutos> constroiProdutos() {
+		 ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
-				osProdutos.add(produtos.get(i).getIdProduto());
+				OsProdutos osProduto = new OsProdutos();
+				osProduto.setIdProduto(produtos.get(i).getIdProduto());
+				osProduto.setQuantidade(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 3).toString()));
+				osProdutos.add(osProduto);
 			}
 		}
 		return osProdutos;
 	}
 
-	private ArrayList<Integer> constroiServicos() {
-		ArrayList<Integer> osServicos = new ArrayList<Integer>();
+	private ArrayList<OsServicos> constroiServicos() {
+		ArrayList<OsServicos> osServicos = new ArrayList<OsServicos>();
 		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
 			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
-				osServicos.add(servicos.get(i).getIdServico());
+				OsServicos osServico = new OsServicos();
+				osServico.setIdServico(servicos.get(i).getIdServico());
+				osServico.setQtdPorHora(Integer.parseInt(tabelaModeloServico.getValueAt(i, 3).toString()));
+				osServico.setQuantidade(Integer.parseInt(tabelaModeloServico.getValueAt(i, 4).toString()));
+				osServicos.add(osServico);
 			}
 		}
 		return osServicos;
