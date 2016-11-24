@@ -237,7 +237,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setColumns(10);
 		textFieldData.setText(java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Servi�o");
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -449,7 +449,7 @@ public class CadastroOrdemServico extends JPanel {
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
 				OsProdutos osProduto = new OsProdutos();
-				osProduto.setIdProduto(produtos.get(i).getIdProduto());
+				osProduto.setIdProduto(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 5).toString()));
 				osProduto.setQuantidade(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 3).toString()));
 				osProdutos.add(osProduto);
 			}
@@ -462,9 +462,9 @@ public class CadastroOrdemServico extends JPanel {
 		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
 			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
 				OsServicos osServico = new OsServicos();
-				osServico.setIdServico(servicos.get(i).getIdServico());
 				osServico.setQtdPorHora(Integer.parseInt(tabelaModeloServico.getValueAt(i, 3).toString()));
 				osServico.setQuantidade(Integer.parseInt(tabelaModeloServico.getValueAt(i, 4).toString()));
+				osServico.setIdServico(Integer.parseInt(tabelaModeloServico.getValueAt(i, 6).toString()));
 				osServicos.add(osServico);
 			}
 		}
@@ -512,7 +512,9 @@ public class CadastroOrdemServico extends JPanel {
         tabelaModeloServico.addColumn("Por Hora");
         tabelaModeloServico.addColumn("Quantidade");
         tabelaModeloServico.addColumn("Total (R$)");
-        
+        tabelaModeloServico.addColumn("idServico");
+        tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
+        tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
         tabelaModeloServico.setNumRows(0);
         servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
@@ -521,7 +523,7 @@ public class CadastroOrdemServico extends JPanel {
 				porHora = 1;
 			}
 			if (servico.getEstaAtivo())
-				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
+				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0", servico.getIdServico()});
 			
 		}
 		tabelaServico.getTableHeader().setReorderingAllowed(false);
@@ -561,11 +563,14 @@ public class CadastroOrdemServico extends JPanel {
         tabelaModeloProduto.addColumn("Valor (R$)");
         tabelaModeloProduto.addColumn("Quantidade");
         tabelaModeloProduto.addColumn("Total (R$)");
+        tabelaModeloProduto.addColumn("idProduto");
+        tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
+        tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
         tabelaModeloProduto.setNumRows(0);
 		
         produtos = new ProdutoController().buscaProdutos();
 		for (Produto produto : produtos) {
-			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0"});
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0",produto.getIdProduto()});
 		}
 		tabelaProduto.getTableHeader().setReorderingAllowed(false);
 		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(70);
