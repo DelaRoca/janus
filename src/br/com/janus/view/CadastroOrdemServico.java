@@ -22,11 +22,14 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
+import br.com.janus.StatusENUM;
 import br.com.janus.controller.ClienteController;
+import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.controller.ProdutoController;
 import br.com.janus.controller.ServicoController;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.OrdemServico;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.model.Veiculo;
@@ -43,13 +46,19 @@ public class CadastroOrdemServico extends JPanel {
 	private JFormattedTextField textFieldData;
 	private JFormattedTextField textFieldTelefone;
 	private JTextField textFieldTotal;
-	private Cliente clienteAtual;
-	private Veiculo veiculoAtual;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
+	private JTable tabelaServico;
+	private JTable tabelaProduto;
+	
+	private Cliente clienteAtual;
+	private Veiculo veiculoAtual;
 	private Double parcialDoubleServico = 0.0;
 	private Double parcialDoubleProduto = 0.0;
 	private Double valorDoubleTotal = 0.0;
+	
+	private ArrayList<Produto> produtos;
+	private ArrayList<Servico> servicos;
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
@@ -97,7 +106,6 @@ public class CadastroOrdemServico extends JPanel {
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
-	private JTable tabelaProduto;
 	
 	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
@@ -163,10 +171,6 @@ public class CadastroOrdemServico extends JPanel {
            	fireTableCellUpdated(row, 5);
         }   
 	};
-	private JTable tabelaServico;
-	
-	private ArrayList<Produto> produtos;
-	private ArrayList<Servico> servicos;
 
 	public CadastroOrdemServico() throws ParseException {
 
@@ -320,9 +324,7 @@ public class CadastroOrdemServico extends JPanel {
 
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			//TODO implementar
-			
-        	 //salvar "total" <-- getText(textFieldTotal); (já é string pronta pra salvar com vírgula)
+			salvaOrdemServico();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -430,6 +432,44 @@ public class CadastroOrdemServico extends JPanel {
 	    ButtonGroup grupoRadios = new ButtonGroup();
 	    grupoRadios.add(rdbtnCpf);
 	    grupoRadios.add(rdbtnCnpj);
+	}
+
+	private void salvaOrdemServico() {
+		OrdemServico ordemServico =constroiOrdemServico();
+		ArrayList<Integer> osServicos = constroiServicos();
+		ArrayList<Integer> osProdutos = constroiProdutos();
+		new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
+		
+	}
+
+	private ArrayList<Integer> constroiProdutos() {
+		 ArrayList<Integer> osProdutos = new ArrayList<Integer>();
+		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+				osProdutos.add(produtos.get(i).getIdProduto());
+			}
+		}
+		return osProdutos;
+	}
+
+	private ArrayList<Integer> constroiServicos() {
+		ArrayList<Integer> osServicos = new ArrayList<Integer>();
+		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+				osServicos.add(servicos.get(i).getIdServico());
+			}
+		}
+		return osServicos;
+	}
+
+	private OrdemServico constroiOrdemServico() {
+		OrdemServico ordemServico = new OrdemServico();
+		ordemServico.setData(this.textFieldData.getText());
+		ordemServico.setStatus(StatusENUM.ABERTO.getValor());
+		ordemServico.setTotal(this.textFieldTotal.getText());
+		ordemServico.setIdCliente(clienteAtual.getIdCliente());
+		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
+		return ordemServico;
 	}
 
 	private void populaTabelaServicos() {
