@@ -10,6 +10,7 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
 import br.com.janus.Conecta;
+import br.com.janus.model.OsProdutos;
 import br.com.janus.model.Produto;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
@@ -39,11 +40,9 @@ public class ProdutoController {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from produto");
 			ResultSet result = st.executeQuery();
-			System.out.println("result set : " +result == null);
 			if (result != null){
 				ArrayList<Produto> produtos = new ArrayList<Produto>();
 				while(result.next()){
-					System.out.println("next");
 					Produto produto = new Produto();
 					produto.setIdProduto(result.getInt("idproduto"));
 					produto.setNome(result.getString("nome"));
@@ -52,6 +51,31 @@ public class ProdutoController {
 					produtos.add(produto);
 				}
 				return produtos;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Produto> buscaProdutos(ArrayList<OsProdutos> osProdutos) {
+		try{
+			for (OsProdutos osProduto : osProdutos) {
+				PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from produto where idProduto = ?");
+				st.setInt(1, osProduto.getIdProduto());
+				ResultSet result = st.executeQuery();
+				if (result != null){
+					ArrayList<Produto> produtos = new ArrayList<Produto>();
+					while(result.next()){
+						Produto produto = new Produto();
+						produto.setIdProduto(result.getInt("idproduto"));
+						produto.setNome(result.getString("nome"));
+						produto.setDescricao(result.getString("descricao"));
+						produto.setValor(result.getString("valor"));
+						produtos.add(produto);
+					}
+					return produtos;
+				}
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

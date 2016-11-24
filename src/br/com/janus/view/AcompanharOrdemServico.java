@@ -26,6 +26,8 @@ import br.com.janus.controller.ServicoController;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
 import br.com.janus.model.OrdemServico;
+import br.com.janus.model.OsProdutos;
+import br.com.janus.model.OsServicos;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.model.Veiculo;
@@ -59,6 +61,7 @@ public class AcompanharOrdemServico extends JPanel {
 	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
+	
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
@@ -106,6 +109,7 @@ public class AcompanharOrdemServico extends JPanel {
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
+
 	
 	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
@@ -285,7 +289,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblProduto.setBounds(10, 297, 67, 14);
 		add(lblProduto);
 
-		populaTabelaProduto();
+		criaTabelaProduto();
 		JScrollPane scrollP = new JScrollPane(tabelaProduto);
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
@@ -294,7 +298,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
-		populaTabelaServicos();
+		criaTabelaServico();
 		JScrollPane scrollS = new JScrollPane(tabelaServico);
 		scrollS.setBounds(510, 315, 480, 196);
 		add(scrollS);
@@ -304,6 +308,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblTotal.setBounds(422, 525, 46, 25);
 		add(lblTotal);
 
+		
 		textFieldTotal = new JTextField();
 		textFieldTotal.setEditable(false);
 		textFieldTotal.setBounds(478, 525, 86, 25);
@@ -402,6 +407,10 @@ public class AcompanharOrdemServico extends JPanel {
 	private void buscaOrdemServico() {
 		try {
 			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
+			ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemServico());
+			populaTabelaProduto(osProdutos);
+			ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemServico());
+			populaTabelaServico(osServicos);
 			clienteAtual = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
 			veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());
 		} catch (Exception e) {
@@ -410,101 +419,8 @@ public class AcompanharOrdemServico extends JPanel {
 		}
 	}
 
-	private void populaTabelaServicos() {
-		tabelaServico = new JTable(tabelaModeloServico){
 
-            private static final long serialVersionUID = 1L;
 
-            @Override
-            public Class getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return Boolean.class;
-                    case 1:
-                        return String.class;
-                    case 2:
-                        return String.class;
-                    case 3:
-                        return Integer.class;
-                    case 4:
-                        return Integer.class;
-                    case 5:
-                        return String.class;
-                    default:
-                        return Boolean.class;
-                }
-            }
-        };
-        tabelaModeloServico.addColumn("Selecione");
-        tabelaModeloServico.addColumn("Nome");
-        tabelaModeloServico.addColumn("Valor (R$)");
-        tabelaModeloServico.addColumn("Por Hora");
-        tabelaModeloServico.addColumn("Quantidade");
-        tabelaModeloServico.addColumn("Total (R$)");
-        
-        tabelaModeloServico.setNumRows(0);
-        servicos = new ServicoController().buscaServicos();
-		for (Servico servico : servicos) {
-			int porHora = 0;
-			if(servico.getPorHora()){
-				porHora = 1;
-			}
-			if (servico.getEstaAtivo())
-				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0"});
-		}
-		
-		
-		tabelaServico.getTableHeader().setReorderingAllowed(false);
-		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
-		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
-		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(60);
-		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(75);
-		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
-	}
-
-	private void populaTabelaProduto() {
-		tabelaProduto = new JTable(tabelaModeloProduto){
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Class getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return Boolean.class;
-                    case 1:
-                        return String.class;
-                    case 2:
-                        return String.class;
-                    case 3:
-                        return Integer.class;
-                    case 4:
-                        return String.class;
-                    default:
-                        return Boolean.class;
-                }
-            }
-        };
-        tabelaModeloProduto.addColumn("Selecione");
-        tabelaModeloProduto.addColumn("Nome");
-        tabelaModeloProduto.addColumn("Valor (R$)");
-        tabelaModeloProduto.addColumn("Quantidade");
-        tabelaModeloProduto.addColumn("Total (R$)");
-        tabelaModeloProduto.setNumRows(0);
-		
-        produtos = new ProdutoController().buscaProdutos();
-		for (Produto produto : produtos) {
-			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0"});
-		}
-		tabelaProduto.getTableHeader().setReorderingAllowed(false);
-		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(70);
-		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(195); 
-		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
-		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(70);
-	}
-	
 	public void preencheDadosCliente(Cliente cliente) {
 		System.out.println("Cliente : " + cliente.getIdCliente());
 		if (cliente != null) {
@@ -556,5 +472,156 @@ public class AcompanharOrdemServico extends JPanel {
 		valorStrTotal = valorStrTotal.replace(".", ",");
 		textFieldTotal.setText(valorStrTotal);
 		//Acaba Metodo Calcula Total
+	}
+
+	private void populaTabelaProduto(ArrayList<OsProdutos> osProdutos) {
+		
+		//LIMPAR TABELA
+		while (tabelaModeloProduto.getRowCount() > 0) {
+			tabelaModeloProduto.removeRow(0);
+		}
+		
+		
+		//POPULAR TABELA
+		produtos = new ProdutoController().buscaProdutos();
+		
+		int contador = 0;
+		for (Produto produto : produtos) {
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0", produto.getIdProduto()});
+			for (OsProdutos osProduto : osProdutos) {
+				if(produto.getIdProduto() == osProduto.getIdProduto()){
+					tabelaModeloProduto.setValueAt(true, contador, 0);
+					tabelaModeloProduto.setValueAt(osProduto.getQuantidade(), contador, 3);
+				}
+			}
+			contador++;
+		}
+		
+	}
+
+	private void populaTabelaServico(ArrayList<OsServicos> osServicos) {
+		
+//		//LIMPAR TABELA
+		while (tabelaModeloServico.getRowCount() > 0) {
+			tabelaModeloServico.removeRow(0);
+		}
+
+		
+		//POPULAR TABELA
+		servicos = new ServicoController().buscaServicos();
+		
+		int contador = 0;
+		for (Servico servico : servicos) {
+			int porHora = 0;
+			if(servico.getPorHora()){
+				porHora = 1;
+			}
+			if (!servico.getEstaAtivo()) {
+				for (OsServicos osServico : osServicos) {
+					if(servico.getIdServico() == osServico.getIdServico()) {
+						tabelaModeloServico.addRow(new Object[]{true, servico.getNome(), servico.getValor(), osServico.getQtdPorHora(), osServico.getQuantidade(), "0", servico.getIdServico()});
+					}
+				}
+			} else {
+				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0", servico.getIdServico()});
+				for (OsServicos osServico : osServicos) {
+					if(servico.getIdServico() == osServico.getIdServico()) {
+						tabelaModeloServico.setValueAt(true, contador, 0);
+						tabelaModeloServico.setValueAt(osServico.getQtdPorHora(), contador, 3);
+						tabelaModeloServico.setValueAt(osServico.getQuantidade(), contador, 4);
+					}
+				}
+			}
+			contador++;
+		}
+	}
+	
+	private void criaTabelaProduto() {
+		tabelaProduto = new JTable(tabelaModeloProduto){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return Integer.class;
+                    case 4:
+                        return String.class;
+                    case 5:
+                        return Integer.class;
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloProduto.addColumn("Selecione");
+        tabelaModeloProduto.addColumn("Nome");
+        tabelaModeloProduto.addColumn("Valor (R$)");
+        tabelaModeloProduto.addColumn("Quantidade");
+        tabelaModeloProduto.addColumn("Total (R$)");
+        tabelaModeloProduto.addColumn("idProduto");
+        tabelaModeloProduto.setNumRows(0);
+		tabelaProduto.getTableHeader().setReorderingAllowed(false);
+		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(70);
+		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(195); 
+		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
+		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(70);
+        tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
+        tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
+	}
+	
+	
+	private void criaTabelaServico() {
+		tabelaServico = new JTable(tabelaModeloServico){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return Integer.class;
+                    case 4:
+                        return Integer.class;
+                    case 5:
+                        return String.class;
+                    case 6:
+                        return Integer.class;                        
+                    default:
+                        return Boolean.class;
+                }
+            }
+        };
+        tabelaModeloServico.addColumn("Selecione");
+        tabelaModeloServico.addColumn("Nome");
+        tabelaModeloServico.addColumn("Valor (R$)");
+        tabelaModeloServico.addColumn("Por Hora");
+        tabelaModeloServico.addColumn("Quantidade");
+        tabelaModeloServico.addColumn("Total (R$)");
+        tabelaModeloServico.addColumn("idServico");
+        tabelaModeloServico.setNumRows(0);
+		tabelaServico.getTableHeader().setReorderingAllowed(false);
+		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
+		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(75);
+		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
+		tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
 	}
 }

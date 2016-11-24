@@ -63,7 +63,7 @@ public class OrdemServicoController {
 		try{
 			for (OsServicos osServico : osServicos) {
 				PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into osservico " +
-						"(idOrdemServico,idServico,quantidade,qtdPorHora) " +
+						"(idOrdemDeServico,idServico,quantidade,qtdPorHora) " +
 						"values (?,?,?,?)");
 				st.setInt(1, idOrdemServico);
 				st.setInt(2,osServico.getIdServico());
@@ -95,7 +95,7 @@ public class OrdemServicoController {
 		}
 	}
 
-	public OrdemServico buscaOrdemServico(int idOrdemServico) throws SQLException {
+	public OrdemServico buscaOrdemServico(Integer idOrdemServico) throws SQLException {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemDeServico = ?;");
 		st.setInt(1, idOrdemServico);
 		ResultSet result = st.executeQuery();
@@ -132,6 +132,24 @@ public class OrdemServicoController {
 			}
 		}
 		return produtos;
+	}
+
+	public ArrayList<OsServicos> buscaServicosOrdemServico(Integer idOrdemServico) throws SQLException {
+		ArrayList<OsServicos> servicos = new ArrayList<OsServicos>();
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osservico where idOrdemDeServico = ?;");
+		st.setInt(1, idOrdemServico);
+		ResultSet result = st.executeQuery();
+		System.out.println("result set : " +result == null);
+		if (result != null){
+			while(result.next()){
+				OsServicos os = new OsServicos();
+				os.setIdServico(result.getInt("idServico"));
+				os.setQuantidade(result.getInt("quantidade"));
+				os.setQtdPorHora(result.getInt("qtdPorHora"));
+				servicos.add(os);
+			}
+		}
+		return servicos;
 	}
 
 }

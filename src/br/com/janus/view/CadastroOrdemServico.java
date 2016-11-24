@@ -50,15 +50,16 @@ public class CadastroOrdemServico extends JPanel {
 	private JTextField textFieldTotal;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
+	
 	private JTable tabelaServico;
 	private JTable tabelaProduto;
 	
-	private Cliente clienteAtual;
-	private Veiculo veiculoAtual;
 	private Double parcialDoubleServico = 0.0;
 	private Double parcialDoubleProduto = 0.0;
 	private Double valorDoubleTotal = 0.0;
 	
+	private Cliente clienteAtual;
+	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
 	
@@ -68,6 +69,7 @@ public class CadastroOrdemServico extends JPanel {
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
+            	setValueAt("1", rowIndex, 3);
             	return selecionado[columnIndex];
             }
             else {
@@ -78,7 +80,12 @@ public class CadastroOrdemServico extends JPanel {
         
         @Override
         public Object getValueAt(int row, int column) {
-            if (column == 4) {
+            
+        	if (column == 5) {
+        		preencheValorTotalOrdemServico();
+        	}
+        	
+        	if (column == 4) {
                 if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
                     return super.getValueAt(row, column);
                 } else {
@@ -101,8 +108,8 @@ public class CadastroOrdemServico extends JPanel {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column);
-
+        	super.setValueAt(aValue, row, column);
+        	
             preencheValorTotalOrdemServico();
 			
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
@@ -117,8 +124,10 @@ public class CadastroOrdemServico extends JPanel {
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
             	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
+                	setValueAt("1", rowIndex, 4);
             		return selecionadoPorHora[columnIndex];
             	} else {
+                	setValueAt("1", rowIndex, 4);
             		return selecionado[columnIndex];
             	}
             }
@@ -501,6 +510,8 @@ public class CadastroOrdemServico extends JPanel {
                         return Integer.class;
                     case 5:
                         return String.class;
+                    case 6:
+                        return Integer.class;                        
                     default:
                         return Boolean.class;
                 }
@@ -513,9 +524,17 @@ public class CadastroOrdemServico extends JPanel {
         tabelaModeloServico.addColumn("Quantidade");
         tabelaModeloServico.addColumn("Total (R$)");
         tabelaModeloServico.addColumn("idServico");
-        tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
-        tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
         tabelaModeloServico.setNumRows(0);
+		tabelaServico.getTableHeader().setReorderingAllowed(false);
+		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
+		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(75);
+		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
+		tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
+		tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
+
         servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
 			int porHora = 0;
@@ -526,13 +545,6 @@ public class CadastroOrdemServico extends JPanel {
 				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0", servico.getIdServico()});
 			
 		}
-		tabelaServico.getTableHeader().setReorderingAllowed(false);
-		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(70);
-		tabelaServico.getColumnModel().getColumn(1).setPreferredWidth(135); 
-		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(60);
-		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(75);
-		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
 	}
 
 	private void populaTabelaProduto() {
@@ -564,20 +576,20 @@ public class CadastroOrdemServico extends JPanel {
         tabelaModeloProduto.addColumn("Quantidade");
         tabelaModeloProduto.addColumn("Total (R$)");
         tabelaModeloProduto.addColumn("idProduto");
-        tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
-        tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
         tabelaModeloProduto.setNumRows(0);
-		
-        produtos = new ProdutoController().buscaProdutos();
-		for (Produto produto : produtos) {
-			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0",produto.getIdProduto()});
-		}
 		tabelaProduto.getTableHeader().setReorderingAllowed(false);
 		tabelaProduto.getColumnModel().getColumn(0).setPreferredWidth(70);
 		tabelaProduto.getColumnModel().getColumn(1).setPreferredWidth(195); 
 		tabelaProduto.getColumnModel().getColumn(2).setPreferredWidth(70);
 		tabelaProduto.getColumnModel().getColumn(3).setPreferredWidth(75);
 		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(70);
+        tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
+        tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
+        
+        produtos = new ProdutoController().buscaProdutos();
+		for (Produto produto : produtos) {
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0", produto.getIdProduto()});
+		}
 	}
 	
 	public void preencheDadosCliente(Cliente cliente) {
