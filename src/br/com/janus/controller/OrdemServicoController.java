@@ -149,16 +149,16 @@ public class OrdemServicoController {
 			st.setInt(1, status);
 			ResultSet result = st.executeQuery();
 			if (result != null){
-				System.out.println("st.getResultSet" + st.getResultSet());
-				OrdemServico os = new OrdemServico();
+				System.out.println("st.getResultSet " + st.getResultSet());
 				while(result.next()){
+					OrdemServico os = new OrdemServico();
 					System.out.println("next aqui no busca ordem pelo status");
 					System.out.println(result.getInt("idordemDeServico"));
 					System.out.println(result.getInt("idCliente"));
 					os.setIdOrdemServico(result.getInt("idordemDeServico"));
 					os.setIdCliente(result.getInt("idCliente"));
-					os.setIdVeiculo(result.getInt("idVeiculo"));
-					os.setData(result.getString("data"));
+//TODO necessários?	os.setIdVeiculo(result.getInt("idVeiculo"));
+//					os.setData(result.getString("data"));
 					os.setStatus(result.getInt("status"));
 					os.setTotal(result.getString("total"));
 					ordens.add(os);
@@ -169,7 +169,6 @@ public class OrdemServicoController {
 			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
 			e.printStackTrace();
 		}
-		
 		return ordens;
 	}
 

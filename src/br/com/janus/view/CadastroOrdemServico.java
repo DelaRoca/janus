@@ -69,7 +69,6 @@ public class CadastroOrdemServico extends JPanel {
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
-            	setValueAt("1", rowIndex, 3);
             	return selecionado[columnIndex];
             }
             else {
@@ -81,14 +80,11 @@ public class CadastroOrdemServico extends JPanel {
         @Override
         public Object getValueAt(int row, int column) {
             
-        	if (column == 5) {
-        		preencheValorTotalOrdemServico();
-        	}
+//        	if (column == 5) {
+//        		preencheValorTotalOrdemServico();
+//        	}
         	
         	if (column == 4) {
-                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
-                    return super.getValueAt(row, column);
-                } else {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
                 	double valor = Double.parseDouble(valorStr);
@@ -101,7 +97,6 @@ public class CadastroOrdemServico extends JPanel {
                     String resultadoStr = String.valueOf(resultado);
                     resultadoStr = resultadoStr.replace(".", ",");
                     return resultadoStr;
-                }
             }
             return super.getValueAt(row, column);
         }
@@ -366,8 +361,9 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldTotal = new JTextField();
 		textFieldTotal.setEditable(false);
 		textFieldTotal.setBounds(478, 525, 86, 25);
-		add(textFieldTotal);
 		textFieldTotal.setColumns(10);
+		textFieldTotal.setText("0,0");
+		add(textFieldTotal);
 		
 		JButton btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(a -> {
@@ -542,7 +538,7 @@ public class CadastroOrdemServico extends JPanel {
 				porHora = 1;
 			}
 			if (servico.getEstaAtivo())
-				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0", servico.getIdServico()});
+				tabelaModeloServico.addRow(new Object[]{false, servico.getNome(), servico.getValor(), porHora, "0", "0,00", servico.getIdServico()});
 			
 		}
 	}
@@ -588,7 +584,7 @@ public class CadastroOrdemServico extends JPanel {
         
         produtos = new ProdutoController().buscaProdutos();
 		for (Produto produto : produtos) {
-			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0", produto.getIdProduto()});
+			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0,00", produto.getIdProduto()});
 		}
 	}
 	

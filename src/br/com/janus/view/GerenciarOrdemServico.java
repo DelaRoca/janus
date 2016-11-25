@@ -15,8 +15,11 @@ import javax.swing.table.DefaultTableModel;
 import br.com.janus.StatusENUM;
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.OrdemServicoController;
+import br.com.janus.controller.ServicoController;
 import br.com.janus.model.Cliente;
 import br.com.janus.model.OrdemServico;
+import br.com.janus.model.OsServicos;
+import br.com.janus.model.Servico;
 
 public class GerenciarOrdemServico extends JPanel {
 
@@ -29,26 +32,22 @@ public class GerenciarOrdemServico extends JPanel {
 	private JTable tabelaExecucao;
 	
 	private ArrayList<OrdemServico> ordensAprovadas;
-	private ArrayList<OrdemServico> ordensExecucao;
+	private ArrayList<OrdemServico> ordensExecutadas;
  
 	public GerenciarOrdemServico(){
 		setLayout(null);
 		
-		populaTabelaAprovados(); 
-		JScrollPane scroll = new JScrollPane(tabelaAprovados);
-		scroll.setBounds(564, 178, 373, 291);
-		add(scroll);
+		criaTabelaExecucao();
+		populaTabelaExecucao();
+		JScrollPane scrollE = new JScrollPane(tabelaExecucao);
+		scrollE.setBounds(564, 178, 373, 291);
+		add(scrollE);
 		
-		String[] colunasS ={ "NÃºmero da OS", "Cliente"};
-		Object[][] dadosS = { { "003", "Josefano Dela Roca" }, { "002", "Josefina Crocetta"} };
-		tabelaExecucao = new JTable(dadosS, colunasS);
-		tabelaExecucao.getTableHeader().setReorderingAllowed(false);
-		tabelaExecucao.getColumnModel().getColumn(0).setPreferredWidth(100);
-		tabelaExecucao.getColumnModel().getColumn(1).setPreferredWidth(273); 
-
-		JScrollPane scrollS = new JScrollPane(tabelaExecucao);
-		scrollS.setBounds(66, 178, 373, 291);
-		add(scrollS);
+		criaTabelaAprovados();
+		populaTabelaAprovados();
+		JScrollPane scrollA = new JScrollPane(tabelaAprovados);
+		scrollA.setBounds(66, 178, 373, 291);
+		add(scrollA);
 				
 		JLabel lblAprovados = new JLabel("Aprovados");
 		lblAprovados.setHorizontalAlignment(SwingConstants.CENTER);
@@ -78,6 +77,8 @@ public class GerenciarOrdemServico extends JPanel {
 		JButton btnCancelarOSAprovados = new JButton("Cancelar OS");
 		btnCancelarOSAprovados.addActionListener(a -> {
 		//TODO Implementar
+			
+//			tabelaModeloAprovados.removeRow(LINHA); --> LINHA = selecionado da tabela Ap
 		});
 		btnCancelarOSAprovados.setBounds(242, 480, 105, 25);
 		add(btnCancelarOSAprovados);
@@ -85,6 +86,9 @@ public class GerenciarOrdemServico extends JPanel {
 		JButton btnExecutarOSAprovados = new JButton("Executar");
 		btnExecutarOSAprovados.addActionListener(a -> {
 		//TODO Implementar
+
+//			tabelaModeloAprovados.removeRow(LINHA); --> LINHA = selecionado da tabela Ap
+//			populaTabelaExecucao(); --> último comando
 		});
 		btnExecutarOSAprovados.setBounds(353, 480, 86, 25);
 		add(btnExecutarOSAprovados);
@@ -92,6 +96,9 @@ public class GerenciarOrdemServico extends JPanel {
 		JButton btnFinalizarOSExecucao = new JButton("Finalizar");
 		btnFinalizarOSExecucao.addActionListener(a -> {
 		//TODO Implementar
+			
+			
+//			tabelaModeloExecucao.removeRow(LINHA); --> LINHA = selecionado da tabela Ex
 		});
 		btnFinalizarOSExecucao.setBounds(851, 480, 86, 25);
 		add(btnFinalizarOSExecucao);
@@ -99,12 +106,14 @@ public class GerenciarOrdemServico extends JPanel {
 		JButton btnCancelarOsExecucao = new JButton("Cancelar OS");
 		btnCancelarOsExecucao.addActionListener(a -> {
 		//TODO Implementar
+			
+//			tabelaModeloExecucao.removeRow(LINHA); --> LINHA = selecionado da tabela Ex
 		});
 		btnCancelarOsExecucao.setBounds(740, 480, 105, 25);
 		add(btnCancelarOsExecucao);
 	}
 
-	private void populaTabelaAprovados(){
+	private void criaTabelaAprovados(){
 		tabelaAprovados = new JTable(tabelaModeloAprovados){
             private static final long serialVersionUID = 1L;
             @Override
@@ -119,13 +128,20 @@ public class GerenciarOrdemServico extends JPanel {
                 }
             }
         };
-        tabelaModeloAprovados.addColumn("NÃºmero da OS");
+        tabelaModeloAprovados.addColumn("Número da OS");
         tabelaModeloAprovados.addColumn("Cliente");
         tabelaModeloAprovados.setNumRows(0);
+		tabelaAprovados.getTableHeader().setReorderingAllowed(false);
+		tabelaAprovados.getColumnModel().getColumn(0).setPreferredWidth(100);
+		tabelaAprovados.getColumnModel().getColumn(1).setPreferredWidth(273);
+	}
+	
+	private void populaTabelaAprovados() {
+		//POPULAR TABELA
 		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.APROVADO.getValor());
 		for (OrdemServico ordemServico : ordensAprovadas) {
-			System.out.println(ordemServico.getStatus());
-			System.out.println(ordemServico.getIdCliente());
+			System.out.println("pop. status OS Ap."+ordemServico.getStatus());
+			System.out.println("pop. cliente Ap."+ordemServico.getIdCliente());
 			Cliente cliente = new Cliente();
 			try {
 				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
@@ -134,8 +150,49 @@ public class GerenciarOrdemServico extends JPanel {
 			}
 			tabelaModeloAprovados.addRow(new Object[]{ordemServico.getIdOrdemServico(), cliente.getNome()});
 		}
-		tabelaAprovados.getTableHeader().setReorderingAllowed(false);
-		tabelaAprovados.getColumnModel().getColumn(0).setPreferredWidth(100);
-		tabelaAprovados.getColumnModel().getColumn(1).setPreferredWidth(273);
+	}
+	
+	private void criaTabelaExecucao(){
+		tabelaExecucao = new JTable(tabelaModeloExecucao){
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Integer.class;
+                    case 1:
+                        return String.class;
+                    default:
+                        return String.class;
+                }
+            }
+        };
+        tabelaModeloExecucao.addColumn("Número da OS");
+        tabelaModeloExecucao.addColumn("Cliente");
+        tabelaModeloExecucao.setNumRows(0);
+		tabelaExecucao.getTableHeader().setReorderingAllowed(false);
+		tabelaExecucao.getColumnModel().getColumn(0).setPreferredWidth(100);
+		tabelaExecucao.getColumnModel().getColumn(1).setPreferredWidth(273);
+	}
+	
+	private void populaTabelaExecucao(){
+		//LIMPAR TABELA POR EXECUTAR UM APROVADO
+		while (tabelaModeloAprovados.getRowCount() > 0) {
+			tabelaModeloAprovados.removeRow(0);
+		}
+		
+		//POPULAR TABELA
+		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.EXECUCAO.getValor());
+		for (OrdemServico ordemServico : ordensExecutadas) {
+			System.out.println("pop. status OS Exc."+ordemServico.getStatus());
+			System.out.println("pop. cliente Exc."+ordemServico.getIdCliente());
+			Cliente cliente = new Cliente();
+			try {
+				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			tabelaModeloExecucao.addRow(new Object[]{ordemServico.getIdOrdemServico(), cliente.getNome()});
+		}
 	}
 }
