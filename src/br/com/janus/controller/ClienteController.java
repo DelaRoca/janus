@@ -19,19 +19,24 @@ public class ClienteController {
 	private Connection conexao = new Conecta().getConnection();
 
 	public Cliente buscaDadosclienteId(Integer idCliente) throws SQLException {
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
-		st.setInt(1, idCliente);
-		ResultSet result = st.executeQuery();
-		if (result != null){
-			Cliente cliente = new Cliente();
-			while(result.next()){
-				cliente.setIdCliente(result.getInt("idCliente"));
-				cliente.setNome(result.getString("nome"));
-				cliente.setCpf(result.getString("cpf"));
-				cliente.setCnpj(result.getString("cnpj"));
-				cliente.setTelefone(result.getString("telefone"));
-				return cliente;
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
+			st.setInt(1, idCliente);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				Cliente cliente = new Cliente();
+				while(result.next()){
+					cliente.setIdCliente(result.getInt("idCliente"));
+					cliente.setNome(result.getString("nome"));
+					cliente.setCpf(result.getString("cpf"));
+					cliente.setCnpj(result.getString("cnpj"));
+					cliente.setTelefone(result.getString("telefone"));
+					return cliente;
+				}
 			}
+		}catch (Exception e) {
+			// TODO: PENSAR MENSAGEM
+			JOptionPane.showMessageDialog(null, "Dados inv�lidos, tente novamente");
 		}
 		return null;
 	}

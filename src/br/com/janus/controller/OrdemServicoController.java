@@ -36,19 +36,10 @@ public class OrdemServicoController {
 		    st.setInt(5,ordemServico.getIdVeiculo());
 		    st.execute();
 		    
-		    ResultSet rs = st.executeQuery("SELECT MAX(idordemDeServico) as pau FROM ordemdeservico");
+		    ResultSet rs = st.executeQuery("SELECT MAX(idordemDeServico) as id FROM ordemdeservico");
 		    while(rs.next()){
-		    	idOrdemServico = rs.getInt("pau");
+		    	idOrdemServico = rs.getInt("id");
 		    }
-//		    ResultSet result = st.executeQuery();
-//			System.out.println("result set : " +result == null);
-//			if (result != null){
-//				System.out.println("st.getResultSet" + st.getResultSet());
-//				while(result.next()){
-//					idOrdemServico =result.getInt("idordemDeServico");
-//					return;
-//				}
-//			}
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
@@ -114,7 +105,6 @@ public class OrdemServicoController {
 			}
 		}
 		return null;
-		
 	}
 
 	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemServico) throws SQLException {
@@ -150,6 +140,37 @@ public class OrdemServicoController {
 			}
 		}
 		return servicos;
+	}
+
+	public ArrayList<OrdemServico> buscaOrdensServico(Integer status) {
+		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where status = ?;");
+			st.setInt(1, status);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				System.out.println("st.getResultSet" + st.getResultSet());
+				OrdemServico os = new OrdemServico();
+				while(result.next()){
+					System.out.println("next aqui no busca ordem pelo status");
+					System.out.println(result.getInt("idordemDeServico"));
+					System.out.println(result.getInt("idCliente"));
+					os.setIdOrdemServico(result.getInt("idordemDeServico"));
+					os.setIdCliente(result.getInt("idCliente"));
+					os.setIdVeiculo(result.getInt("idVeiculo"));
+					os.setData(result.getString("data"));
+					os.setStatus(result.getInt("status"));
+					os.setTotal(result.getString("total"));
+					ordens.add(os);
+				}
+			}
+		}catch (SQLException e) {
+			//TODO 
+			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			e.printStackTrace();
+		}
+		
+		return ordens;
 	}
 
 }
