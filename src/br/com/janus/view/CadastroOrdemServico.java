@@ -22,7 +22,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
-import br.com.janus.StatusENUM;
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.controller.ProdutoController;
@@ -478,8 +477,7 @@ public class CadastroOrdemServico extends JPanel {
 
 	private OrdemServico constroiOrdemServico() {
 		OrdemServico ordemServico = new OrdemServico();
-		ordemServico.setData(this.textFieldData.getText());
-		ordemServico.setStatus(StatusENUM.ABERTO.getValor());
+		ordemServico.setDataCriacao(this.textFieldData.getText());
 		ordemServico.setTotal(this.textFieldTotal.getText());
 		ordemServico.setIdCliente(clienteAtual.getIdCliente());
 		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());

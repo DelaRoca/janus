@@ -15,7 +15,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
-import br.com.janus.StatusENUM; //TODO REMOVER - implementar a segunda forma de controlar estados.
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.model.Cliente;
@@ -129,7 +128,7 @@ public class GerenciarOrdemServico extends JPanel {
 	
 	private void populaTabelaAprovados() {
 		ordensAprovadas.clear();
-		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.APROVADO.getValor());
+//TODO		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.APROVADO.getValor());
 		for (OrdemServico ordemServico : ordensAprovadas) {
 			Cliente cliente = new Cliente();
 			try {
@@ -137,7 +136,7 @@ public class GerenciarOrdemServico extends JPanel {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			tabelaModeloAprovados.addRow(new Object[]{ordemServico.getIdOrdemServico(), cliente.getNome()});
+			tabelaModeloAprovados.addRow(new Object[]{ordemServico.getIdOrdemDeServico(), cliente.getNome()});
 		}
 	}
 	
@@ -169,7 +168,7 @@ public class GerenciarOrdemServico extends JPanel {
 			tabelaModeloExecucao.removeRow(0);
 		}
 		ordensExecutadas.clear();	
-		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.EXECUCAO.getValor());
+//TODO		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.EXECUCAO.getValor());
 		for (OrdemServico ordemServico : ordensExecutadas) {
 			Cliente cliente = new Cliente();
 			try {
@@ -177,19 +176,19 @@ public class GerenciarOrdemServico extends JPanel {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			tabelaModeloExecucao.addRow(new Object[]{ordemServico.getIdOrdemServico(), cliente.getNome()});
+			tabelaModeloExecucao.addRow(new Object[]{ordemServico.getIdOrdemDeServico(), cliente.getNome()});
 		}
 	}
 
 	private void cancelaOSAprovada() {
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
-			Integer idOrdem = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
-			System.out.println("idOrdem" + idOrdem);
-			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdem);
+			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
 			if(cancelouOrdem){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdem + " cancelado com sucesso");
+				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdemDeServico + " cancelado com sucesso");
 			}else{
 				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
 			}
@@ -201,17 +200,13 @@ public class GerenciarOrdemServico extends JPanel {
 	private void executaOrdemServico() {
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
+			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
 			String dataExecucao = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			System.out.println(dataExecucao);
-			System.out.println("linhaSelecionada " +linhaSelecionada);
-			Integer idOrdem = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
-			System.out.println("idOrdem" + idOrdem);
-			boolean executou = new OrdemServicoController().executaOrdem(idOrdem, dataExecucao);
+			boolean executou = new OrdemServicoController().executaOrdem(idOrdemDeServico, dataExecucao);
 			if(executou){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
 				populaTabelaExecucao();
-//				populaTabelaAprovados(); // TODO  PQ popular aprovados se é só remover a única linha nele?? usando a linha tava dando problema!
-				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdem + " executando com sucesso");
+				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdemDeServico + " executando com sucesso");
 			}else{
 				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
 			}
@@ -223,12 +218,12 @@ public class GerenciarOrdemServico extends JPanel {
 	private void cancelaOSExecucao() {
 		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 			if(linhaSelecionada >= 0){
-			Integer idOrdem = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
-			System.out.println("idOrdem" + idOrdem);
-			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdem);
+			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
+			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
 			if(cancelouOrdem){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdem + " cancelado com sucesso");
+				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdemDeServico + " cancelado com sucesso");
 			}else{
 				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
 			}
@@ -240,12 +235,12 @@ public class GerenciarOrdemServico extends JPanel {
 	private void finalizaOrdemServico() {
 		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 		if(linhaSelecionada >= 0){
-			Integer idOrdem = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
-			System.out.println("idOrdem" + idOrdem);
-			boolean finalizou = new OrdemServicoController().finalizaOrdem();
+			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
+			String dataFinalizado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+			boolean finalizou = new OrdemServicoController().finalizaOrdem(idOrdemDeServico, dataFinalizado);
 			if(finalizou){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdem + " finalizado com sucesso");
+				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdemDeServico + " finalizado com sucesso");
 			}else{
 				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
 			}

@@ -10,12 +10,9 @@ import javax.swing.JOptionPane;
 import com.mysql.jdbc.PreparedStatement;
 
 import br.com.janus.Conecta;
-import br.com.janus.model.Cliente;
 import br.com.janus.model.OrdemServico;
 import br.com.janus.model.OsProdutos;
 import br.com.janus.model.OsServicos;
-import br.com.janus.model.Produto;
-import br.com.janus.model.Servico;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
 
@@ -28,16 +25,14 @@ public class OrdemServicoController {
 		System.out.println(ordemServico.getIdCliente());
 		try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into ordemdeservico " +
-	                "(idCliente,data,status,total,idVeiculo) " +
-	                "values (?,?,?,?,?)");
+	                "(idcliente,idveiculo,total,datacriacao) " +
+	                "values (?,?,?,?)");
 	    	st.setInt(1, ordemServico.getIdCliente());
-			st.setString(2,ordemServico.getData());
-			st.setInt(3,ordemServico.getStatus());
-		    st.setString(4,ordemServico.getTotal());
-		    st.setInt(5,ordemServico.getIdVeiculo());
+		    st.setInt(2,ordemServico.getIdVeiculo());
+		    st.setString(3,ordemServico.getTotal());
+		    st.setString(4,ordemServico.getDataCriacao());
 		    st.execute();
-		    
-		    ResultSet rs = st.executeQuery("SELECT MAX(idordemDeServico) as id FROM ordemdeservico");
+		    ResultSet rs = st.executeQuery("SELECT MAX(idordemdeservico) as id FROM ordemdeservico");
 		    while(rs.next()){
 		    	idOrdemServico = rs.getInt("id");
 		    }
@@ -55,7 +50,7 @@ public class OrdemServicoController {
 		try{
 			for (OsServicos osServico : osServicos) {
 				PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into osservico " +
-						"(idOrdemDeServico,idServico,quantidade,qtdPorHora) " +
+						"(idordemdeservico,idservico,quantidade,qtdporhora) " +
 						"values (?,?,?,?)");
 				st.setInt(1, idOrdemServico);
 				st.setInt(2,osServico.getIdServico());
@@ -74,7 +69,7 @@ public class OrdemServicoController {
 		try{
 			for (OsProdutos osProduto : osProdutos) {
 				PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into osproduto " +
-						"(idOrdemDeServico,idProduto,quantidade) " +
+						"(idordemdeservico,idproduto,quantidade) " +
 						"values (?,?,?)");
 				st.setInt(1, idOrdemServico);
 				st.setInt(2,osProduto.getIdProduto());
@@ -87,20 +82,24 @@ public class OrdemServicoController {
 		}
 	}
 
-	public OrdemServico buscaOrdemServico(Integer idOrdemServico) throws SQLException {
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemDeServico = ?;");
-		st.setInt(1, idOrdemServico);
+	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?;");
+		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " +result == null);
 		if (result != null){
 			System.out.println("st.getResultSet" + st.getResultSet());
 			OrdemServico os = new OrdemServico();
 			while(result.next()){
-				os.setIdOrdemServico(result.getInt("idordemDeServico"));
-				os.setIdCliente(result.getInt("idCliente"));
-				os.setIdVeiculo(result.getInt("idVeiculo"));
-				os.setData(result.getString("data"));
-				os.setStatus(result.getInt("status"));
+				os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
+				os.setIdCliente(result.getInt("idcliente"));
+				os.setIdVeiculo(result.getInt("idveiculo"));
+				os.setEstaExpirado(result.getString("estaexpirado") == "1" ? true:false);
+				os.setDataCriacao(result.getString("datacriacao"));
+				os.setDataAprovado(result.getString("dataaprovado"));
+				os.setDataExecucao(result.getString("dataexecucao"));
+				os.setDataFinalizado(result.getString("datafinalizado"));
+				os.setDataCancelado(result.getString("datacancelado"));
 				os.setTotal(result.getString("total"));
 				return os;
 			}
@@ -110,7 +109,7 @@ public class OrdemServicoController {
 
 	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsProdutos> produtos = new ArrayList<OsProdutos>();
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idOrdemDeServico = ?;");
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idordemdeservico = ?;");
 		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " +result == null);

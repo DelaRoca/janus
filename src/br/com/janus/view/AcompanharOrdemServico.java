@@ -18,7 +18,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
-import br.com.janus.StatusENUM;
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.controller.ProdutoController;
@@ -336,11 +335,11 @@ public class AcompanharOrdemServico extends JPanel {
 
 		comboBoxStatus = new JComboBox<String>();
 		comboBoxStatus.removeAllItems();
-		comboBoxStatus.addItem(StatusENUM.ABERTO.getNome());
-		comboBoxStatus.addItem(StatusENUM.APROVADO.getNome());
-		comboBoxStatus.addItem(StatusENUM.EXECUCAO.getNome());
-		comboBoxStatus.addItem(StatusENUM.FINALIZADO.getNome());
-		comboBoxStatus.addItem(StatusENUM.CANCELADO.getNome());
+//		comboBoxStatus.addItem(StatusENUM.ABERTO.getNome());
+//		comboBoxStatus.addItem(StatusENUM.APROVADO.getNome());
+//		comboBoxStatus.addItem(StatusENUM.EXECUCAO.getNome());
+//		comboBoxStatus.addItem(StatusENUM.FINALIZADO.getNome());
+//TODO (atualizar)		comboBoxStatus.addItem(StatusENUM.CANCELADO.getNome());
 		comboBoxStatus.addItem("");
 		comboBoxStatus.setSelectedItem("");
 		comboBoxStatus.setBounds(85, 106, 225, 25);
@@ -370,7 +369,7 @@ public class AcompanharOrdemServico extends JPanel {
 	private void preencheDados() {
 	
 		//ORDEM DE SERVIÇO
-		textFieldData.setText(ordemServico.getData());
+		textFieldData.setText(ordemServico.getDataCriacao());
 		textFieldTotal.setText(ordemServico.getTotal());
 		
 //		//CLIENTE
@@ -387,8 +386,8 @@ public class AcompanharOrdemServico extends JPanel {
 		textFieldModelo.setText(veiculoAtual.getModelo());
 		textFieldAno.setText(veiculoAtual.getAno());
 
-		if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
-			comboBoxStatus.setSelectedItem(StatusENUM.ABERTO.getValor());
+//		if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
+//TODO			comboBoxStatus.setSelectedItem(StatusENUM.ABERTO.getValor());
 			
 			JLabel lblExpirado = new JLabel("Expirado!");
 			lblExpirado.setForeground(Color.RED);
@@ -398,18 +397,18 @@ public class AcompanharOrdemServico extends JPanel {
 
 			//TODO ------>>>>> bloquear tudo e todos !!!! <<<-------
 		
-		} else {
-			comboBoxStatus.setSelectedItem(ordemServico.getStatus());
-		}
+//		} else {
+//			comboBoxStatus.setSelectedItem(ordemServico.getStatus());
+//		}
 
 	}
 
 	private void buscaOrdemServico() {
 		try {
 			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
-			ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemServico());
+			ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
 			populaTabelaProduto(osProdutos);
-			ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemServico());
+			ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
 			populaTabelaServico(osServicos);
 			clienteAtual = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
 			veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());

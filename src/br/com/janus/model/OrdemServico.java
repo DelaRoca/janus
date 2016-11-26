@@ -12,6 +12,7 @@ public class OrdemServico {
 	public String dataExecucao;
 	public String dataFinalizado;
 	public String dataCancelado;
+	
 	public Integer getIdOrdemDeServico() {
 		return idOrdemDeServico;
 	}
