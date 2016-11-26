@@ -1,15 +1,19 @@
 package br.com.janus.view;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.sql.SQLException;
 import java.text.ParseException;
 //import java.util.InputMismatchException;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.text.MaskFormatter;
@@ -17,13 +21,9 @@ import javax.swing.text.MaskFormatter;
 import br.com.janus.controller.ClienteController;
 import br.com.janus.controller.EnderecoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.ClienteFisico;
+import br.com.janus.model.ClienteJuridico;
 import br.com.janus.model.Endereco;
-
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.ButtonGroup;
-import javax.swing.JRadioButton;
 
 @SuppressWarnings("serial")
 public class CadastroCliente extends JPanel {
@@ -47,7 +47,8 @@ public class CadastroCliente extends JPanel {
 	JLabel lblCadastroDeClientes;
 	
 	public boolean edicao = false;
-	private Cliente clienteAtual;
+	private ClienteFisico clienteFisico;
+	private ClienteJuridico clienteJuridico;
 	private Endereco enderecoAtual;
 
 	public CadastroCliente() throws ParseException {
@@ -258,14 +259,6 @@ public class CadastroCliente extends JPanel {
 			cnpj = cnpj.replace("/", "");
 			cnpj = cnpj.replace("-", "");
 			cnpj = cnpj.replace(" ", "");
-			System.out.println("Cpf: " + cpf);
-			System.out.println("Cpf.isEmpty: " + cpf.isEmpty());
-			System.out.println("Cpf.equals: " + cpf.equals(""));
-			System.out.println("Cpf == null " + cpf == null);
-			System.out.println("cnpj: " + cnpj);
-			System.out.println("cnpj.isEmpty: " + cnpj.isEmpty());
-			System.out.println("cnpj.equals: " + cnpj.equals(""));
-			System.out.println("cnpj null: " + cnpj == null);
 			try{
 				Long.parseLong(cpf);
 			}catch (Exception e) {
@@ -278,10 +271,10 @@ public class CadastroCliente extends JPanel {
 				if (novo(cnpj)) {
 					btnSalvar.setEnabled(true);
 					try {
-						clienteAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
-						if (clienteAtual != null) {
-							enderecoAtual = new EnderecoController().buscaEndereco(clienteAtual.getEndereco());
-							this.preencheDadosCliente(clienteAtual, enderecoAtual);
+						clienteJuridico = new ClienteController().buscaDadosClienteCnpj(cnpj);
+						if (clienteJuridico != null) {
+							enderecoAtual = new EnderecoController().buscaEndereco(clienteJuridico.getEndereco());
+							this.preencheDadosCliente(clienteJuridico, enderecoAtual);
 							edicao = true;
 
 						} else {
@@ -294,7 +287,6 @@ public class CadastroCliente extends JPanel {
 					System.out.println("CNPJ VALIDDD");
 				} else {
 					dadosInvalidos();
-					// cnpjValid(cnpj);
 				}
 			}
 		});
@@ -344,17 +336,51 @@ public class CadastroCliente extends JPanel {
 	}
 
 	private void atualizaCliente() {
-		System.out.println("edicao endereco");
-		System.out.println("idEndereco: " + enderecoAtual);
 		Endereco endereco = constroiEndereco();
 		Integer idEndereco = new ClienteController().atualizaEndereco(endereco);
-		System.out.println("idEndereco" + idEndereco);
 		if (idEndereco != 0) {
-			Cliente cliente = constroiCliente(idEndereco);
-			new ClienteController().atualizaCliente(cliente, idEndereco);
-		}
+			String cpf = this.textFieldCPF.getText();
+			cpf = cpf.replace(".", "");
+			cpf = cpf.replace("-", "");
+			cpf = cpf.replace(" ","");
 
+			String cnpj = this.textFieldCNPJ.getText();
+			cnpj = cnpj.replace(".", "");
+			cnpj = cnpj.replace("/", "");
+			cnpj = cnpj.replace("-", "");
+			cnpj = cnpj.replace(" ","");
+
+			if (cpf != null || !cpf.equals("") ) {
+				ClienteFisico cliente = constroiClienteFisico(idEndereco);
+				new ClienteController().atualizaCliente(cliente, idEndereco);
+			}else if(cnpj != null || !cnpj.equals("")){
+				ClienteJuridico cliente = constroiClienteJuridico(idEndereco);
+				new ClienteController().atualizaCliente(cliente, idEndereco);
+			}
+		}
 	}
+
+	private ClienteJuridico constroiClienteJuridico(Integer idEndereco) {
+		ClienteJuridico cliente = new ClienteJuridico();
+		cliente.setNome(this.textFieldNome.getText());
+		cliente.setEmail(this.textFieldEmail.getText());
+		cliente.setTelefone(this.textFieldTelefone.getText());
+		cliente.setCelular(this.textFieldCelular.getText());
+		cliente.setEndereco(idEndereco);
+		return cliente;
+	}
+	
+	private ClienteFisico constroiClienteFisico(Integer idEndereco) {
+		ClienteFisico cliente = new ClienteFisico();
+		cliente.setCpf(this.textFieldCelular.getText());
+		cliente.setNome(this.textFieldNome.getText());
+		cliente.setEmail(this.textFieldEmail.getText());
+		cliente.setDataNascimento(this.textFieldDtNasc.getText());
+		cliente.setTelefone(this.textFieldTelefone.getText());
+		cliente.setCelular(this.textFieldCelular.getText());
+		cliente.setEndereco(idEndereco);
+		return cliente;
+}
 
 	private void salvaCliente() {
 		System.out.println("salvar cliente");
@@ -362,8 +388,51 @@ public class CadastroCliente extends JPanel {
 		String idEndereco = new ClienteController().salvaEndereco(endereco);
 		System.out.println("idEnderec" + idEndereco);
 		if (idEndereco != "0") {
-			Cliente cliente = constroiCliente(Integer.parseInt(idEndereco));
-			new ClienteController().salvaCliente(cliente, Integer.parseInt(idEndereco));
+			novoCliente(Integer.parseInt(idEndereco));
+		}
+	}
+
+	private void novoCliente(int idEndereco) {
+		String cpf = this.textFieldCPF.getText();
+		cpf = cpf.replace(".", "");
+		cpf = cpf.replace("-", "");
+		cpf = cpf.replace(" ","");
+		
+		String cnpj = this.textFieldCNPJ.getText();
+		cnpj = cnpj.replace(".", "");
+		cnpj = cnpj.replace("/", "");
+		cnpj = cnpj.replace("-", "");
+		cnpj = cnpj.replace(" ","");
+
+		if (cpf != null || !cpf.equals("") ) {
+			ClienteFisico cliente = new ClienteFisico();
+			cliente.setCpf(cpf);
+			cliente.setNome(this.textFieldNome.getText());
+			cliente.setEmail(this.textFieldEmail.getText());
+			cliente.setDataNascimento(this.textFieldDtNasc.getText());
+			cliente.setTelefone(this.textFieldTelefone.getText());
+			cliente.setCelular(this.textFieldCelular.getText());
+			cliente.setEndereco(idEndereco);
+			boolean salvouCliente = new ClienteController().salvaCliente(cliente,idEndereco);
+			if(salvouCliente){
+				clienteFisico = cliente;
+				JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
+				GerenciadorDeInterface.setPanel(new Principal());
+			}
+		}else if (cnpj != null || cnpj.equals("")){
+			ClienteJuridico cliente = new ClienteJuridico();
+			cliente.setCnpj(cnpj);
+			cliente.setNome(this.textFieldNome.getText());
+			cliente.setEmail(this.textFieldEmail.getText());
+			cliente.setTelefone(this.textFieldTelefone.getText());
+			cliente.setCelular(this.textFieldCelular.getText());
+			cliente.setEndereco(idEndereco);
+			boolean salvouCliente = new ClienteController().salvaCliente(cliente,idEndereco);
+			if(salvouCliente){
+				clienteJuridico = cliente;
+				JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
+				GerenciadorDeInterface.setPanel(new Principal());
+			}
 		}
 	}
 
@@ -384,46 +453,7 @@ public class CadastroCliente extends JPanel {
 		return endereco;
 	}
 
-	private Cliente constroiCliente(Integer idEndereco) {
-		String cpf = this.textFieldCPF.getText();
-		cpf = cpf.replace(".", "");
-		cpf = cpf.replace("-", "");
-
-		String cnpj = this.textFieldCNPJ.getText();
-		cnpj = cnpj.replace(".", "");
-		cnpj = cnpj.replace("/", "");
-		cnpj = cnpj.replace("-", "");
-
-		if (clienteAtual != null) {
-			clienteAtual.setCpf(cpf);
-			clienteAtual.setCnpj(cnpj);
-			clienteAtual.setNome(this.textFieldNome.getText());
-			clienteAtual.setEmail(this.textFieldEmail.getText());
-			clienteAtual.setDataNascimento(this.textFieldDtNasc.getText());
-			clienteAtual.setTelefone(this.textFieldTelefone.getText());
-			clienteAtual.setCelular(this.textFieldCelular.getText());
-			clienteAtual.setEndereco(idEndereco);
-			return clienteAtual;
-		}
-		Cliente cliente = new Cliente();
-		cliente.setCpf(cpf);
-		cliente.setCnpj(cnpj);
-		cliente.setNome(this.textFieldNome.getText());
-		cliente.setEmail(this.textFieldEmail.getText());
-		cliente.setDataNascimento(this.textFieldDtNasc.getText());
-		cliente.setTelefone(this.textFieldTelefone.getText());
-		cliente.setCelular(this.textFieldCelular.getText());
-		cliente.setEndereco(idEndereco);
-		cliente.setIdCliente(0);
-		return cliente;
-	}
-
 	private boolean verificaCamposValidos() {
-		System.out.println("aqui nos verifica campos ");
-		System.out.println("this.textFieldNome" + this.textFieldNome.getText().equals(""));
-		System.out.println("this.textFieldTelefone " + this.textFieldTelefone.getText().equals(""));
-		System.out.println("this.textFieldCPF.getText().equals" + this.textFieldCPF.getText().equals(""));
-
 		if (this.textFieldNome.getText().equals("") || this.textFieldTelefone.getText().equals("")
 				|| (this.textFieldCPF.getText().equals("") && this.textFieldCNPJ.getText().equals(""))) {
 			return false;
@@ -432,17 +462,13 @@ public class CadastroCliente extends JPanel {
 	}
 
 	private void cpfValido(String cpf) {
-		System.out.println("method: cpfValido");
 		if (validaCPF(cpf)) {
-			System.out.println("cpf valido");
 			try {
-				clienteAtual = new ClienteController().buscaDadosClienteCpf(cpf);
-				if (clienteAtual != null) {
-					enderecoAtual = new EnderecoController().buscaEndereco(clienteAtual.getEndereco());
-
-					this.preencheDadosCliente(clienteAtual, enderecoAtual);
+				clienteFisico = new ClienteController().buscaDadosClienteCpf(cpf);
+				if (clienteFisico != null) {
+					enderecoAtual = new EnderecoController().buscaEndereco(clienteFisico.getEndereco());
+					this.preencheDadosCliente(clienteFisico, enderecoAtual);
 					edicao = true;
-
 				} else {
 					limpaCampos();
 					edicao = false;
@@ -536,134 +562,49 @@ public class CadastroCliente extends JPanel {
 		return primDig.toString() + segDig.toString();
 	}
 
-	public void preencheDadosCliente(Cliente cliente, Endereco endereco) {
+	public void preencheDadosCliente(ClienteJuridico cliente, Endereco endereco) {
 		System.out.println("Cliente : " + cliente.getIdCliente());
 		if (cliente != null) {
 			lblCadastroDeClientes.setText("Edição de Cliente");
 			lblCadastroDeClientes.repaint();
 			
-			this.clienteAtual = cliente;
-			textFieldCPF.setText(cliente.getCpf());
+			this.clienteJuridico = cliente;
 			textFieldCNPJ.setText(cliente.getCnpj());
 			textFieldNome.setText(cliente.getNome());
 			textFieldNome.repaint();
 			textFieldEmail.setText(cliente.getEmail());
 			textFieldCelular.setText(cliente.getCelular());
 			textFieldTelefone.setText(cliente.getTelefone());
-			textFieldDtNasc.setText(cliente.getDataNascimento());
 		}
-		System.out.println("Endereco : " + endereco.getIdEndereco());
 		if (endereco != null) {
 			this.enderecoAtual = endereco;
 			textFieldRua.setText(endereco.getRua());
 			textFieldBairro.setText(endereco.getBairro());
 			textFieldCidade.setText(endereco.getCidade());
 			textFieldEstado.setText(endereco.getEstado());
-
 		}
-
 	}
-
-//	private boolean isCnpjValido(String cnpj) {
-//		if (!cnpj.substring(0, 1).equals("")) {
-//			try {
-//				cnpj = cnpj.replace('.', ' ');// onde há ponto coloca espaço
-//				cnpj = cnpj.replace('/', ' ');// onde há barra coloca espaço
-//				cnpj = cnpj.replace('-', ' ');// onde há traço coloca espaço
-//				cnpj = cnpj.replaceAll(" ", "");// retira espaço
-//				int soma = 0, dig;
-//				String cnpj_calc = cnpj.substring(0, 12);
-//				if (cnpj.length() != 14) {
-//					return false;
-//				}
-//				char[] chr_cnpj = cnpj.toCharArray();
-//				/* Primeira parte */
-//				for (int i = 0; i < 4; i++) {
-//					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
-//						soma += (chr_cnpj[i] - 48) * (6 - (i + 1));
-//					}
-//				}
-//				for (int i = 0; i < 8; i++) {
-//					if (chr_cnpj[i + 4] - 48 >= 0 && chr_cnpj[i + 4] - 48 <= 9) {
-//						soma += (chr_cnpj[i + 4] - 48) * (10 - (i + 1));
-//					}
-//				}
-//				dig = 11 - (soma % 11);
-//				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
-//				/* Segunda parte */
-//				soma = 0;
-//				for (int i = 0; i < 5; i++) {
-//					if (chr_cnpj[i] - 48 >= 0 && chr_cnpj[i] - 48 <= 9) {
-//						soma += (chr_cnpj[i] - 48) * (7 - (i + 1));
-//					}
-//				}
-//				for (int i = 0; i < 8; i++) {
-//					if (chr_cnpj[i + 5] - 48 >= 0 && chr_cnpj[i + 5] - 48 <= 9) {
-//						soma += (chr_cnpj[i + 5] - 48) * (10 - (i + 1));
-//					}
-//				}
-//				dig = 11 - (soma % 11);
-//				cnpj_calc += (dig == 10 || dig == 11) ? "0" : Integer.toString(dig);
-//				return cnpj.equals(cnpj_calc);
-//			} catch (Exception e) {
-//				return false;
-//			}
-//		} else {
-//			return false;
-//		}
-//	}
-//
-//	private boolean cnpjValid(String cnpj) {
-//		// considera-se erro CNPJ's formados por uma sequencia de numeros iguais
-//		if (cnpj == null || cnpj.length() != 14
-//				|| cnpj.matches("^(0{14}|1{14}|2{14}|3{14}|4{14}|5{14}|6{14}|7{14}|8{14}|9{14})$"))
-//			return (false);
-//		char dig13, dig14;
-//		int sm, i, r, num, peso;
-//		// "try" - protege o código para eventuais erros de conversao de tipo
-//		// (int)
-//		try {
-//			// Calculo do 1o. Digito Verificador
-//			sm = 0;
-//			peso = 2;
-//			for (i = 11; i >= 0; i--) {
-//				// converte o i-ésimo caractere do CNPJ em um número:
-//				// por exemplo, transforma o caractere '0' no inteiro 0
-//				// (48 eh a posição de '0' na tabela ASCII)
-//				num = (int) (cnpj.charAt(i) - 48);
-//				sm = sm + (num * peso);
-//				peso = peso + 1;
-//				if (peso == 10)
-//					peso = 2;
-//			}
-//			r = sm % 11;
-//			if ((r == 0) || (r == 1))
-//				dig13 = '0';
-//			else
-//				dig13 = (char) ((11 - r) + 48);
-//			// Calculo do 2o. Digito Verificador
-//			sm = 0;
-//			peso = 2;
-//			for (i = 12; i >= 0; i--) {
-//				num = (int) (cnpj.charAt(i) - 48);
-//				sm = sm + (num * peso);
-//				peso = peso + 1;
-//				if (peso == 10)
-//					peso = 2;
-//			}
-//			r = sm % 11;
-//			if ((r == 0) || (r == 1))
-//				dig14 = '0';
-//			else
-//				dig14 = (char) ((11 - r) + 48);
-//			// Verifica se os dígitos calculados conferem com os dígitos
-//			// informados.
-//			if ((dig13 == cnpj.charAt(12)) && (dig14 == cnpj.charAt(13)))
-//				return (true);
-//			else
-//				return (false);
-//		} catch (InputMismatchException erro) {
-//			return (false);
-//		}
-//	}
+	
+	public void preencheDadosCliente(ClienteFisico cliente, Endereco endereco) {
+		if (cliente != null) {
+			lblCadastroDeClientes.setText("Edição de Cliente");
+			lblCadastroDeClientes.repaint();
+			
+			this.clienteFisico = cliente;
+			textFieldCPF.setText(cliente.getCpf());
+			textFieldDtNasc.setText(cliente.getDataNascimento());
+			textFieldNome.setText(cliente.getNome());
+			textFieldNome.repaint();
+			textFieldEmail.setText(cliente.getEmail());
+			textFieldCelular.setText(cliente.getCelular());
+			textFieldTelefone.setText(cliente.getTelefone());
+		}
+		if (endereco != null) {
+			this.enderecoAtual = endereco;
+			textFieldRua.setText(endereco.getRua());
+			textFieldBairro.setText(endereco.getBairro());
+			textFieldCidade.setText(endereco.getCidade());
+			textFieldEstado.setText(endereco.getEstado());
+		}
+	}
 }

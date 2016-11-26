@@ -7,9 +7,12 @@ import javax.swing.JOptionPane;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.StringUtils;
 
 import br.com.janus.Conecta;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.ClienteFisico;
+import br.com.janus.model.ClienteJuridico;
 import br.com.janus.model.Endereco;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
@@ -24,31 +27,86 @@ public class ClienteController {
 			st.setInt(1, idCliente);
 			ResultSet result = st.executeQuery();
 			if (result != null){
-				Cliente cliente = new Cliente();
 				while(result.next()){
-					cliente.setIdCliente(result.getInt("idCliente"));
-					cliente.setNome(result.getString("nome"));
-					cliente.setCpf(result.getString("cpf"));
-					cliente.setCnpj(result.getString("cnpj"));
-					cliente.setTelefone(result.getString("telefone"));
-					return cliente;
-				}
+						Cliente cliente = new ClienteFisico();
+						cliente.setIdCliente(result.getInt("idCliente"));
+						cliente.setNome(result.getString("nome"));
+						return cliente;
+					}
 			}
 		}catch (Exception e) {
-			// TODO: PENSAR MENSAGEM
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public Cliente buscaDadosClienteCpf(String cpf) throws SQLException{
+	public ClienteFisico buscaDadosclienteFisicoId(Integer idCliente) throws SQLException {
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
+			st.setInt(1, idCliente);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				while(result.next()){
+						ClienteFisico cliente = new ClienteFisico();
+						cliente.setCpf(result.getString("cpf"));
+						cliente.setDataNascimento(result.getString("datanascimento"));
+						cliente.setIdCliente(result.getInt("idCliente"));
+						cliente.setNome(result.getString("nome"));
+						cliente.setTelefone(result.getString("telefone"));
+						return cliente;
+					}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public ClienteJuridico buscaDadosclienteJuridicoId(Integer idCliente) throws SQLException {
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
+			st.setInt(1, idCliente);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				while(result.next()){
+						ClienteJuridico cliente = new ClienteJuridico();
+						cliente.setCnpj(result.getString("cnpj"));
+						cliente.setIdCliente(result.getInt("idCliente"));
+						cliente.setNome(result.getString("nome"));
+						cliente.setTelefone(result.getString("telefone"));
+						return cliente;
+					}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean verificaClienteFisico(Integer idCliente) throws SQLException {
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
+			st.setInt(1, idCliente);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				while(result.next()){
+					return result.getString("cpf") != null || result.getString("cpf").equals("");
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public ClienteFisico buscaDadosClienteCpf(String cpf) throws SQLException{
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cpf = ?;");
 		st.setString(1, cpf);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " +result == null);
 		if (result != null){
 			System.out.println("st.getResultSet" + st.getResultSet());
-			Cliente cliente = new Cliente();
+			ClienteFisico cliente = new ClienteFisico();
 			while(result.next()){
 				cliente.setIdCliente(result.getInt("idCliente"));
 				cliente.setNome(result.getString("nome"));
@@ -64,7 +122,7 @@ public class ClienteController {
 		return null;
 	}
 	
-	public Cliente buscaDadosClienteCnpj(String cnpj) throws SQLException{
+	public ClienteJuridico buscaDadosClienteCnpj(String cnpj) throws SQLException{
 		System.out.println("aqui no busca dados do cliente, cnpj : "+ cnpj);
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
 		st.setString(1, cnpj);
@@ -72,12 +130,11 @@ public class ClienteController {
 		System.out.println("result set : " +result == null);
 		if (result != null){
 			System.out.println("st.getResultSet" + st.getResultSet());
-			Cliente cliente = new Cliente();
+			ClienteJuridico cliente = new ClienteJuridico();
 			while(result.next()){
 				cliente.setIdCliente(Integer.parseInt(result.getString("idCliente")));
 				cliente.setNome(result.getString("nome"));
 				cliente.setCnpj(result.getString("cnpj"));
-				cliente.setDataNascimento(result.getString("dataNascimento"));
 				cliente.setEmail(result.getString("email"));
 				cliente.setTelefone(result.getString("telefone"));
 				cliente.setCelular(result.getString("celular"));
@@ -88,20 +145,59 @@ public class ClienteController {
 		return null;
 	}
 	
-	public void salvaCliente(Cliente cliente, Integer idEndereco){
+	public boolean salvaCliente(ClienteFisico clienteFisico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
-	                "(cpf,cnpj,nome,dataNascimento,telefone,email,celular,idEndereco) " +
+	                "(cpf,nome,dataNascimento,telefone,email,celular,idEndereco) " +
 	                "values (?,?,?,?,?,?,?,?)");
-	    	st.setString(1, cliente.getCpf());
-			st.setString(2,cliente.getCnpj());
-			st.setString(3,cliente.getNome());
-		    st.setString(4,cliente.getDataNascimento());
-		    st.setString(5,cliente.getTelefone());
-		    st.setString(6,cliente.getEmail());
-		    st.setString(7,cliente.getCelular());
-		    System.out.println(cliente.getEndereco().toString() + "cliente.getEndereco().toString()");
-			st.setString(8,cliente.getEndereco().toString());
+	    	st.setString(1, clienteFisico.getCpf());
+			st.setString(2,clienteFisico.getNome());
+		    st.setString(3,clienteFisico.getDataNascimento());
+		    st.setString(4,clienteFisico.getTelefone());
+		    st.setString(5,clienteFisico.getEmail());
+		    st.setString(6,clienteFisico.getCelular());
+			st.setString(7,clienteFisico.getEndereco().toString());
+			return st.execute();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			e.printStackTrace();
+		}
+	    return false;
+	}
+	
+	public boolean salvaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
+	    try {
+	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
+	                "(cnpj,nome,telefone,email,celular,idEndereco) " +
+	                "values (?,?,?,?,?,?,?,?)");
+			st.setString(1,clienteJuridico.getCnpj());
+			st.setString(2,clienteJuridico.getNome());
+		    st.setString(3,clienteJuridico.getTelefone());
+		    st.setString(4,clienteJuridico.getEmail());
+		    st.setString(5,clienteJuridico.getCelular());
+			st.setString(6,clienteJuridico.getEndereco().toString());
+			return st.execute();
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			e.printStackTrace();
+		}
+	    return false;
+	}
+
+	public void atualizaCliente(ClienteFisico clienteFisico, Integer idEndereco){
+	    try {
+	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
+	                "set cpf= ?,nome= ?,dataNascimento= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
+	                "where cpf = ?;");
+	    	st.setString(1,clienteFisico.getCpf());
+			st.setString(2,clienteFisico.getNome());
+		    st.setString(3,clienteFisico.getDataNascimento());
+		    st.setString(4,clienteFisico.getTelefone());
+		    st.setString(5,clienteFisico.getEmail());
+		    st.setString(6,clienteFisico.getCelular());
+			st.setString(7,clienteFisico.getEndereco().toString());
+			st.setString(8, clienteFisico.getCpf());
 			st.execute();
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
@@ -110,20 +206,19 @@ public class ClienteController {
 			e.printStackTrace();
 		}
 	}
-
-	public void atualizaCliente(Cliente cliente, Integer idEndereco){
+	
+	public void atualizaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
-	                "set cpf= ?,cnpj= ?,nome= ?,dataNascimento= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
-	                "where cpf = '"+cliente.getCpf()+"'");
-	    	st.setString(1,cliente.getCpf());
-			st.setString(2,cliente.getCnpj());
-			st.setString(3,cliente.getNome());
-		    st.setString(4,cliente.getDataNascimento());
-		    st.setString(5,cliente.getTelefone());
-		    st.setString(6,cliente.getEmail());
-		    st.setString(7,cliente.getCelular());
-			st.setString(8,cliente.getEndereco().toString());
+	                "set cnpj= ?,nome= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
+	                "where cnpj = ?;");
+			st.setString(1,clienteJuridico.getCnpj());
+			st.setString(2,clienteJuridico.getNome());
+		    st.setString(3,clienteJuridico.getTelefone());
+		    st.setString(4,clienteJuridico.getEmail());
+		    st.setString(5,clienteJuridico.getCelular());
+			st.setString(6,clienteJuridico.getEndereco().toString());
+			st.setString(7,clienteJuridico.getCnpj());
 			st.execute();
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());

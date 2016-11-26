@@ -28,6 +28,8 @@ import br.com.janus.controller.ProdutoController;
 import br.com.janus.controller.ServicoController;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.ClienteFisico;
+import br.com.janus.model.ClienteJuridico;
 import br.com.janus.model.OrdemServico;
 import br.com.janus.model.OsProdutos;
 import br.com.janus.model.OsServicos;
@@ -57,7 +59,9 @@ public class CadastroOrdemServico extends JPanel {
 	private Double parcialDoubleProduto = 0.0;
 	private Double valorDoubleTotal = 0.0;
 	
-	private Cliente clienteAtual;
+	private ClienteFisico clienteFisicoAtual;
+	private ClienteJuridico clienteJuridicoAtual;
+	
 	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
@@ -238,9 +242,10 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setBounds(101, 65, 85, 25);
 		add(textFieldData);
 		textFieldData.setColumns(10);
-		textFieldData.setText(java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de ServiÃ§o");
+		textFieldData.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
+		
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -270,9 +275,9 @@ public class CadastroOrdemServico extends JPanel {
 			}
 			if (!cpf.isEmpty()) {
 						try {
-							clienteAtual = new ClienteController().buscaDadosClienteCpf(cpf);
-							if (clienteAtual != null) {
-								this.preencheDadosCliente(clienteAtual);
+							clienteFisicoAtual = new ClienteController().buscaDadosClienteCpf(cpf);
+							if (clienteFisicoAtual != null) {
+								preencheDadosClienteFisico(clienteFisicoAtual);
 							} else {
 								textFieldTelefone.setText("");
 								textFieldTelefone.setValue("");
@@ -285,9 +290,9 @@ public class CadastroOrdemServico extends JPanel {
 						}
 			} else if (!cnpj.isEmpty()) {
 					try {
-						clienteAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
-						if (clienteAtual != null) {
-							this.preencheDadosCliente(clienteAtual);
+						clienteJuridicoAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
+						if (clienteJuridicoAtual != null) {
+							preencheDadosClienteJuridico(clienteJuridicoAtual);
 						} else {
 							textFieldTelefone.setText("");
 							textFieldTelefone.setValue("");
@@ -479,14 +484,17 @@ public class CadastroOrdemServico extends JPanel {
 		OrdemServico ordemServico = new OrdemServico();
 		ordemServico.setDataCriacao(this.textFieldData.getText());
 		ordemServico.setTotal(this.textFieldTotal.getText());
-		ordemServico.setIdCliente(clienteAtual.getIdCliente());
+		if(clienteFisicoAtual.getIdCliente() != null){
+			ordemServico.setIdCliente(clienteFisicoAtual.getIdCliente());
+		}else{
+			ordemServico.setIdCliente(clienteJuridicoAtual.getIdCliente());
+		}
 		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
 		return ordemServico;
 	}
 
 	private void populaTabelaServicos() {
 		tabelaServico = new JTable(tabelaModeloServico){
-
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -586,19 +594,23 @@ public class CadastroOrdemServico extends JPanel {
 		}
 	}
 	
-	public void preencheDadosCliente(Cliente cliente) {
-		System.out.println("Cliente : " + cliente.getIdCliente());
-		if (cliente != null) {
-			this.clienteAtual = cliente;
-			textFieldCpf.setText(cliente.getCpf());
-			textFieldCnpj.setText(cliente.getCnpj());
-			textFieldNome.setText(cliente.getNome());
-			textFieldTelefone.setText(cliente.getTelefone());
+	public void preencheDadosClienteJuridico(ClienteJuridico clienteJuridico) {
+		if (clienteJuridico != null) {
+			this.clienteJuridicoAtual = clienteJuridico;
+			textFieldCnpj.setText(clienteJuridico.getCnpj());
+			textFieldNome.setText(clienteJuridico.getNome());
+			textFieldTelefone.setText(clienteJuridico.getTelefone());
 		}
 	}
 	
+	private void preencheDadosClienteFisico(ClienteFisico clienteFisico) {
+		this.clienteFisicoAtual = clienteFisico;
+		textFieldCpf.setText(clienteFisico.getCpf());
+		textFieldNome.setText(clienteFisico.getNome());
+		textFieldTelefone.setText(clienteFisico.getTelefone());
+	}
+	
 	public void preencheDadosVeiculo(Veiculo veiculo) {
-		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
 		if (veiculo != null) {
 			this.veiculoAtual = veiculo;
 			textFieldPlaca.setText(veiculo.getPlaca());
@@ -608,7 +620,6 @@ public class CadastroOrdemServico extends JPanel {
 	}
 	
 	public void preencheValorTotalOrdemServico() {
-		//Metodo Calcula Total (criar)
         valorDoubleTotal = 0.0;
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
@@ -634,6 +645,5 @@ public class CadastroOrdemServico extends JPanel {
 		String valorStrTotal = valorDoubleTotal.toString();
 		valorStrTotal = valorStrTotal.replace(".", ",");
 		textFieldTotal.setText(valorStrTotal);
-		//Acaba Metodo Calcula Total
 	}
 }

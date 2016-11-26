@@ -22,7 +22,6 @@ public class OrdemServicoController {
 	private Integer idOrdemServico;
 
 	public void salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
-		System.out.println(ordemServico.getIdCliente());
 		try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into ordemdeservico " +
 	                "(idcliente,idveiculo,total,datacriacao) " +
@@ -37,12 +36,12 @@ public class OrdemServicoController {
 		    	idOrdemServico = rs.getInt("id");
 		    }
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		JOptionPane.showMessageDialog(null, "Ordem de serviÃ§o com sucesso!");
+		JOptionPane.showMessageDialog(null, "Ordem de serviço de número "+ idOrdemServico+" criada com sucesso!");
 		GerenciadorDeInterface.setPanel(new Principal());
 	}
 
@@ -83,26 +82,28 @@ public class OrdemServicoController {
 	}
 
 	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?;");
-		st.setInt(1, idOrdemDeServico);
-		ResultSet result = st.executeQuery();
-		System.out.println("result set : " +result == null);
-		if (result != null){
-			System.out.println("st.getResultSet" + st.getResultSet());
-			OrdemServico os = new OrdemServico();
-			while(result.next()){
-				os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
-				os.setIdCliente(result.getInt("idcliente"));
-				os.setIdVeiculo(result.getInt("idveiculo"));
-				os.setEstaExpirado(result.getString("estaexpirado") == "1" ? true:false);
-				os.setDataCriacao(result.getString("datacriacao"));
-				os.setDataAprovado(result.getString("dataaprovado"));
-				os.setDataExecucao(result.getString("dataexecucao"));
-				os.setDataFinalizado(result.getString("datafinalizado"));
-				os.setDataCancelado(result.getString("datacancelado"));
-				os.setTotal(result.getString("total"));
-				return os;
-			}
+		try{
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?;");
+			st.setInt(1, idOrdemDeServico);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				OrdemServico os = new OrdemServico();
+				while(result.next()){
+					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
+					os.setIdCliente(result.getInt("idcliente"));
+					os.setIdVeiculo(result.getInt("idveiculo"));
+					os.setEstaExpirado(result.getString("estaexpirado") == "0" ? false : true);
+					os.setDataCriacao(result.getString("datacriacao"));
+					os.setDataAprovado(result.getString("dataaprovado"));
+					os.setDataExecucao(result.getString("dataexecucao"));
+					os.setDataFinalizado(result.getString("datafinalizado"));
+					os.setDataCancelado(result.getString("datacancelado"));
+					os.setTotal(result.getString("total"));
+					return os;
+				}
+			}	
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -188,10 +189,16 @@ public class OrdemServicoController {
 		return false;
 	}
 	
+	/*
+	 * Estado Finalizado
+	* String dataFinalizado -> BD dataFinalizado != null AND dataCancelado == null
+	* if (dataExecucao != null && dataFinalizado == null && dataCancelado == null)
+	*	dataFinalizado = dataAtual();
+	*/
 	public boolean finalizaOrdem(Integer idOrdemDeServico, String dataFinalizado) {
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico " +
-	                "set datafinalizado= ? " +
+	                "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL" +
 	                "where idordemdeservico = '"+idOrdemDeServico+"'");
 	    	st.setString(1,dataFinalizado);
 			st.execute();

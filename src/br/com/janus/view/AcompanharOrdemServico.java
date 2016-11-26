@@ -2,14 +2,14 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -24,15 +24,14 @@ import br.com.janus.controller.ProdutoController;
 import br.com.janus.controller.ServicoController;
 import br.com.janus.controller.VeiculoController;
 import br.com.janus.model.Cliente;
+import br.com.janus.model.ClienteFisico;
+import br.com.janus.model.ClienteJuridico;
 import br.com.janus.model.OrdemServico;
 import br.com.janus.model.OsProdutos;
 import br.com.janus.model.OsServicos;
 import br.com.janus.model.Produto;
 import br.com.janus.model.Servico;
 import br.com.janus.model.Veiculo;
-
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 
 public class AcompanharOrdemServico extends JPanel {
 
@@ -56,128 +55,16 @@ public class AcompanharOrdemServico extends JPanel {
 	private Double valorDoubleTotal = 0.0;
 	
 	private OrdemServico ordemServico;
-	private Cliente clienteAtual;
+	private ClienteFisico clienteFisicoAtual;
+	private ClienteJuridico clienteJuridicoAtual;
 	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
 	
-	
-	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
-        boolean[] selecionado = new boolean[]{true, false, false, true, false};
-        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
-                
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
-            	return selecionado[columnIndex];
-            }
-            else {
-            	setValueAt("0", rowIndex, 3);
-            	return naoSelecionado[columnIndex];
-            }
-        }
-        
-        @Override
-        public Object getValueAt(int row, int column) {
-            if (column == 4) {
-                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
-                    return super.getValueAt(row, column);
-                } else {
-                	String valorStr = getValueAt(row, 2).toString();
-                	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
-                	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
-                    if (quantidade < 0) {
-                    	quantidade = 0;
-                    }
-                    resultado = valor * quantidade;
-                    String resultadoStr = String.valueOf(resultado);
-                    resultadoStr = resultadoStr.replace(".", ",");
-                    return resultadoStr;
-                }
-            }
-            return super.getValueAt(row, column);
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column);
-            
-            preencheValorTotalOrdemServico();
-			
-            tabelaModeloProduto.fireTableCellUpdated(row, 4);
-        }
-	};
-
-	
-	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
-        boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
-        boolean[] selecionadoPorHora = new boolean[]{true, false, false, true, true, false};
-        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
-                
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
-            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
-            		return selecionadoPorHora[columnIndex];
-            	} else {
-            		return selecionado[columnIndex];
-            	}
-            }
-            else {
-            	setValueAt("0", rowIndex, 4);
-            	return naoSelecionado[columnIndex];
-            }
-        }
-	
-        @Override
-        public Object getValueAt(int row, int column) {
-            if (column == 5) {
-                if (getValueAt(row, 2).equals("") && getValueAt(row, 4).equals("")){
-                    return super.getValueAt(row, column);
-                } else {
-                	String valorStr = getValueAt(row, 2).toString();
-                	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
-                	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
-                	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
-                    if (quantidade < 0) {
-                    	quantidade = 0;
-                    }
-                    if (valorPorHora > 0) {
-                    	resultado = (valor * quantidade) * valorPorHora;	
-                    } else {
-                    	resultado = valor * quantidade;
-                    }
-                    String resultadoStr = String.valueOf(resultado);
-                    resultadoStr = resultadoStr.replace(".", ",");
-                    return resultadoStr;
-                }
-            }
-            return super.getValueAt(row, column);
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column);
-            
-            if (column == 3) {
-            	int testePorHora = Integer.parseInt(aValue.toString());
-            	if (testePorHora < 1){
-            		setValueAt("1", row, column);
-            	}
-            }
-            
-            preencheValorTotalOrdemServico();
-			
-           	fireTableCellUpdated(row, 5);
-        }   
-	};
-
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
 
-		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Servi\u00E7o");
+		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -274,7 +161,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("VeÃ­culo:");
+		JLabel lblVeiculo = new JLabel("Veículo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -293,7 +180,7 @@ public class AcompanharOrdemServico extends JPanel {
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		JLabel lblServico = new JLabel("ServiÃ§os:");
+		JLabel lblServico = new JLabel("Serviços:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
@@ -366,22 +253,132 @@ public class AcompanharOrdemServico extends JPanel {
 		add(btnBuscar);
 	}
 	
-	private void preencheDados() {
+	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
+            	return selecionado[columnIndex];
+            }
+            else {
+            	setValueAt("0", rowIndex, 3);
+            	return naoSelecionado[columnIndex];
+            }
+        }
+        
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 4) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace(",", ".");
+                	double valor = Double.parseDouble(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
+                    double resultado = 0.0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    resultado = valor * quantidade;
+                    String resultadoStr = String.valueOf(resultado);
+                    resultadoStr = resultadoStr.replace(".", ",");
+                    return resultadoStr;
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column);
+            
+            preencheValorTotalOrdemServico();
+            tabelaModeloProduto.fireTableCellUpdated(row, 4);
+        }
+	};
+
 	
-		//ORDEM DE SERVIÃ‡O
+	
+	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
+        boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
+        boolean[] selecionadoPorHora = new boolean[]{true, false, false, true, true, false};
+        boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
+                
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
+            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
+            		return selecionadoPorHora[columnIndex];
+            	} else {
+            		return selecionado[columnIndex];
+            	}
+            }
+            else {
+            	setValueAt("0", rowIndex, 4);
+            	return naoSelecionado[columnIndex];
+            }
+        }
+	
+        @Override
+        public Object getValueAt(int row, int column) {
+            if (column == 5) {
+                if (getValueAt(row, 2).equals("") && getValueAt(row, 4).equals("")){
+                    return super.getValueAt(row, column);
+                } else {
+                	String valorStr = getValueAt(row, 2).toString();
+                	valorStr = valorStr.replace(",", ".");
+                	double valor = Double.parseDouble(valorStr);
+                	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
+                	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
+                    double resultado = 0.0;
+                    if (quantidade < 0) {
+                    	quantidade = 0;
+                    }
+                    if (valorPorHora > 0) {
+                    	resultado = (valor * quantidade) * valorPorHora;	
+                    } else {
+                    	resultado = valor * quantidade;
+                    }
+                    String resultadoStr = String.valueOf(resultado);
+                    resultadoStr = resultadoStr.replace(".", ",");
+                    return resultadoStr;
+                }
+            }
+            return super.getValueAt(row, column);
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int row, int column) {
+            super.setValueAt(aValue, row, column);
+            
+            if (column == 3) {
+            	int testePorHora = Integer.parseInt(aValue.toString());
+            	if (testePorHora < 1){
+            		setValueAt("1", row, column);
+            	}
+            }
+            
+            preencheValorTotalOrdemServico();
+           	fireTableCellUpdated(row, 5);
+        }   
+	};
+	
+
+	private void preencheDados() {
 		textFieldData.setText(ordemServico.getDataCriacao());
 		textFieldTotal.setText(ordemServico.getTotal());
 		
-//		//CLIENTE
-		if ( !clienteAtual.getCnpj().equals("") ) {
-			textFieldCpfCnpj.setText(clienteAtual.getCnpj());
+		if (clienteJuridicoAtual != null) {
+			textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
+			textFieldNome.setText(clienteJuridicoAtual.getNome());
+			textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
 		} else {
-			textFieldCpfCnpj.setText(clienteAtual.getCpf());
+			textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
+			textFieldNome.setText(clienteFisicoAtual.getNome());
+			textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
 		}
-		textFieldNome.setText(clienteAtual.getNome());
-		textFieldTelefone.setText(clienteAtual.getTelefone());
 		
-		//VEICULO
 		textFieldPlaca.setText(veiculoAtual.getPlaca());
 		textFieldModelo.setText(veiculoAtual.getModelo());
 		textFieldAno.setText(veiculoAtual.getAno());
@@ -406,33 +403,25 @@ public class AcompanharOrdemServico extends JPanel {
 	private void buscaOrdemServico() {
 		try {
 			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
-			ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
-			populaTabelaProduto(osProdutos);
-			ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
-			populaTabelaServico(osServicos);
-			clienteAtual = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
-			veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());
+			if(ordemServico != null){
+				ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
+				populaTabelaProduto(osProdutos);
+				ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
+				populaTabelaServico(osServicos);
+				boolean ehClienteFisico = new ClienteController().verificaClienteFisico(ordemServico.getIdCliente());
+				if(ehClienteFisico){
+					clienteFisicoAtual = new ClienteController().buscaDadosclienteFisicoId(ordemServico.getIdCliente());
+				}else{
+					clienteJuridicoAtual = new ClienteController().buscaDadosclienteJuridicoId(ordemServico.getIdCliente());
+				}
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());	
+			}
 		} catch (Exception e) {
-			//pensar em mensagem default
+			//pensar em mensagem 'default'
 			e.printStackTrace();
 		}
 	}
 
-
-
-	public void preencheDadosCliente(Cliente cliente) {
-		System.out.println("Cliente : " + cliente.getIdCliente());
-		if (cliente != null) {
-			this.clienteAtual = cliente;
-			if (cliente.getCpf().equals(""))
-				textFieldCpfCnpj.setText(cliente.getCnpj());
-			else if (cliente.getCnpj().equals(""))
-				textFieldCpfCnpj.setText(cliente.getCpf());
-			textFieldNome.setText(cliente.getNome());
-			textFieldTelefone.setText(cliente.getTelefone());
-		}
-	}
-	
 	public void preencheDadosVeiculo(Veiculo veiculo) {
 		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
 		if (veiculo != null) {
@@ -474,16 +463,12 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 
 	private void populaTabelaProduto(ArrayList<OsProdutos> osProdutos) {
-		
 		//LIMPAR TABELA
 		while (tabelaModeloProduto.getRowCount() > 0) {
 			tabelaModeloProduto.removeRow(0);
 		}
 		
-		
-		//POPULAR TABELA
 		produtos = new ProdutoController().buscaProdutos();
-		
 		int contador = 0;
 		for (Produto produto : produtos) {
 			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0", produto.getIdProduto()});
@@ -495,20 +480,15 @@ public class AcompanharOrdemServico extends JPanel {
 			}
 			contador++;
 		}
-		
 	}
 
 	private void populaTabelaServico(ArrayList<OsServicos> osServicos) {
-		
 //		//LIMPAR TABELA
 		while (tabelaModeloServico.getRowCount() > 0) {
 			tabelaModeloServico.removeRow(0);
 		}
-
 		
-		//POPULAR TABELA
 		servicos = new ServicoController().buscaServicos();
-		
 		int contador = 0;
 		for (Servico servico : servicos) {
 			int porHora = 0;
@@ -577,12 +557,9 @@ public class AcompanharOrdemServico extends JPanel {
         tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
 	}
 	
-	
 	private void criaTabelaServico() {
 		tabelaServico = new JTable(tabelaModeloServico){
-
             private static final long serialVersionUID = 1L;
-
             @Override
             public Class getColumnClass(int column) {
                 switch (column) {
