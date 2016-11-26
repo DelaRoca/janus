@@ -351,42 +351,62 @@ public class CadastroCliente extends JPanel {
 			cnpj = cnpj.replace(" ","");
 
 			if (cpf != null || !cpf.equals("") ) {
-				ClienteFisico cliente = constroiClienteFisico(idEndereco);
-				new ClienteController().atualizaCliente(cliente, idEndereco);
+				System.out.println("entrando no if cpf");
+				ClienteFisico cliente = constroiClienteFisico();
+				System.out.println(cliente.getCpf());
+				new ClienteController().atualizaCliente(cliente);
 			}else if(cnpj != null || !cnpj.equals("")){
-				ClienteJuridico cliente = constroiClienteJuridico(idEndereco);
-				new ClienteController().atualizaCliente(cliente, idEndereco);
+				System.out.println("entrando no else");
+				ClienteJuridico cliente = constroiClienteJuridico();
+				new ClienteController().atualizaCliente(cliente);
 			}
 		}
 	}
 
-	private ClienteJuridico constroiClienteJuridico(Integer idEndereco) {
+	private ClienteJuridico constroiClienteJuridico() {
+		String cnpj = this.textFieldCNPJ.getText();
+		cnpj = cnpj.replace(".", "");
+		cnpj = cnpj.replace("/", "");
+		cnpj = cnpj.replace("-", "");
+		cnpj = cnpj.replace(" ","");
+		
 		ClienteJuridico cliente = new ClienteJuridico();
+		cliente.setCnpj(cnpj);
 		cliente.setNome(this.textFieldNome.getText());
 		cliente.setEmail(this.textFieldEmail.getText());
 		cliente.setTelefone(this.textFieldTelefone.getText());
 		cliente.setCelular(this.textFieldCelular.getText());
-		cliente.setEndereco(idEndereco);
 		return cliente;
 	}
 	
-	private ClienteFisico constroiClienteFisico(Integer idEndereco) {
+	private ClienteFisico constroiClienteFisico() {
+//		if (clienteFisico != null) {
+//			clienteFisico.setCpf(this.textFieldCPF.getText());           
+//			clienteFisico.setNome(this.textFieldNome.getText());             
+//			clienteFisico.setEmail(this.textFieldEmail.getText());           
+//			clienteFisico.setDataNascimento(this.textFieldDtNasc.getText()); 
+//			clienteFisico.setTelefone(this.textFieldTelefone.getText());     
+//		    clienteFisico.setCelular(this.textFieldCelular.getText());
+//		    return clienteFisico;
+//		}
+		String cpf = this.textFieldCPF.getText();
+		cpf = cpf.replace(".", "");
+		cpf = cpf.replace("-", "");
+		cpf = cpf.replace(" ","");
+		
 		ClienteFisico cliente = new ClienteFisico();
-		cliente.setCpf(this.textFieldCelular.getText());
+		cliente.setCpf(cpf);
 		cliente.setNome(this.textFieldNome.getText());
 		cliente.setEmail(this.textFieldEmail.getText());
 		cliente.setDataNascimento(this.textFieldDtNasc.getText());
 		cliente.setTelefone(this.textFieldTelefone.getText());
 		cliente.setCelular(this.textFieldCelular.getText());
-		cliente.setEndereco(idEndereco);
 		return cliente;
 }
 
 	private void salvaCliente() {
-		System.out.println("salvar cliente");
 		Endereco endereco = constroiEndereco();
 		String idEndereco = new ClienteController().salvaEndereco(endereco);
-		System.out.println("idEnderec" + idEndereco);
 		if (idEndereco != "0") {
 			novoCliente(Integer.parseInt(idEndereco));
 		}
@@ -413,12 +433,8 @@ public class CadastroCliente extends JPanel {
 			cliente.setTelefone(this.textFieldTelefone.getText());
 			cliente.setCelular(this.textFieldCelular.getText());
 			cliente.setEndereco(idEndereco);
-			boolean salvouCliente = new ClienteController().salvaCliente(cliente,idEndereco);
-			if(salvouCliente){
-				clienteFisico = cliente;
-				JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
-				GerenciadorDeInterface.setPanel(new Principal());
-			}
+			new ClienteController().salvaCliente(cliente,idEndereco);
+						
 		}else if (cnpj != null || cnpj.equals("")){
 			ClienteJuridico cliente = new ClienteJuridico();
 			cliente.setCnpj(cnpj);
@@ -427,12 +443,7 @@ public class CadastroCliente extends JPanel {
 			cliente.setTelefone(this.textFieldTelefone.getText());
 			cliente.setCelular(this.textFieldCelular.getText());
 			cliente.setEndereco(idEndereco);
-			boolean salvouCliente = new ClienteController().salvaCliente(cliente,idEndereco);
-			if(salvouCliente){
-				clienteJuridico = cliente;
-				JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
-				GerenciadorDeInterface.setPanel(new Principal());
-			}
+			new ClienteController().salvaCliente(cliente,idEndereco);
 		}
 	}
 
@@ -467,7 +478,7 @@ public class CadastroCliente extends JPanel {
 				clienteFisico = new ClienteController().buscaDadosClienteCpf(cpf);
 				if (clienteFisico != null) {
 					enderecoAtual = new EnderecoController().buscaEndereco(clienteFisico.getEndereco());
-					this.preencheDadosCliente(clienteFisico, enderecoAtual);
+					preencheDadosCliente(clienteFisico, enderecoAtual);
 					edicao = true;
 				} else {
 					limpaCampos();

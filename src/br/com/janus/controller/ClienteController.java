@@ -28,8 +28,8 @@ public class ClienteController {
 			ResultSet result = st.executeQuery();
 			if (result != null){
 				while(result.next()){
-						Cliente cliente = new ClienteFisico();
-						cliente.setIdCliente(result.getInt("idCliente"));
+						Cliente cliente = new Cliente();
+						cliente.setIdCliente(result.getInt("idcliente"));
 						cliente.setNome(result.getString("nome"));
 						return cliente;
 					}
@@ -50,7 +50,7 @@ public class ClienteController {
 						ClienteFisico cliente = new ClienteFisico();
 						cliente.setCpf(result.getString("cpf"));
 						cliente.setDataNascimento(result.getString("datanascimento"));
-						cliente.setIdCliente(result.getInt("idCliente"));
+						cliente.setIdCliente(result.getInt("idcliente"));
 						cliente.setNome(result.getString("nome"));
 						cliente.setTelefone(result.getString("telefone"));
 						return cliente;
@@ -71,7 +71,7 @@ public class ClienteController {
 				while(result.next()){
 						ClienteJuridico cliente = new ClienteJuridico();
 						cliente.setCnpj(result.getString("cnpj"));
-						cliente.setIdCliente(result.getInt("idCliente"));
+						cliente.setIdCliente(result.getInt("idcliente"));
 						cliente.setNome(result.getString("nome"));
 						cliente.setTelefone(result.getString("telefone"));
 						return cliente;
@@ -103,19 +103,17 @@ public class ClienteController {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cpf = ?;");
 		st.setString(1, cpf);
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " +result == null);
 		if (result != null){
-			System.out.println("st.getResultSet" + st.getResultSet());
 			ClienteFisico cliente = new ClienteFisico();
 			while(result.next()){
-				cliente.setIdCliente(result.getInt("idCliente"));
+				cliente.setIdCliente(result.getInt("idcliente"));
 				cliente.setNome(result.getString("nome"));
 				cliente.setCpf(result.getString("cpf"));
-				cliente.setDataNascimento(result.getString("dataNascimento"));
+				cliente.setDataNascimento(result.getString("datanascimento"));
 				cliente.setEmail(result.getString("email"));
 				cliente.setTelefone(result.getString("telefone"));
 				cliente.setCelular(result.getString("celular"));
-				cliente.setEndereco(Integer.parseInt(result.getString("idEndereco")));
+				cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
 				return cliente;
 			}
 		}
@@ -123,33 +121,30 @@ public class ClienteController {
 	}
 	
 	public ClienteJuridico buscaDadosClienteCnpj(String cnpj) throws SQLException{
-		System.out.println("aqui no busca dados do cliente, cnpj : "+ cnpj);
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
 		st.setString(1, cnpj);
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " +result == null);
 		if (result != null){
-			System.out.println("st.getResultSet" + st.getResultSet());
 			ClienteJuridico cliente = new ClienteJuridico();
 			while(result.next()){
-				cliente.setIdCliente(Integer.parseInt(result.getString("idCliente")));
+				cliente.setIdCliente(Integer.parseInt(result.getString("idcliente")));
 				cliente.setNome(result.getString("nome"));
 				cliente.setCnpj(result.getString("cnpj"));
 				cliente.setEmail(result.getString("email"));
 				cliente.setTelefone(result.getString("telefone"));
 				cliente.setCelular(result.getString("celular"));
-				cliente.setEndereco(Integer.parseInt(result.getString("idEndereco")));
+				cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
 				return cliente;
 			}
 		}
 		return null;
 	}
 	
-	public boolean salvaCliente(ClienteFisico clienteFisico, Integer idEndereco){
+	public void salvaCliente(ClienteFisico clienteFisico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
-	                "(cpf,nome,dataNascimento,telefone,email,celular,idEndereco) " +
-	                "values (?,?,?,?,?,?,?,?)");
+	                "(cpf,nome,dataNascimento,telefone,email,celular,idendereco) " +
+	                "values (?,?,?,?,?,?,?)");
 	    	st.setString(1, clienteFisico.getCpf());
 			st.setString(2,clienteFisico.getNome());
 		    st.setString(3,clienteFisico.getDataNascimento());
@@ -157,73 +152,72 @@ public class ClienteController {
 		    st.setString(5,clienteFisico.getEmail());
 		    st.setString(6,clienteFisico.getCelular());
 			st.setString(7,clienteFisico.getEndereco().toString());
-			return st.execute();
+			st.execute();
+			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
+			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
-	    return false;
 	}
 	
-	public boolean salvaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
+	public void salvaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
-	                "(cnpj,nome,telefone,email,celular,idEndereco) " +
-	                "values (?,?,?,?,?,?,?,?)");
+	                "(cnpj,nome,telefone,email,celular,idendereco) " +
+	                "values (?,?,?,?,?,?)");
 			st.setString(1,clienteJuridico.getCnpj());
 			st.setString(2,clienteJuridico.getNome());
 		    st.setString(3,clienteJuridico.getTelefone());
 		    st.setString(4,clienteJuridico.getEmail());
 		    st.setString(5,clienteJuridico.getCelular());
 			st.setString(6,clienteJuridico.getEndereco().toString());
-			return st.execute();
-			
+			st.execute();
+			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
+			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
-	    return false;
 	}
 
-	public void atualizaCliente(ClienteFisico clienteFisico, Integer idEndereco){
+	public void atualizaCliente(ClienteFisico clienteFisico){
 	    try {
+	    	System.out.println(clienteFisico.getNome());
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
-	                "set cpf= ?,nome= ?,dataNascimento= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
-	                "where cpf = ?;");
+	                "set cpf= ?,nome= ?,datanascimento= ?,telefone= ?,email= ?,celular= ? " +
+	                "where cpf = '"+clienteFisico.getCpf()+"'");
 	    	st.setString(1,clienteFisico.getCpf());
 			st.setString(2,clienteFisico.getNome());
 		    st.setString(3,clienteFisico.getDataNascimento());
 		    st.setString(4,clienteFisico.getTelefone());
 		    st.setString(5,clienteFisico.getEmail());
 		    st.setString(6,clienteFisico.getCelular());
-			st.setString(7,clienteFisico.getEndereco().toString());
-			st.setString(8, clienteFisico.getCpf());
 			st.execute();
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
 	
-	public void atualizaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
+	public void atualizaCliente(ClienteJuridico clienteJuridico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
-	                "set cnpj= ?,nome= ?,telefone= ?,email= ?,celular= ?,idEndereco=? " +
+	                "set cnpj= ?,nome= ?,telefone= ?,email= ?,celular= ? " +
 	                "where cnpj = ?;");
 			st.setString(1,clienteJuridico.getCnpj());
 			st.setString(2,clienteJuridico.getNome());
 		    st.setString(3,clienteJuridico.getTelefone());
 		    st.setString(4,clienteJuridico.getEmail());
 		    st.setString(5,clienteJuridico.getCelular());
-			st.setString(6,clienteJuridico.getEndereco().toString());
-			st.setString(7,clienteJuridico.getCnpj());
+			st.setString(6,clienteJuridico.getCnpj());
 			st.execute();
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
@@ -240,7 +234,7 @@ public class ClienteController {
 		    st.setString(4,endereco.getEstado());		    
 		    int result = st.executeUpdate();
 		    if(result == 1){
-		    	PreparedStatement ps = (PreparedStatement) conexao.prepareStatement("select max(idEndereco) as max from endereco; ");
+		    	PreparedStatement ps = (PreparedStatement) conexao.prepareStatement("select max(idendereco) as max from endereco; ");
 		    	ResultSet rs = ps.executeQuery();
 		    	while(rs.next()){
 		    		return rs.getString("max");
@@ -248,7 +242,7 @@ public class ClienteController {
 		    }
 		    		    
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 		return "0";
@@ -256,21 +250,20 @@ public class ClienteController {
 
 	public Integer atualizaEndereco(Endereco endereco) {
 		try {
-			System.out.println("endereco.getIdEndereco()"+endereco.getIdEndereco());
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update endereco " +
 	    			"set rua = ?,bairro = ?,cidade = ?,estado= ? " +
-	                "where idEndereco = '"+endereco.getIdEndereco()+"';");
+	                "where idendereco = ?;");
 			st.setString(1,endereco.getRua() == null ? null : endereco.getRua());
 			st.setString(2,endereco.getBairro()== null ? null : endereco.getBairro());
 		    st.setString(3,endereco.getCidade()== null ? null : endereco.getCidade());
-		    st.setString(4, endereco.getEstado()== null ? null : endereco.getEstado());
+		    st.setString(4,endereco.getEstado()== null ? null : endereco.getEstado());
+		    st.setInt(5,endereco.getIdEndereco());
 			int executeUpdate = st.executeUpdate();
-			System.out.println("executeUpdate atualizaEndereco"+ executeUpdate);
 			if (executeUpdate == 1){
 				return endereco.getIdEndereco();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 		return 0;
