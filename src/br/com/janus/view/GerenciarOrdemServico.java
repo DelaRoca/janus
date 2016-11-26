@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,8 +32,8 @@ public class GerenciarOrdemServico extends JPanel {
 	private DefaultTableModel tabelaModeloExecucao = new DefaultTableModel();
 	private JTable tabelaExecucao;
 	
-	private ArrayList<OrdemServico> ordensAprovadas;
-	private ArrayList<OrdemServico> ordensExecutadas;
+	private ArrayList<OrdemServico> ordensAprovadas = new ArrayList<OrdemServico>();
+	private ArrayList<OrdemServico> ordensExecutadas = new ArrayList<OrdemServico>();
  
 	public GerenciarOrdemServico(){
 		setLayout(null);
@@ -76,41 +77,79 @@ public class GerenciarOrdemServico extends JPanel {
 		
 		JButton btnCancelarOSAprovados = new JButton("Cancelar OS");
 		btnCancelarOSAprovados.addActionListener(a -> {
-		//TODO Implementar
-			
-//			tabelaModeloAprovados.removeRow(LINHA); --> LINHA = selecionado da tabela Ap
+			cancelaOSAprovada();
 		});
 		btnCancelarOSAprovados.setBounds(242, 480, 105, 25);
 		add(btnCancelarOSAprovados);
 		
 		JButton btnExecutarOSAprovados = new JButton("Executar");
 		btnExecutarOSAprovados.addActionListener(a -> {
-		//TODO Implementar
-
-//			tabelaModeloAprovados.removeRow(LINHA); --> LINHA = selecionado da tabela Ap
-//			populaTabelaExecucao(); --> �ltimo comando
+			executaOrdemServico();
 		});
 		btnExecutarOSAprovados.setBounds(353, 480, 86, 25);
 		add(btnExecutarOSAprovados);
 		
 		JButton btnFinalizarOSExecucao = new JButton("Finalizar");
 		btnFinalizarOSExecucao.addActionListener(a -> {
-		//TODO Implementar
-			
-			
-//			tabelaModeloExecucao.removeRow(LINHA); --> LINHA = selecionado da tabela Ex
+			finalizaOrdemServico();
 		});
 		btnFinalizarOSExecucao.setBounds(851, 480, 86, 25);
 		add(btnFinalizarOSExecucao);
 		
 		JButton btnCancelarOsExecucao = new JButton("Cancelar OS");
 		btnCancelarOsExecucao.addActionListener(a -> {
-		//TODO Implementar
-			
-//			tabelaModeloExecucao.removeRow(LINHA); --> LINHA = selecionado da tabela Ex
+			cancelaOSExecucao();
 		});
 		btnCancelarOsExecucao.setBounds(740, 480, 105, 25);
 		add(btnCancelarOsExecucao);
+	}
+
+	private void executaOrdemServico() {
+		int linhaSelecionada = tabelaAprovados.getSelectedRow();
+		if(linhaSelecionada >= 0){
+			System.out.println("linhaSelecionada " +linhaSelecionada);
+			Integer idOrdem = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+			System.out.println("idOrdem" + idOrdem);
+			boolean executou = new OrdemServicoController().executaOrdem();
+			if(executou){
+				tabelaModeloAprovados.removeRow(linhaSelecionada);
+				populaTabelaExecucao();
+				populaTabelaAprovados();
+				JOptionPane.showMessageDialog(null, "Ordem finalizada "+idOrdem+" ... ( PENSAR MENSAGEM");
+			}else{
+				JOptionPane.showMessageDialog(null, "Não foi possível ( PENSAR MENSAGEM)");
+			}
+		}
+	}
+
+	private void finalizaOrdemServico() {
+		int linhaSelecionada = tabelaAprovados.getSelectedRow();
+		if(linhaSelecionada >= 0){
+			Integer idOrdem = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+			System.out.println("idOrdem" + idOrdem);
+			boolean finalizou = new OrdemServicoController().finalizaOrdem();
+			if(finalizou){
+				tabelaModeloAprovados.removeRow(linhaSelecionada);
+				JOptionPane.showMessageDialog(null, "Ordem finalizada "+idOrdem+" ... ( PENSAR MENSAGEM");
+			}else{
+				JOptionPane.showMessageDialog(null, "Não foi possível ( PENSAR MENSAGEM)");
+			}
+		}
+	}
+
+	private void cancelaOSAprovada() {
+		int linhaSelecionada = tabelaAprovados.getSelectedRow();
+		if(linhaSelecionada >= 0){
+			Integer idOrdem = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+			System.out.println("idOrdem" + idOrdem);
+			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdem);
+			if(cancelouOrdem){
+				tabelaModeloAprovados.removeRow(linhaSelecionada);
+				JOptionPane.showMessageDialog(null, "Ordem cancelada "+idOrdem+" ... ( PENSAR MENSAGEM");
+			}else{
+				JOptionPane.showMessageDialog(null, "Não foi possível ( PENSAR MENSAGEM");
+			}
+		}
 	}
 
 	private void criaTabelaAprovados(){
@@ -128,7 +167,7 @@ public class GerenciarOrdemServico extends JPanel {
                 }
             }
         };
-        tabelaModeloAprovados.addColumn("N�mero da OS");
+        tabelaModeloAprovados.addColumn("Número da OS");
         tabelaModeloAprovados.addColumn("Cliente");
         tabelaModeloAprovados.setNumRows(0);
 		tabelaAprovados.getTableHeader().setReorderingAllowed(false);
@@ -137,11 +176,9 @@ public class GerenciarOrdemServico extends JPanel {
 	}
 	
 	private void populaTabelaAprovados() {
-		//POPULAR TABELA
+		ordensAprovadas.clear();
 		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.APROVADO.getValor());
 		for (OrdemServico ordemServico : ordensAprovadas) {
-			System.out.println("pop. status OS Ap."+ordemServico.getStatus());
-			System.out.println("pop. cliente Ap."+ordemServico.getIdCliente());
 			Cliente cliente = new Cliente();
 			try {
 				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
@@ -149,6 +186,20 @@ public class GerenciarOrdemServico extends JPanel {
 				e.printStackTrace();
 			}
 			tabelaModeloAprovados.addRow(new Object[]{ordemServico.getIdOrdemServico(), cliente.getNome()});
+		}
+	}
+	
+	private void cancelaOSExecucao() {
+		int linhaSelecionada = tabelaExecucao.getSelectedRow();
+			if(linhaSelecionada >= 0){
+			Integer idOrdem = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
+			System.out.println("idOrdem" + idOrdem);
+			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdem);
+			if(cancelouOrdem){
+				tabelaModeloExecucao.removeRow(linhaSelecionada);
+			}else{
+				JOptionPane.showMessageDialog(null, "Não foi possível ( PENSAR MENSAGEM");
+			}
 		}
 	}
 	
@@ -167,7 +218,7 @@ public class GerenciarOrdemServico extends JPanel {
                 }
             }
         };
-        tabelaModeloExecucao.addColumn("N�mero da OS");
+        tabelaModeloExecucao.addColumn("Número da OS");
         tabelaModeloExecucao.addColumn("Cliente");
         tabelaModeloExecucao.setNumRows(0);
 		tabelaExecucao.getTableHeader().setReorderingAllowed(false);
@@ -176,16 +227,12 @@ public class GerenciarOrdemServico extends JPanel {
 	}
 	
 	private void populaTabelaExecucao(){
-		//LIMPAR TABELA POR EXECUTAR UM APROVADO
 		while (tabelaModeloAprovados.getRowCount() > 0) {
 			tabelaModeloAprovados.removeRow(0);
 		}
-		
-		//POPULAR TABELA
+		ordensExecutadas.clear();	
 		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.EXECUCAO.getValor());
 		for (OrdemServico ordemServico : ordensExecutadas) {
-			System.out.println("pop. status OS Exc."+ordemServico.getStatus());
-			System.out.println("pop. cliente Exc."+ordemServico.getIdCliente());
 			Cliente cliente = new Cliente();
 			try {
 				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());

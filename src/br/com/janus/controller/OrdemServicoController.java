@@ -157,7 +157,7 @@ public class OrdemServicoController {
 					System.out.println(result.getInt("idCliente"));
 					os.setIdOrdemServico(result.getInt("idordemDeServico"));
 					os.setIdCliente(result.getInt("idCliente"));
-//TODO necessários?	os.setIdVeiculo(result.getInt("idVeiculo"));
+//TODO necessï¿½rios?	os.setIdVeiculo(result.getInt("idVeiculo"));
 //					os.setData(result.getString("data"));
 					os.setStatus(result.getInt("status"));
 					os.setTotal(result.getString("total"));
@@ -170,6 +170,21 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 		return ordens;
+	}
+
+	public boolean cancelaOrdemServico(Integer idOrdem) {
+		// TODO implementar update
+		return true;
+	}
+
+	public boolean finalizaOrdem() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	public boolean executaOrdem() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }
