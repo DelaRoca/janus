@@ -15,6 +15,7 @@ import br.com.janus.model.OrdemServico;
 import br.com.janus.model.OsProdutos;
 import br.com.janus.model.OsServicos;
 import br.com.janus.model.Produto;
+import br.com.janus.model.Servico;
 import br.com.janus.view.GerenciadorDeInterface;
 import br.com.janus.view.Principal;
 
@@ -107,16 +108,16 @@ public class OrdemServicoController {
 		return null;
 	}
 
-	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemServico) throws SQLException {
+	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsProdutos> produtos = new ArrayList<OsProdutos>();
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idOrdemDeServico = ?;");
-		st.setInt(1, idOrdemServico);
+		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " +result == null);
 		if (result != null){
 			while(result.next()){
 				OsProdutos os = new OsProdutos();
-				os.setIdProduto(result.getInt("idProduto"));
+				os.setIdProduto(result.getInt("idproduto"));
 				os.setQuantidade(result.getInt("quantidade"));
 				produtos.add(os);
 			}
@@ -124,24 +125,25 @@ public class OrdemServicoController {
 		return produtos;
 	}
 
-	public ArrayList<OsServicos> buscaServicosOrdemServico(Integer idOrdemServico) throws SQLException {
+	public ArrayList<OsServicos> buscaServicosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsServicos> servicos = new ArrayList<OsServicos>();
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osservico where idOrdemDeServico = ?;");
-		st.setInt(1, idOrdemServico);
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osservico where idordemdeservico = ?;");
+		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " +result == null);
 		if (result != null){
 			while(result.next()){
 				OsServicos os = new OsServicos();
-				os.setIdServico(result.getInt("idServico"));
+				os.setIdServico(result.getInt("idservico"));
 				os.setQuantidade(result.getInt("quantidade"));
-				os.setQtdPorHora(result.getInt("qtdPorHora"));
+				os.setQtdPorHora(result.getInt("qtdporhora"));
 				servicos.add(os);
 			}
 		}
 		return servicos;
 	}
 
+	//TODO (arrumar a lógica do "status" -> não tem mais variável status
 	public ArrayList<OrdemServico> buscaOrdensServico(Integer status) {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 		try{
@@ -152,14 +154,15 @@ public class OrdemServicoController {
 				System.out.println("st.getResultSet " + st.getResultSet());
 				while(result.next()){
 					OrdemServico os = new OrdemServico();
-					System.out.println("next aqui no busca ordem pelo status");
-					System.out.println(result.getInt("idordemDeServico"));
-					System.out.println(result.getInt("idCliente"));
-					os.setIdOrdemServico(result.getInt("idordemDeServico"));
-					os.setIdCliente(result.getInt("idCliente"));
-//TODO necessï¿½rios?	os.setIdVeiculo(result.getInt("idVeiculo"));
-//					os.setData(result.getString("data"));
-					os.setStatus(result.getInt("status"));
+					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
+					os.setIdCliente(result.getInt("idcliente"));
+					os.setIdVeiculo(result.getInt("idveiculo"));
+					os.setEstaExpirado(result.getString("estaexpirado") == "1" ? true:false);
+					os.setDataCriacao(result.getString("datacriacao"));
+					os.setDataAprovado(result.getString("dataaprovado"));
+					os.setDataExecucao(result.getString("dataexecucao"));
+					os.setDataFinalizado(result.getString("datafinalizado"));
+					os.setDataCancelado(result.getString("datacancelado"));
 					os.setTotal(result.getString("total"));
 					ordens.add(os);
 				}
@@ -172,19 +175,45 @@ public class OrdemServicoController {
 		return ordens;
 	}
 
-	public boolean cancelaOrdemServico(Integer idOrdem) {
-		// TODO implementar update
-		return true;
+	public boolean executaOrdem(Integer idOrdemDeServico, String dataExecucao) {
+	    try {
+	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico " +
+	                "set dataexecucao= ? " +
+	                "where idordemdeservico = '"+idOrdemDeServico+"'");
+	    	st.setString(1,dataExecucao);
+			st.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
-
-	public boolean finalizaOrdem() {
-		// TODO Auto-generated method stub
-		return true;
+	
+	public boolean finalizaOrdem(Integer idOrdemDeServico, String dataFinalizado) {
+	    try {
+	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico " +
+	                "set datafinalizado= ? " +
+	                "where idordemdeservico = '"+idOrdemDeServico+"'");
+	    	st.setString(1,dataFinalizado);
+			st.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
-
-	public boolean executaOrdem() {
-		// TODO Auto-generated method stub
-		return true;
+	
+	public boolean cancelaOrdemServico(Integer idOrdemDeServico, String dataCancelado) {
+	    try {
+	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico " +
+	                "set datacancelado= ? " +
+	                "where idordemdeservico = '"+idOrdemDeServico+"'");
+	    	st.setString(1,dataCancelado);
+			st.execute();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
-
 }

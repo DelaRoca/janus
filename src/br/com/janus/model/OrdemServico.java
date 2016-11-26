@@ -2,17 +2,21 @@ package br.com.janus.model;
 
 public class OrdemServico {
 
-	public Integer idOrdemServico;
+	public Integer idOrdemDeServico;
 	public Integer idCliente;
 	public Integer idVeiculo;
-	public Integer status;
 	public String total;
-	public String data;
-	public Integer getIdOrdemServico() {
-		return idOrdemServico;
+	public Boolean estaExpirado;
+	public String dataCriacao;
+	public String dataAprovado;
+	public String dataExecucao;
+	public String dataFinalizado;
+	public String dataCancelado;
+	public Integer getIdOrdemDeServico() {
+		return idOrdemDeServico;
 	}
-	public void setIdOrdemServico(Integer idOrdemServico) {
-		this.idOrdemServico = idOrdemServico;
+	public void setIdOrdemDeServico(Integer idOrdemDeServico) {
+		this.idOrdemDeServico = idOrdemDeServico;
 	}
 	public Integer getIdCliente() {
 		return idCliente;
@@ -26,25 +30,46 @@ public class OrdemServico {
 	public void setIdVeiculo(Integer idVeiculo) {
 		this.idVeiculo = idVeiculo;
 	}
-	public Integer getStatus() {
-		return status;
-	}
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
 	public String getTotal() {
 		return total;
 	}
 	public void setTotal(String total) {
 		this.total = total;
 	}
-	public String getData() {
-		return data;
+	public Boolean getEstaExpirado() {
+		return estaExpirado;
 	}
-	public void setData(String data) {
-		this.data = data;
+	public void setEstaExpirado(Boolean estaExpirado) {
+		this.estaExpirado = estaExpirado;
 	}
-	
-	
-	
+	public String getDataCriacao() {
+		return dataCriacao;
+	}
+	public void setDataCriacao(String dataCriacao) {
+		this.dataCriacao = dataCriacao;
+	}
+	public String getDataAprovado() {
+		return dataAprovado;
+	}
+	public void setDataAprovado(String dataAprovado) {
+		this.dataAprovado = dataAprovado;
+	}
+	public String getDataExecucao() {
+		return dataExecucao;
+	}
+	public void setDataExecucao(String dataExecucao) {
+		this.dataExecucao = dataExecucao;
+	}
+	public String getDataFinalizado() {
+		return dataFinalizado;
+	}
+	public void setDataFinalizado(String dataFinalizado) {
+		this.dataFinalizado = dataFinalizado;
+	}
+	public String getDataCancelado() {
+		return dataCancelado;
+	}
+	public void setDataCancelado(String dataCancelado) {
+		this.dataCancelado = dataCancelado;
+	}	
 }
