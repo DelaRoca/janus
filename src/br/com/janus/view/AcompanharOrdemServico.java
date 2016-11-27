@@ -64,7 +64,7 @@ public class AcompanharOrdemServico extends JPanel {
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
 
-		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Serviço");
+		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Serviï¿½o");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -161,7 +161,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("Veículo:");
+		JLabel lblVeiculo = new JLabel("Veï¿½culo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -180,7 +180,7 @@ public class AcompanharOrdemServico extends JPanel {
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		JLabel lblServico = new JLabel("Serviços:");
+		JLabel lblServico = new JLabel("Serviï¿½os:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
@@ -203,7 +203,7 @@ public class AcompanharOrdemServico extends JPanel {
 		
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			//TODO implementar
+			salvaOrdemServico();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -222,16 +222,14 @@ public class AcompanharOrdemServico extends JPanel {
 
 		comboBoxStatus = new JComboBox<String>();
 		comboBoxStatus.removeAllItems();
-//		comboBoxStatus.addItem(StatusENUM.ABERTO.getNome());
-//		comboBoxStatus.addItem(StatusENUM.APROVADO.getNome());
-//		comboBoxStatus.addItem(StatusENUM.EXECUCAO.getNome());
-//		comboBoxStatus.addItem(StatusENUM.FINALIZADO.getNome());
-//TODO (atualizar)		comboBoxStatus.addItem(StatusENUM.CANCELADO.getNome());
-		comboBoxStatus.addItem("");
-		comboBoxStatus.setSelectedItem("");
+		comboBoxStatus.addItem("Aberto");
+		comboBoxStatus.addItem("Aprovado");
+		comboBoxStatus.addItem("Execucao");
+		comboBoxStatus.addItem("Finalizado");
+		comboBoxStatus.setSelectedIndex(0);
 		comboBoxStatus.setBounds(85, 106, 225, 25);
 		add(comboBoxStatus);
-
+		
 		//if status desativado, bloquear combobox e todos os outros campos...
 		
 		JLabel lblNDaOs = new JLabel("N\u00BA da OS:");
@@ -251,6 +249,54 @@ public class AcompanharOrdemServico extends JPanel {
 		});
 		btnBuscar.setBounds(221, 70, 90, 25);
 		add(btnBuscar);
+	}
+	
+	private void salvaOrdemServico() {
+		OrdemServico ordemServico =constroiOrdemServico();
+		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();
+		ArrayList<OsServicos> osServicos = constroiServicos();
+		ArrayList<OsProdutos> osProdutos = constroiProdutos();
+		new OrdemServicoController().salva(ordemServico,osServicos,osProdutos, estadoSelecionado.toUpperCase(), this.textFieldData.getText());
+		
+	}
+	
+	private OrdemServico constroiOrdemServico() {
+		OrdemServico ordemServico = new OrdemServico();
+		ordemServico.setTotal(this.textFieldTotal.getText());
+		if(clienteFisicoAtual.getIdCliente() != null){
+			ordemServico.setIdCliente(clienteFisicoAtual.getIdCliente());
+		}else{
+			ordemServico.setIdCliente(clienteJuridicoAtual.getIdCliente());
+		}
+		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
+		return ordemServico;
+	}
+	
+	private ArrayList<OsProdutos> constroiProdutos() {
+		 ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
+		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+				OsProdutos osProduto = new OsProdutos();
+				osProduto.setIdProduto(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 5).toString()));
+				osProduto.setQuantidade(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 3).toString()));
+				osProdutos.add(osProduto);
+			}
+		}
+		return osProdutos;
+	}
+
+	private ArrayList<OsServicos> constroiServicos() {
+		ArrayList<OsServicos> osServicos = new ArrayList<OsServicos>();
+		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+				OsServicos osServico = new OsServicos();
+				osServico.setQtdPorHora(Integer.parseInt(tabelaModeloServico.getValueAt(i, 3).toString()));
+				osServico.setQuantidade(Integer.parseInt(tabelaModeloServico.getValueAt(i, 4).toString()));
+				osServico.setIdServico(Integer.parseInt(tabelaModeloServico.getValueAt(i, 6).toString()));
+				osServicos.add(osServico);
+			}
+		}
+		return osServicos;
 	}
 	
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
@@ -298,8 +344,6 @@ public class AcompanharOrdemServico extends JPanel {
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
-
-	
 	
 	private DefaultTableModel tabelaModeloServico = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
@@ -366,17 +410,19 @@ public class AcompanharOrdemServico extends JPanel {
 	
 
 	private void preencheDados() {
-		textFieldData.setText(ordemServico.getDataCriacao());
-		textFieldTotal.setText(ordemServico.getTotal());
-		
-		if (clienteJuridicoAtual != null) {
-			textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
-			textFieldNome.setText(clienteJuridicoAtual.getNome());
-			textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
-		} else {
-			textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
-			textFieldNome.setText(clienteFisicoAtual.getNome());
-			textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
+		if(ordemServico != null){
+			textFieldData.setText(ordemServico.getDataCriacao());
+			textFieldTotal.setText(ordemServico.getTotal());
+			
+			if (clienteJuridicoAtual != null) {
+				textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
+				textFieldNome.setText(clienteJuridicoAtual.getNome());
+				textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
+			} else {
+				textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
+				textFieldNome.setText(clienteFisicoAtual.getNome());
+				textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
+			}
 		}
 		
 		textFieldPlaca.setText(veiculoAtual.getPlaca());
@@ -433,7 +479,6 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 
 	public void preencheValorTotalOrdemServico() {
-		//Metodo Calcula Total (criar)
         valorDoubleTotal = 0.0;
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
@@ -459,11 +504,9 @@ public class AcompanharOrdemServico extends JPanel {
 		String valorStrTotal = valorDoubleTotal.toString();
 		valorStrTotal = valorStrTotal.replace(".", ",");
 		textFieldTotal.setText(valorStrTotal);
-		//Acaba Metodo Calcula Total
 	}
 
 	private void populaTabelaProduto(ArrayList<OsProdutos> osProdutos) {
-		//LIMPAR TABELA
 		while (tabelaModeloProduto.getRowCount() > 0) {
 			tabelaModeloProduto.removeRow(0);
 		}
@@ -483,7 +526,6 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 
 	private void populaTabelaServico(ArrayList<OsServicos> osServicos) {
-//		//LIMPAR TABELA
 		while (tabelaModeloServico.getRowCount() > 0) {
 			tabelaModeloServico.removeRow(0);
 		}
