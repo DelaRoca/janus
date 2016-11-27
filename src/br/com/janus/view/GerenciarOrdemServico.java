@@ -127,12 +127,14 @@ public class GerenciarOrdemServico extends JPanel {
 	}
 	
 	private void populaTabelaAprovados() {
-		ordensAprovadas.clear();
-//TODO		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.APROVADO.getValor());
+		limpaTabelaAprovados();
+		String buscaOrdens = "aprovado";
+		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(buscaOrdens);
 		for (OrdemServico ordemServico : ordensAprovadas) {
 			Cliente cliente = new Cliente();
+			int idCliente = ordemServico.getIdCliente();
 			try {
-				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
+				cliente = new ClienteController().buscaDadosclienteId(idCliente);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -163,20 +165,30 @@ public class GerenciarOrdemServico extends JPanel {
 		tabelaExecucao.getColumnModel().getColumn(1).setPreferredWidth(273);
 	}
 	
+	private void limpaTabelaAprovados(){
+		ordensAprovadas.clear();
+	}
+	
 	private void populaTabelaExecucao(){
-		while (tabelaModeloExecucao.getRowCount() > 0) {
-			tabelaModeloExecucao.removeRow(0);
-		}
-		ordensExecutadas.clear();	
-//TODO		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(StatusENUM.EXECUCAO.getValor());
+		limpaTabelaExecucao();
+		String buscaOrdens = "execucao";
+		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(buscaOrdens);
 		for (OrdemServico ordemServico : ordensExecutadas) {
 			Cliente cliente = new Cliente();
+			int idCliente = ordemServico.getIdCliente();
 			try {
-				cliente = new ClienteController().buscaDadosclienteId(ordemServico.getIdCliente());
+				cliente = new ClienteController().buscaDadosclienteId(idCliente);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			tabelaModeloExecucao.addRow(new Object[]{ordemServico.getIdOrdemDeServico(), cliente.getNome()});
+		}
+	}
+	
+	private void limpaTabelaExecucao(){
+		ordensExecutadas.clear();
+		while (tabelaModeloExecucao.getRowCount() > 0) {
+			tabelaModeloExecucao.removeRow(0);
 		}
 	}
 

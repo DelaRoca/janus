@@ -144,11 +144,20 @@ public class OrdemServicoController {
 	}
 
 	//TODO (arrumar a lógica do "status" -> não tem mais variável status
-	public ArrayList<OrdemServico> buscaOrdensServico(Integer status) {
+	public ArrayList<OrdemServico> buscaOrdensServico(String estado) {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
+		PreparedStatement st  = null;
 		try{
-			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where status = ?;");
-			st.setInt(1, status);
+			switch (estado) {
+			case "aprovado":
+				st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where dataaprovado is not null and dataexecucao is null and datacancelado is null;");
+				break;
+			case "execucao":
+				st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where dataexecucao is not null and datafinalizado is null and datacancelado is null;");
+				break;
+			default:
+				return ordens;
+			}
 			ResultSet result = st.executeQuery();
 			if (result != null){
 				System.out.println("st.getResultSet " + st.getResultSet());
