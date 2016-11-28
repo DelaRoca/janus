@@ -128,8 +128,7 @@ public class GerenciarOrdemServico extends JPanel {
 	
 	private void populaTabelaAprovados() {
 		limpaTabelaAprovados();
-		String buscaOrdens = "aprovado";
-		ordensAprovadas = new OrdemServicoController().buscaOrdensServico(buscaOrdens);
+		ordensAprovadas = new OrdemServicoController().buscaOrdensServicoAprovadas();
 		for (OrdemServico ordemServico : ordensAprovadas) {
 			Cliente cliente = new Cliente();
 			int idCliente = ordemServico.getIdCliente();
@@ -171,8 +170,7 @@ public class GerenciarOrdemServico extends JPanel {
 	
 	private void populaTabelaExecucao(){
 		limpaTabelaExecucao();
-		String buscaOrdens = "execucao";
-		ordensExecutadas = new OrdemServicoController().buscaOrdensServico(buscaOrdens);
+		ordensExecutadas = new OrdemServicoController().buscaOrdensServicoExecutadas();
 		for (OrdemServico ordemServico : ordensExecutadas) {
 			Cliente cliente = new Cliente();
 			int idCliente = ordemServico.getIdCliente();
@@ -214,7 +212,7 @@ public class GerenciarOrdemServico extends JPanel {
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
 			String dataExecucao = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean executou = new OrdemServicoController().executaOrdem(idOrdemDeServico, dataExecucao);
+			boolean executou = new OrdemServicoController().executaOrdemServico(idOrdemDeServico, dataExecucao);
 			if(executou){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
 				populaTabelaExecucao();
@@ -227,8 +225,11 @@ public class GerenciarOrdemServico extends JPanel {
 		}
 	}
 	
+	private int retornaLinhaSelecionadaExecucao() {
+		return tabelaExecucao.getSelectedRow();
+	}
 	private void cancelaOSExecucao() {
-		int linhaSelecionada = tabelaExecucao.getSelectedRow();
+		int linhaSelecionada = retornaLinhaSelecionadaExecucao();
 			if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
 			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
@@ -249,7 +250,7 @@ public class GerenciarOrdemServico extends JPanel {
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
 			String dataFinalizado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean finalizou = new OrdemServicoController().finalizaOrdem(idOrdemDeServico, dataFinalizado);
+			boolean finalizou = new OrdemServicoController().finalizaOrdemServico(idOrdemDeServico, dataFinalizado);
 			if(finalizou){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
 				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdemDeServico + " finalizado com sucesso");

@@ -40,72 +40,8 @@ public class OrdemServicoController {
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		JOptionPane.showMessageDialog(null, "Ordem de serviï¿½o de nï¿½mero " + idOrdemServico + " criada com sucesso!");
+		JOptionPane.showMessageDialog(null, "Ordem de serviço de número " + idOrdemServico + " criada com sucesso!");
 		GerenciadorDeInterface.setPanel(new Principal());
-	}
-
-	public boolean salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String estado, String data) {
-		PreparedStatement st = null;
-		System.out.println("totall" + ordemServico.getTotal());
-		try{
-			switch (estado) {
-			case "EXECUCAO":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"update ordemdeservico"+
-						"set total = ?, dataexecucao = ?, datacriacao = NULL, dataaprovado = NULL, datafinalizado = NULL, datacancelado = NULL"+
-					    "where idordemservico = ?");
-				st.setString(1, ordemServico.getTotal());
-				st.setString(2, data);
-				st.setInt(3,ordemServico.getIdOrdemDeServico());
-				break;
-			case "CANCELADO":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"update ordemdeservico"+
-						"set total = ?, dataexecucao = NULL, datacriacao = NULL, dataaprovado = NULL, datafinalizado = NULL, datacancelado = ?"+
-					    "where idordemservico = ?");
-				st.setString(1, ordemServico.getTotal());
-				st.setString(2, data);
-				st.setInt(3,ordemServico.getIdOrdemDeServico());
-				break;
-			case "FINALIZADO":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"update ordemdeservico"+
-						"set total = ?, dataexecucao = NULL, datacriacao = NULL, dataaprovado = NULL, datafinalizado = ?, datacancelado = NULL"+
-					    "where idordemservico = ?");
-				st.setString(1, ordemServico.getTotal());
-				st.setString(2, data);
-				st.setInt(3,ordemServico.getIdOrdemDeServico());
-				break;
-			case "APROVADO":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"update ordemdeservico"+
-						"set total = ?, dataexecucao = NULL, datacriacao = NULL, dataaprovado = ?, datafinalizado = NULL, datacancelado = NULL"+
-					    "where idordemservico = ?");
-				st.setString(1, ordemServico.getTotal());
-				st.setString(2, data);
-				st.setInt(3,ordemServico.getIdOrdemDeServico());
-				break;
-			case "ABERTO":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"update ordemdeservico"+
-						"set total = ?, dataexecucao = NULL, datacriacao = ?, dataaprovado = NULL, datafinalizado = NULL, datacancelado = NULL"+
-					    "where idordemservico = ?");
-				st.setString(1, ordemServico.getTotal());
-				st.setString(2, data);
-				st.setInt(3,ordemServico.getIdOrdemDeServico());
-				break;	
-			default:
-				return false;
-			}
-			st.executeUpdate();
-			salvaOsProdutos(osProdutos);
-			salvaOsServicos(osServicos);
-			return true;
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-
 	}
 
 	private void salvaOsServicos(ArrayList<OsServicos> osServicos) {
@@ -151,7 +87,7 @@ public class OrdemServicoController {
 			ResultSet result = st.executeQuery();
 			if (result != null) {
 				OrdemServico os = new OrdemServico();
-				while (result.next()) {
+//				while (result.next()) { TODO acho que esse "while" está causando falha, e nem é necessário por retornar somente uma ordem.
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
 					os.setIdCliente(result.getInt("idcliente"));
 					os.setIdVeiculo(result.getInt("idveiculo"));
@@ -163,7 +99,7 @@ public class OrdemServicoController {
 					os.setDataCancelado(result.getString("datacancelado"));
 					os.setTotal(result.getString("total"));
 					return os;
-				}
+//				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -208,23 +144,11 @@ public class OrdemServicoController {
 		return servicos;
 	}
 
-	// TODO (arrumar a lï¿½gica do "status" -> nï¿½o tem mais variï¿½vel status
-	public ArrayList<OrdemServico> buscaOrdensServico(String estado) {
+	public ArrayList<OrdemServico> buscaOrdensServicoAprovadas() {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
-		PreparedStatement st = null;
 		try {
-			switch (estado) {
-			case "aprovado":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"select * from ordemdeservico where dataaprovado is not null and dataexecucao is null and datacancelado is null;");
-				break;
-			case "execucao":
-				st = (PreparedStatement) conexao.prepareStatement(
-						"select * from ordemdeservico where dataexecucao is not null and datafinalizado is null and datacancelado is null;");
-				break;
-			default:
-				return ordens;
-			}
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+				"select * from ordemdeservico where dataaprovado is not null and dataexecucao is null and datacancelado is null;");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
 				System.out.println("st.getResultSet " + st.getResultSet());
@@ -250,8 +174,56 @@ public class OrdemServicoController {
 		}
 		return ordens;
 	}
+	
+	public ArrayList<OrdemServico> buscaOrdensServicoExecutadas() {
+		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 
-	public boolean executaOrdem(Integer idOrdemDeServico, String dataExecucao) {
+		try {
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+				"select * from ordemdeservico where dataexecucao is not null and datafinalizado is null and datacancelado is null;");
+			ResultSet result = st.executeQuery();
+			if (result != null) {
+				System.out.println("st.getResultSet " + st.getResultSet());
+				while (result.next()) {
+					OrdemServico os = new OrdemServico();
+					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
+					os.setIdCliente(result.getInt("idcliente"));
+					os.setIdVeiculo(result.getInt("idveiculo"));
+					os.setEstaExpirado(result.getString("estaexpirado") == "1" ? true : false);
+					os.setDataCriacao(result.getString("datacriacao"));
+					os.setDataAprovado(result.getString("dataaprovado"));
+					os.setDataExecucao(result.getString("dataexecucao"));
+					os.setDataFinalizado(result.getString("datafinalizado"));
+					os.setDataCancelado(result.getString("datacancelado"));
+					os.setTotal(result.getString("total"));
+					ordens.add(os);
+				}
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			e.printStackTrace();
+		}
+		return ordens;
+	}
+	
+	public boolean aprovaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String dataAprovado) {
+		PreparedStatement st = null;
+		try{
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ?, dataaprovado = ? "+"where idordemservico = ?");
+			st.setString(1, ordemServico.getTotal());
+			st.setString(2, dataAprovado);
+			st.setInt(3,ordemServico.getIdOrdemDeServico());
+			st.executeUpdate();
+			salvaOsProdutos(osProdutos);
+			salvaOsServicos(osServicos);
+			return true;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean executaOrdemServico(Integer idOrdemDeServico, String dataExecucao) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico "
 					+ "set dataexecucao= ? " + "where idordemdeservico = '" + idOrdemDeServico + "'");
@@ -264,15 +236,10 @@ public class OrdemServicoController {
 		return false;
 	}
 
-	/*
-	 * Estado Finalizado String dataFinalizado -> BD dataFinalizado != null AND
-	 * dataCancelado == null if (dataExecucao != null && dataFinalizado == null
-	 * && dataCancelado == null) dataFinalizado = dataAtual();
-	 */
-	public boolean finalizaOrdem(Integer idOrdemDeServico, String dataFinalizado) {
+	public boolean finalizaOrdemServico(Integer idOrdemDeServico, String dataFinalizado) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-					"update ordemdeservico " + "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL"
+					"update ordemdeservico " + "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL" //TODO (tirar isso de setar NULLS, isso é errado e a prof vai chiar)
 							+ "where idordemdeservico = '" + idOrdemDeServico + "'");
 			st.setString(1, dataFinalizado);
 			st.execute();
@@ -296,4 +263,19 @@ public class OrdemServicoController {
 		return false;
 	}
 
+	public boolean atualizaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
+		PreparedStatement st = null;
+		try{
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ? "+"where idordemservico = ?");
+			st.setString(1, ordemServico.getTotal());
+			st.setInt(2,ordemServico.getIdOrdemDeServico());
+			st.executeUpdate();
+			salvaOsProdutos(osProdutos);
+			salvaOsServicos(osServicos);
+			return true;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

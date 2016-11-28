@@ -38,7 +38,7 @@ public class AcompanharOrdemServico extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldOrdemServico;
-	private JTextField textFieldData;
+	private JTextField textFieldDataCriacao;
 	private JComboBox<String> comboBoxStatus;
 	private JTextField textFieldCpfCnpj;
 	private JTextField textFieldNome;
@@ -47,6 +47,8 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textFieldModelo;
 	private JTextField textFieldAno;
 	private JTextField textFieldTotal;
+	private JTextField textFieldStatus;
+	private JButton btnSalvar;
 	
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
@@ -136,11 +138,11 @@ public class AcompanharOrdemServico extends JPanel {
 		lblData.setBounds(532, 70, 100, 25);
 		add(lblData);
 
-		textFieldData = new JFormattedTextField(new MaskFormatter("##/##/####"));
-		textFieldData.setEditable(false);
-		textFieldData.setBounds(644, 70, 100, 25);
-		add(textFieldData);
-		textFieldData.setColumns(10);
+		textFieldDataCriacao = new JFormattedTextField(new MaskFormatter("##/##/####"));
+		textFieldDataCriacao.setEditable(false);
+		textFieldDataCriacao.setBounds(644, 70, 100, 25);
+		add(textFieldDataCriacao);
+		textFieldDataCriacao.setColumns(10);
 
 		JLabel lblCliente = new JLabel("Cliente:");
 		lblCliente.setBounds(46, 142, 46, 14);
@@ -195,16 +197,18 @@ public class AcompanharOrdemServico extends JPanel {
 		lblTotal.setBounds(422, 525, 46, 25);
 		add(lblTotal);
 
-		
 		textFieldTotal = new JTextField();
 		textFieldTotal.setEditable(false);
 		textFieldTotal.setBounds(478, 525, 86, 25);
 		add(textFieldTotal);
 		textFieldTotal.setColumns(10);
 		
-		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			salvaOrdemServico();
+			if (comboBoxStatus.equals("Aberto"))
+				aprovaOrdemServico();
+			else if (comboBoxStatus.equals("Aprovado") || comboBoxStatus.equals("Execucao") )
+				atualizaOrdemServico();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -221,6 +225,12 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
+		textFieldStatus = new JTextField();
+		textFieldStatus.setEditable(false);
+		textFieldStatus.setBounds(644, 70, 100, 25);
+		add(textFieldStatus);
+		textFieldStatus.setColumns(10);
+		
 		comboBoxStatus = new JComboBox<String>();
 		comboBoxStatus.removeAllItems();
 		comboBoxStatus.addItem("Aberto");
@@ -251,13 +261,26 @@ public class AcompanharOrdemServico extends JPanel {
 		add(btnBuscar);
 	}
 	
-	private void salvaOrdemServico() {
-		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();
+	private void aprovaOrdemServico() {
+//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no método (sim faz, else é pra ser bloqueado o salvar e comboBox, e permitir somente atualização dos OsServicos e OsProdutos)
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
-		boolean salvou = new OrdemServicoController().salva(ordemServico,osServicos,osProdutos, estadoSelecionado.toUpperCase(), this.textFieldData.getText());
+		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
 		
 		if(salvou){
+			JOptionPane.showMessageDialog(null, "Ordem de servico salva com sucesso.. ( MUDAR MENSAGEM)");
+		}else{
+			JOptionPane.showMessageDialog(null, "NÃ£o foi possÃ­vel salvar a ordem de serviÃ§o.. ( MUDAR MENSAGEM)");
+		}
+	}
+	
+	private void atualizaOrdemServico() {
+//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no método (sim faz, else é pra ser bloqueado o salvar e comboBox, e permitir somente atualização dos OsServicos e OsProdutos)
+		ArrayList<OsServicos> osServicos = constroiServicos();
+		ArrayList<OsProdutos> osProdutos = constroiProdutos();
+		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
+		
+		if(atualizou){
 			JOptionPane.showMessageDialog(null, "Ordem de servico salva com sucesso.. ( MUDAR MENSAGEM)");
 		}else{
 			JOptionPane.showMessageDialog(null, "NÃ£o foi possÃ­vel salvar a ordem de serviÃ§o.. ( MUDAR MENSAGEM)");
@@ -402,7 +425,7 @@ public class AcompanharOrdemServico extends JPanel {
 
 	private void preencheDados() {
 		if(ordemServico != null){
-			textFieldData.setText(ordemServico.getDataCriacao());
+			textFieldDataCriacao.setText(ordemServico.getDataCriacao());
 			textFieldTotal.setText(ordemServico.getTotal());
 			
 			if (clienteJuridicoAtual != null) {
@@ -419,35 +442,33 @@ public class AcompanharOrdemServico extends JPanel {
 			textFieldAno.setText(veiculoAtual.getAno());
 			
 			if(ordemServico.getEstaExpirado()){
-				JLabel lblExpirado = new JLabel("Expirado!");
-				lblExpirado.setForeground(Color.RED);
-				lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
-				lblExpirado.setBounds(325, 106, 106, 25);
-				add(lblExpirado);
-				bloqueiaCampos();
+				textFieldStatus.setText("Expirado!");
+				textFieldStatus.setForeground(Color.RED);
+					bloqueiaCampos();
 			}else{
-				setaEstadoOrdemServico();
+				informaStatusOrdemServico();
 			}
 		}
 
 	}
 
-	private void setaEstadoOrdemServico() {
+	private void informaStatusOrdemServico() {
 		if(ordemServico.getDataAprovado() != null){
-			comboBoxStatus.setSelectedIndex(1);
-		}else if (ordemServico.getDataCancelado()!= null ){
-			comboBoxStatus.setSelectedIndex(4);
+			textFieldStatus.setText("Aprovado");
+		}else if (ordemServico.getDataCancelado()!= null){
+			textFieldStatus.setText("Cancelado");
 		}else if( ordemServico.getDataCriacao() != null){
-			comboBoxStatus.setSelectedIndex(0);
+			textFieldStatus.setText("Em Aberto");
 		}else if ( ordemServico.getDataExecucao() != null){
-			comboBoxStatus.setSelectedIndex(2);
+			textFieldStatus.setText("Em Execução");
 		}else if ( ordemServico.getDataFinalizado() != null){
-			comboBoxStatus.setSelectedIndex(3);
+			textFieldStatus.setText("Finalizado");
 		}
 	}
 
 	private void bloqueiaCampos() {
 		// TODO bloquear todos os campos
+		btnSalvar.setEnabled(false);
 		
 	}
 
