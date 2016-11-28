@@ -3,7 +3,11 @@ package br.com.janus.controller;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JOptionPane;
 
@@ -91,7 +95,7 @@ public class OrdemServicoController {
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
 					os.setIdCliente(result.getInt("idcliente"));
 					os.setIdVeiculo(result.getInt("idveiculo"));
-					os.setEstaExpirado(result.getString("estaexpirado") == "0" ? false : true);
+					os.setEstaExpirado(result.getInt("estaexpirado") == 0 ? false : true);
 					os.setDataCriacao(result.getString("datacriacao"));
 					os.setDataAprovado(result.getString("dataaprovado"));
 					os.setDataExecucao(result.getString("dataexecucao"));
@@ -209,7 +213,7 @@ public class OrdemServicoController {
 	public boolean aprovaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String dataAprovado) {
 		PreparedStatement st = null;
 		try{
-			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ?, dataaprovado = ? "+"where idordemservico = ?");
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ?, dataaprovado = ? "+"where idordemdeservico = ?");
 			st.setString(1, ordemServico.getTotal());
 			st.setString(2, dataAprovado);
 			st.setInt(3,ordemServico.getIdOrdemDeServico());
@@ -239,8 +243,8 @@ public class OrdemServicoController {
 	public boolean finalizaOrdemServico(Integer idOrdemDeServico, String dataFinalizado) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-					"update ordemdeservico " + "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL" //TODO (tirar isso de setar NULLS, isso � errado e a prof vai chiar)
-							+ "where idordemdeservico = '" + idOrdemDeServico + "'");
+					"update ordemdeservico " + "set datafinalizado= ? "
+			+ "where idordemdeservico = '" + idOrdemDeServico + "'");
 			st.setString(1, dataFinalizado);
 			st.execute();
 			return true;
@@ -266,7 +270,8 @@ public class OrdemServicoController {
 	public boolean atualizaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
 		PreparedStatement st = null;
 		try{
-			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ? "+"where idordemservico = ?");
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+
+															  "set total = ? "+"where idordemdeservico = ?");
 			st.setString(1, ordemServico.getTotal());
 			st.setInt(2,ordemServico.getIdOrdemDeServico());
 			st.executeUpdate();
@@ -278,4 +283,70 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
+
+	public void expiraOrdensServico() {
+		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
+		try {
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+				"select * from ordemdeservico where estaexpirado = 0;");
+			ResultSet result = st.executeQuery();
+			if (result != null) {
+				System.out.println("st.getResultSet " + st.getResultSet());
+				while (result.next()) {
+					OrdemServico os = new OrdemServico();
+					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
+					os.setIdCliente(result.getInt("idcliente"));
+					os.setIdVeiculo(result.getInt("idveiculo"));
+					os.setEstaExpirado(result.getString("estaexpirado") == "1" ? true : false);
+					os.setDataCriacao(result.getString("datacriacao"));
+					os.setDataAprovado(result.getString("dataaprovado"));
+					os.setDataExecucao(result.getString("dataexecucao"));
+					os.setDataFinalizado(result.getString("datafinalizado"));
+					os.setDataCancelado(result.getString("datacancelado"));
+					os.setTotal(result.getString("total"));
+					ordens.add(os);
+				}
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			e.printStackTrace();
+		}
+		
+		verificaExpirou(ordens);
+	}
+
+	private void verificaExpirou(ArrayList<OrdemServico> ordens) {
+		try{
+			// TODO Auto-generated method stub
+			for (OrdemServico ordemServico : ordens) {
+				Calendar agora = Calendar.getInstance();
+				agora.setTime(new Date());//data maior
+				
+				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+				Calendar dataCriacao = Calendar.getInstance();
+				dataCriacao.setTime(format.parse(ordemServico.getDataCriacao()));
+				agora.add(Calendar.DATE, - dataCriacao.get(Calendar.DAY_OF_MONTH));
+				if ( agora.get(Calendar.DAY_OF_MONTH) > 15){
+					ordemServico.setEstaExpirado(true);
+					new OrdemServicoController().expiraOrdemServico(ordemServico.getIdOrdemDeServico());
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void expiraOrdemServico(Integer idOrdemDeServico) {
+		try {
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+					"update ordemdeservico " + 
+				    "set estaexpirado=1" +
+				    "where idordemdeservico = ?;");
+			st.setInt(1, idOrdemDeServico);
+			st.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

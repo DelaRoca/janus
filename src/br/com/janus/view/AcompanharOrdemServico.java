@@ -2,8 +2,12 @@ package br.com.janus.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -64,10 +68,6 @@ public class AcompanharOrdemServico extends JPanel {
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
 	
-//	dei umas mexidas na história do combobox
-//	eliminei isso
-//	virou textField
-//	mas um "não-editavel"
 //	e é pra mudar o botão Salvar no Acompanhar para "aprovar" ou "atualizar" dependendo do retorno da busca
 //	3 condições, vai ter botão, nas outras 3 condições, o botão some (não fica visivel ou bloqueado mesmo)
 //	entendeu a ideia geral né ?
@@ -449,6 +449,7 @@ public class AcompanharOrdemServico extends JPanel {
 					bloqueiaCampos();
 			}else{
 				informaStatusOrdemServico();
+				textFieldStatus.setForeground(Color.BLACK);
 			}
 		}
 
@@ -478,6 +479,7 @@ public class AcompanharOrdemServico extends JPanel {
 		try {
 			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
 			if(ordemServico != null){
+				System.out.println("ordemServico.getEstaExpirado()" + ordemServico.getEstaExpirado());
 				ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
 				populaTabelaProduto(osProdutos);
 				ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
@@ -492,10 +494,27 @@ public class AcompanharOrdemServico extends JPanel {
 				informaStatusOrdemServico();
 			}
 		} catch (Exception e) {
-			//pensar em mensagem 'default'
 			e.printStackTrace();
 		}
 	}
+
+//	private void verificaExpirou() {
+//		try {
+//			Calendar agora = Calendar.getInstance();
+//			agora.setTime(new Date());//data maior
+//			
+//			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+//			Calendar dataCriacao = Calendar.getInstance();
+//			dataCriacao.setTime(format.parse(ordemServico.getDataCriacao()));
+//			agora.add(Calendar.DATE, - dataCriacao.get(Calendar.DAY_OF_MONTH));
+//			if ( agora.get(Calendar.DAY_OF_MONTH) > 15){
+//				ordemServico.setEstaExpirado(true);
+//				new OrdemServicoController().expiraOrdemServico(ordemServico.getIdOrdemDeServico());
+//			}
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void preencheDadosVeiculo(Veiculo veiculo) {
 		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
