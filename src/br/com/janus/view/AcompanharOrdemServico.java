@@ -211,7 +211,7 @@ public class AcompanharOrdemServico extends JPanel {
 
 		textFieldStatus = new JTextField();
 		textFieldStatus.setEditable(false);
-		textFieldStatus.setBounds(644, 70, 100, 40);
+		textFieldStatus.setBounds(85, 106, 126, 25);
 		add(textFieldStatus);
 		textFieldStatus.setColumns(10);
 		
