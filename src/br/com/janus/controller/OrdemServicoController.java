@@ -40,7 +40,7 @@ public class OrdemServicoController {
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		JOptionPane.showMessageDialog(null, "Ordem de serviço de número " + idOrdemServico + " criada com sucesso!");
+		JOptionPane.showMessageDialog(null, "Ordem de serviï¿½o de nï¿½mero " + idOrdemServico + " criada com sucesso!");
 		GerenciadorDeInterface.setPanel(new Principal());
 	}
 
@@ -87,7 +87,7 @@ public class OrdemServicoController {
 			ResultSet result = st.executeQuery();
 			if (result != null) {
 				OrdemServico os = new OrdemServico();
-//				while (result.next()) { TODO acho que esse "while" está causando falha, e nem é necessário por retornar somente uma ordem.
+				while (result.next()) {
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
 					os.setIdCliente(result.getInt("idcliente"));
 					os.setIdVeiculo(result.getInt("idveiculo"));
@@ -99,7 +99,7 @@ public class OrdemServicoController {
 					os.setDataCancelado(result.getString("datacancelado"));
 					os.setTotal(result.getString("total"));
 					return os;
-//				}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -239,7 +239,7 @@ public class OrdemServicoController {
 	public boolean finalizaOrdemServico(Integer idOrdemDeServico, String dataFinalizado) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-					"update ordemdeservico " + "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL" //TODO (tirar isso de setar NULLS, isso é errado e a prof vai chiar)
+					"update ordemdeservico " + "set datafinalizado= ?, dataexecucao = NULL, datacancelado = NULL" //TODO (tirar isso de setar NULLS, isso ï¿½ errado e a prof vai chiar)
 							+ "where idordemdeservico = '" + idOrdemDeServico + "'");
 			st.setString(1, dataFinalizado);
 			st.execute();

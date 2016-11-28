@@ -245,7 +245,7 @@ public class CadastroOrdemServico extends JPanel {
 		
 		textFieldData.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviï¿½o");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -612,10 +612,20 @@ public class CadastroOrdemServico extends JPanel {
 	
 	public void preencheDadosVeiculo(Veiculo veiculo) {
 		if (veiculo != null) {
+			String placa;
+			String modelo;
+			String ano;
+			
 			this.veiculoAtual = veiculo;
-			textFieldPlaca.setText(veiculo.getPlaca());
-			textFieldModelo.setText(veiculo.getModelo());
-			textFieldAno.setText(veiculo.getAno());
+						
+			placa = veiculo.getPlaca();
+			textFieldPlaca.setText(placa);
+
+			modelo = veiculo.getModelo();
+			textFieldModelo.setText(modelo);
+			
+			ano = veiculo.getAno();
+			textFieldAno.setText(ano);
 		}
 	}
 	

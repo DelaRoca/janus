@@ -239,7 +239,7 @@ public class CadastroCliente extends JPanel {
 					salvaCliente();
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+				JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos.");
 			}
 		});
 		btnSalvar.setBounds(412, 529, 89, 23);
@@ -300,7 +300,7 @@ public class CadastroCliente extends JPanel {
 
 		try {
 			Long.parseLong(cnpj);
-		} catch (NumberFormatException e) { // CNPJ não possui somente números
+		} catch (NumberFormatException e) { // CNPJ nï¿½o possui somente nï¿½meros
 			return false;
 		}
 
@@ -520,7 +520,7 @@ public class CadastroCliente extends JPanel {
 	}
 
 	private void dadosInvalidos() {
-		JOptionPane.showMessageDialog(null, "CPF/CNPJ inválido! Por favor, tente novamente.");
+		JOptionPane.showMessageDialog(null, "CPF/CNPJ invï¿½lido! Por favor, tente novamente.");
 	}
 
 	private boolean validaCPF(String cpf) {
@@ -529,7 +529,7 @@ public class CadastroCliente extends JPanel {
 
 		try {
 			Long.parseLong(cpf);
-		} catch (NumberFormatException e) { // CPF não possui somente números
+		} catch (NumberFormatException e) { // CPF nï¿½o possui somente nï¿½meros
 			return false;
 		}
 
@@ -574,9 +574,8 @@ public class CadastroCliente extends JPanel {
 	}
 
 	public void preencheDadosCliente(ClienteJuridico cliente, Endereco endereco) {
-		System.out.println("Cliente : " + cliente.getIdCliente());
 		if (cliente != null) {
-			lblCadastroDeClientes.setText("Edição de Cliente");
+			lblCadastroDeClientes.setText("Ediï¿½ï¿½o de Cliente");
 			lblCadastroDeClientes.repaint();
 			
 			this.clienteJuridico = cliente;
@@ -598,7 +597,7 @@ public class CadastroCliente extends JPanel {
 	
 	public void preencheDadosCliente(ClienteFisico cliente, Endereco endereco) {
 		if (cliente != null) {
-			lblCadastroDeClientes.setText("Edição de Cliente");
+			lblCadastroDeClientes.setText("Ediï¿½ï¿½o de Cliente");
 			lblCadastroDeClientes.repaint();
 			
 			this.clienteFisico = cliente;

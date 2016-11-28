@@ -69,7 +69,7 @@ public class CadastroServico extends JPanel {
 					if (verificaCamposValidos()) {
 						salvaServico();
 					} else {
-						JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+						JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos.");
 					}
 				}
 			} catch( Exception e){
@@ -104,7 +104,7 @@ public class CadastroServico extends JPanel {
 	
 	
 	private void salvaServico() {
-		System.out.println("salvar serviço");
+		System.out.println("salvar serviï¿½o");
 		Servico servico = constroiServico();
 		new ServicoController().salvaServico(servico);
 	}
@@ -112,15 +112,26 @@ public class CadastroServico extends JPanel {
 
 	private Servico constroiServico() {
 		Servico servico = new Servico();
-		servico.setNome(this.textFieldNome.getText());
-		servico.setValor(this.textFieldValor.getText());
-		servico.setDescricao(this.textFieldDescricao.getText());
-		servico.setPorHora(this.chckbxPorHora.isSelected());
+		String nome;
+		String valor;
+		String descricao;
+		Boolean porHora;
+				
+		nome = this.textFieldNome.getText();
+		servico.setNome(nome);
+		
+		valor = this.textFieldValor.getText();
+		servico.setValor(valor);
+		
+		descricao = this.textFieldDescricao.getText();
+		servico.setDescricao(descricao);
+		
+		porHora = this.chckbxPorHora.isSelected();
+		servico.setPorHora(porHora);
+				
 		servico.setEstaAtivo(true);
-		servico.setIdServico(0);
 		return servico;
 	}
-
 	
 	private boolean verificaCamposValidos() {
 		System.out.println("aqui nos verifica campos ");

@@ -39,7 +39,6 @@ public class AcompanharOrdemServico extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldOrdemServico;
 	private JTextField textFieldDataCriacao;
-	private JComboBox<String> comboBoxStatus;
 	private JTextField textFieldCpfCnpj;
 	private JTextField textFieldNome;
 	private JTextField textFieldTelefone;
@@ -49,6 +48,7 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textFieldTotal;
 	private JTextField textFieldStatus;
 	private JButton btnSalvar;
+	private JButton btnAprovar;
 	
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
@@ -63,6 +63,18 @@ public class AcompanharOrdemServico extends JPanel {
 	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
+	
+//	dei umas mexidas na histÃ³ria do combobox
+//	eliminei isso
+//	virou textField
+//	mas um "nÃ£o-editavel"
+//	e Ã© pra mudar o botÃ£o Salvar no Acompanhar para "aprovar" ou "atualizar" dependendo do retorno da busca
+//	3 condiÃ§Ãµes, vai ter botÃ£o, nas outras 3 condiÃ§Ãµes, o botÃ£o some (nÃ£o fica visivel ou bloqueado mesmo)
+//	entendeu a ideia geral nÃ© ?
+//	se tiver em aberto: botÃ£o aprovar (sem poder alterar a OsServicos/OsProdutos
+//	Dificultou...
+//	se tiver em aprovado ou execuÃ§Ã£o:
+//	botÃ£o atualizar (alterando somente o total e OsServicos/OsProdutos)
 	
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
@@ -197,6 +209,12 @@ public class AcompanharOrdemServico extends JPanel {
 		lblTotal.setBounds(422, 525, 46, 25);
 		add(lblTotal);
 
+		textFieldStatus = new JTextField();
+		textFieldStatus.setEditable(false);
+		textFieldStatus.setBounds(644, 70, 100, 40);
+		add(textFieldStatus);
+		textFieldStatus.setColumns(10);
+		
 		textFieldTotal = new JTextField();
 		textFieldTotal.setEditable(false);
 		textFieldTotal.setBounds(478, 525, 86, 25);
@@ -205,10 +223,10 @@ public class AcompanharOrdemServico extends JPanel {
 		
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			if (comboBoxStatus.equals("Aberto"))
-				aprovaOrdemServico();
-			else if (comboBoxStatus.equals("Aprovado") || comboBoxStatus.equals("Execucao") )
-				atualizaOrdemServico();
+//			if (comboBoxStatus.equals("Aberto"))
+//				aprovaOrdemServico();
+//			else if (comboBoxStatus.equals("Aprovado") || comboBoxStatus.equals("Execucao") )
+//				atualizaOrdemServico();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -225,23 +243,6 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
-		textFieldStatus = new JTextField();
-		textFieldStatus.setEditable(false);
-		textFieldStatus.setBounds(644, 70, 100, 25);
-		add(textFieldStatus);
-		textFieldStatus.setColumns(10);
-		
-		comboBoxStatus = new JComboBox<String>();
-		comboBoxStatus.removeAllItems();
-		comboBoxStatus.addItem("Aberto");
-		comboBoxStatus.addItem("Aprovado");
-		comboBoxStatus.addItem("Execucao");
-		comboBoxStatus.addItem("Finalizado");
-		comboBoxStatus.addItem("Cancelado");
-		comboBoxStatus.setSelectedIndex(0);
-		comboBoxStatus.setBounds(85, 106, 225, 25);
-		add(comboBoxStatus);
-		
 		JLabel lblNDaOs = new JLabel("N\u00BA da OS:");
 		lblNDaOs.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNDaOs.setBounds(20, 70, 60, 25);
@@ -262,7 +263,7 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void aprovaOrdemServico() {
-//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no método (sim faz, else é pra ser bloqueado o salvar e comboBox, e permitir somente atualização dos OsServicos e OsProdutos)
+//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no mï¿½todo (sim faz, else ï¿½ pra ser bloqueado o salvar e comboBox, e permitir somente atualizaï¿½ï¿½o dos OsServicos e OsProdutos)
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
@@ -275,7 +276,8 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void atualizaOrdemServico() {
-//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no método (sim faz, else é pra ser bloqueado o salvar e comboBox, e permitir somente atualização dos OsServicos e OsProdutos)
+//    TODO Testa se estado = aprovado ANTES de entrar no mï¿½todo (sim faz, else ï¿½ pra ser bloqueado o salvar e comboBox, e permitir somente atualizaï¿½ï¿½o dos OsServicos e OsProdutos)
+//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
@@ -458,9 +460,9 @@ public class AcompanharOrdemServico extends JPanel {
 		}else if (ordemServico.getDataCancelado()!= null){
 			textFieldStatus.setText("Cancelado");
 		}else if( ordemServico.getDataCriacao() != null){
-			textFieldStatus.setText("Em Aberto");
+			textFieldStatus.setText("Aberto");
 		}else if ( ordemServico.getDataExecucao() != null){
-			textFieldStatus.setText("Em Execução");
+			textFieldStatus.setText("ExecuÃ§Ã£o");
 		}else if ( ordemServico.getDataFinalizado() != null){
 			textFieldStatus.setText("Finalizado");
 		}
@@ -486,7 +488,8 @@ public class AcompanharOrdemServico extends JPanel {
 				}else{
 					clienteJuridicoAtual = new ClienteController().buscaDadosclienteJuridicoId(ordemServico.getIdCliente());
 				}
-				veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());	
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());
+				informaStatusOrdemServico();
 			}
 		} catch (Exception e) {
 			//pensar em mensagem 'default'
