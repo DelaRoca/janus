@@ -46,6 +46,7 @@ public class OrdemServicoController {
 
 	public boolean salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String estado, String data) {
 		PreparedStatement st = null;
+		System.out.println("totall" + ordemServico.getTotal());
 		try{
 			switch (estado) {
 			case "EXECUCAO":
@@ -84,6 +85,15 @@ public class OrdemServicoController {
 				st.setString(2, data);
 				st.setInt(3,ordemServico.getIdOrdemDeServico());
 				break;
+			case "ABERTO":
+				st = (PreparedStatement) conexao.prepareStatement(
+						"update ordemdeservico"+
+						"set total = ?, dataexecucao = NULL, datacriacao = ?, dataaprovado = NULL, datafinalizado = NULL, datacancelado = NULL"+
+					    "where idordemservico = ?");
+				st.setString(1, ordemServico.getTotal());
+				st.setString(2, data);
+				st.setInt(3,ordemServico.getIdOrdemDeServico());
+				break;	
 			default:
 				return false;
 			}
@@ -133,6 +143,7 @@ public class OrdemServicoController {
 	}
 
 	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
+		System.out.println(idOrdemDeServico+" chegou o id buscarOrdem");
 		try {
 			PreparedStatement st = (PreparedStatement) conexao
 					.prepareStatement("select * from ordemdeservico where idordemdeservico = ?;");

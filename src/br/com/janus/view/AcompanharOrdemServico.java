@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -226,11 +227,10 @@ public class AcompanharOrdemServico extends JPanel {
 		comboBoxStatus.addItem("Aprovado");
 		comboBoxStatus.addItem("Execucao");
 		comboBoxStatus.addItem("Finalizado");
+		comboBoxStatus.addItem("Cancelado");
 		comboBoxStatus.setSelectedIndex(0);
 		comboBoxStatus.setBounds(85, 106, 225, 25);
 		add(comboBoxStatus);
-		
-		//if status desativado, bloquear combobox e todos os outros campos...
 		
 		JLabel lblNDaOs = new JLabel("N\u00BA da OS:");
 		lblNDaOs.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -252,24 +252,16 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void salvaOrdemServico() {
-		OrdemServico ordemServico =constroiOrdemServico();
 		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
-		new OrdemServicoController().salva(ordemServico,osServicos,osProdutos, estadoSelecionado.toUpperCase(), this.textFieldData.getText());
+		boolean salvou = new OrdemServicoController().salva(ordemServico,osServicos,osProdutos, estadoSelecionado.toUpperCase(), this.textFieldData.getText());
 		
-	}
-	
-	private OrdemServico constroiOrdemServico() {
-		OrdemServico ordemServico = new OrdemServico();
-		ordemServico.setTotal(this.textFieldTotal.getText());
-		if(clienteFisicoAtual.getIdCliente() != null){
-			ordemServico.setIdCliente(clienteFisicoAtual.getIdCliente());
+		if(salvou){
+			JOptionPane.showMessageDialog(null, "Ordem de servico salva com sucesso.. ( MUDAR MENSAGEM)");
 		}else{
-			ordemServico.setIdCliente(clienteJuridicoAtual.getIdCliente());
+			JOptionPane.showMessageDialog(null, "Não foi possível salvar a ordem de serviço.. ( MUDAR MENSAGEM)");
 		}
-		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
-		return ordemServico;
 	}
 	
 	private ArrayList<OsProdutos> constroiProdutos() {
@@ -407,7 +399,6 @@ public class AcompanharOrdemServico extends JPanel {
            	fireTableCellUpdated(row, 5);
         }   
 	};
-	
 
 	private void preencheDados() {
 		if(ordemServico != null){
@@ -423,27 +414,41 @@ public class AcompanharOrdemServico extends JPanel {
 				textFieldNome.setText(clienteFisicoAtual.getNome());
 				textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
 			}
-		}
-		
-		textFieldPlaca.setText(veiculoAtual.getPlaca());
-		textFieldModelo.setText(veiculoAtual.getModelo());
-		textFieldAno.setText(veiculoAtual.getAno());
-
-//		if(ordemServico.getStatus() == StatusENUM.EXPIRADO.getValor()){
-//TODO			comboBoxStatus.setSelectedItem(StatusENUM.ABERTO.getValor());
+			textFieldPlaca.setText(veiculoAtual.getPlaca());
+			textFieldModelo.setText(veiculoAtual.getModelo());
+			textFieldAno.setText(veiculoAtual.getAno());
 			
-			JLabel lblExpirado = new JLabel("Expirado!");
-			lblExpirado.setForeground(Color.RED);
-			lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
-			lblExpirado.setBounds(325, 106, 106, 25);
-			add(lblExpirado);
+			if(ordemServico.getEstaExpirado()){
+				JLabel lblExpirado = new JLabel("Expirado!");
+				lblExpirado.setForeground(Color.RED);
+				lblExpirado.setFont(new Font("Tahoma", Font.BOLD, 12));
+				lblExpirado.setBounds(325, 106, 106, 25);
+				add(lblExpirado);
+				bloqueiaCampos();
+			}else{
+				setaEstadoOrdemServico();
+			}
+		}
 
-			//TODO ------>>>>> bloquear tudo e todos !!!! <<<-------
+	}
+
+	private void setaEstadoOrdemServico() {
+		if(ordemServico.getDataAprovado() != null){
+			comboBoxStatus.setSelectedIndex(1);
+		}else if (ordemServico.getDataCancelado()!= null ){
+			comboBoxStatus.setSelectedIndex(4);
+		}else if( ordemServico.getDataCriacao() != null){
+			comboBoxStatus.setSelectedIndex(0);
+		}else if ( ordemServico.getDataExecucao() != null){
+			comboBoxStatus.setSelectedIndex(2);
+		}else if ( ordemServico.getDataFinalizado() != null){
+			comboBoxStatus.setSelectedIndex(3);
+		}
+	}
+
+	private void bloqueiaCampos() {
+		// TODO bloquear todos os campos
 		
-//		} else {
-//			comboBoxStatus.setSelectedItem(ordemServico.getStatus());
-//		}
-
 	}
 
 	private void buscaOrdemServico() {
