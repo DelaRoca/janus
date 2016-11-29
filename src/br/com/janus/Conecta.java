@@ -13,8 +13,10 @@ public class Conecta {
 		Connection con = null;
 		try{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			String url = "jdbc:mysql://localhost:3306/janus?user=root&password=admin";
-			con = (Connection) DriverManager.getConnection(url);
+			String url = "jdbc:mysql://localhost:3306/janus?useSSL=false";
+			String user = "root";
+			String password = "admin";
+			con = (Connection) DriverManager.getConnection(url, user, password);
 			status = "Conectado com sucesso!";
 		}catch (SQLException e) {
 			status = e.getMessage();
@@ -29,7 +31,7 @@ public class Conecta {
 	public Connection getConnection() {
         try {
             return (Connection) DriverManager.getConnection(
-          "jdbc:mysql://localhost:3306/janus", "root", "admin");
+          "jdbc:mysql://localhost:3306/janus?useSSL=false", "root", "admin");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

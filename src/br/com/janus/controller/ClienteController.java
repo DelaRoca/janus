@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.StringUtils;
 
 import br.com.janus.Conecta;
 import br.com.janus.model.Cliente;
@@ -21,6 +20,7 @@ public class ClienteController {
 	
 	private Connection conexao = new Conecta().getConnection();
 
+	// Gerenciar Ordem de Serviço
 	public Cliente buscaDadosclienteId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -40,6 +40,7 @@ public class ClienteController {
 		return null;
 	}
 	
+	// Acompanhar Ordem de Serviço
 	public ClienteFisico buscaDadosclienteFisicoId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -62,6 +63,7 @@ public class ClienteController {
 		return null;
 	}
 	
+	// Acompanhar Ordem de Serviço
 	public ClienteJuridico buscaDadosclienteJuridicoId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -83,6 +85,7 @@ public class ClienteController {
 		return null;
 	}
 	
+	// Acompanhar Ordem de Serviço
 	public boolean verificaClienteFisico(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -99,6 +102,8 @@ public class ClienteController {
 		return false;
 	}
 	
+	// Cadastro de Cliente (CPF)
+	// Cadastro de Ordem de Serviço (CPF)
 	public ClienteFisico buscaDadosClienteCpf(String cpf) throws SQLException{
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cpf = ?;");
 		st.setString(1, cpf);
@@ -120,6 +125,8 @@ public class ClienteController {
 		return null;
 	}
 	
+	// Cadastro de Cliente (CNPJ)
+	// Cadastro de Ordem de Serviço (CNPJ)
 	public ClienteJuridico buscaDadosClienteCnpj(String cnpj) throws SQLException{
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
 		st.setString(1, cnpj);
@@ -140,10 +147,11 @@ public class ClienteController {
 		return null;
 	}
 	
+	// Cadastro de Cliente CPF
 	public void salvaCliente(ClienteFisico clienteFisico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
-	                "(cpf,nome,dataNascimento,telefone,email,celular,idendereco) " +
+	                "(cpf,nome,datanascimento,telefone,email,celular,idendereco) " +
 	                "values (?,?,?,?,?,?,?)");
 	    	st.setString(1, clienteFisico.getCpf());
 			st.setString(2,clienteFisico.getNome());
@@ -161,6 +169,7 @@ public class ClienteController {
 		}
 	}
 	
+	// Cadastro de Cliente CNPJ
 	public void salvaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
@@ -181,9 +190,9 @@ public class ClienteController {
 		}
 	}
 
+	// Edição de Cliente CPF
 	public void atualizaCliente(ClienteFisico clienteFisico){
 	    try {
-	    	System.out.println(clienteFisico.getNome());
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
 	                "set cpf= ?,nome= ?,datanascimento= ?,telefone= ?,email= ?,celular= ? " +
 	                "where cpf = '"+clienteFisico.getCpf()+"'");
@@ -202,6 +211,7 @@ public class ClienteController {
 		}
 	}
 	
+	// Edição de Cliente CNPJ
 	public void atualizaCliente(ClienteJuridico clienteJuridico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
@@ -222,8 +232,8 @@ public class ClienteController {
 		}
 	}
 	
+	// Cadastro de Cliente (Endereço)
 	public String salvaEndereco(Endereco endereco) {
-		
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into endereco " +
 					"(rua,bairro,cidade,estado) " +
@@ -248,6 +258,7 @@ public class ClienteController {
 		return "0";
 	}
 
+	// Edição de Cliente (Endereço)
 	public Integer atualizaEndereco(Endereco endereco) {
 		try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update endereco " +

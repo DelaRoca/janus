@@ -259,15 +259,10 @@ public class CadastroOrdemServico extends JPanel {
 		btnBuscarCliente.setBounds(329, 149, 90, 25);
 		btnBuscarCliente.addActionListener(a -> {
 			String cpf = this.textFieldCpf.getText();
-			cpf = cpf.replace(".", "");
-			cpf = cpf.replace("-", "");
-			cpf = cpf.replace(" ", "");
-			
 			String cnpj = this.textFieldCnpj.getText();
-			cnpj = cnpj.replace(".", "");
-			cnpj = cnpj.replace("/", "");
-			cnpj = cnpj.replace("-", "");
-			cnpj = cnpj.replace(" ", "");
+			cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
+			cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
+			
 			try{
 				Long.parseLong(cpf);
 			}catch (Exception e) {
@@ -397,14 +392,16 @@ public class CadastroOrdemServico extends JPanel {
 		add(btnBuscarVeiculo);
 		
 		textFieldCnpj = new JFormattedTextField(new MaskFormatter("##.###.###/####-##"));
+		textFieldCnpj.setColumns(10);
 		textFieldCnpj.setBounds(140, 165, 179, 25);
 		add(textFieldCnpj);
-		textFieldCnpj.setColumns(10);
+		textFieldCnpj.setEditable(false);
 
 		textFieldCpf = new JFormattedTextField(new MaskFormatter("###.###.###-##"));
 		textFieldCpf.setColumns(10);
 		textFieldCpf.setBounds(139, 131, 180, 25);
 		add(textFieldCpf);
+		textFieldCpf.setEditable(false);
 		
 		rdbtnCpf = new JRadioButton("CPF:");
 		rdbtnCpf.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -655,5 +652,13 @@ public class CadastroOrdemServico extends JPanel {
 		String valorStrTotal = valorDoubleTotal.toString();
 		valorStrTotal = valorStrTotal.replace(".", ",");
 		textFieldTotal.setText(valorStrTotal);
+	}
+	
+	private String limpezaCaracteresNaoNumeraisCpfCnpj(String cpfCnpj) {
+		cpfCnpj	 = cpfCnpj.replace(".", "");
+		cpfCnpj	 = cpfCnpj.replace("/", "");
+		cpfCnpj	 = cpfCnpj.replace("-", "");
+		cpfCnpj	 = cpfCnpj.replace(" ", "");
+		return cpfCnpj;
 	}
 }

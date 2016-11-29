@@ -3,6 +3,7 @@ package br.com.janus.controller;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -288,7 +289,7 @@ public class OrdemServicoController {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-				"select * from ordemdeservico where estaexpirado = 0;");
+				"select * from ordemdeservico where estaexpirado = 0 and dataaprovado is null;");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
 				System.out.println("st.getResultSet " + st.getResultSet());
@@ -311,22 +312,21 @@ public class OrdemServicoController {
 			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
 			e.printStackTrace();
 		}
-		
 		verificaExpirou(ordens);
 	}
 
 	private void verificaExpirou(ArrayList<OrdemServico> ordens) {
 		try{
-			// TODO Auto-generated method stub
 			for (OrdemServico ordemServico : ordens) {
-				Calendar agora = Calendar.getInstance();
-				agora.setTime(new Date());//data maior
-				
-				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+				String dataStrAgora = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+				String dataStrCriacao = ordemServico.getDataCriacao();
+				SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 				Calendar dataCriacao = Calendar.getInstance();
-				dataCriacao.setTime(format.parse(ordemServico.getDataCriacao()));
-				agora.add(Calendar.DATE, - dataCriacao.get(Calendar.DAY_OF_MONTH));
-				if ( agora.get(Calendar.DAY_OF_MONTH) > 15){
+				dataCriacao.setTime(formatoData.parse(dataStrCriacao));
+				Calendar dataAgora = Calendar.getInstance();
+				dataAgora.setTime(formatoData.parse(dataStrAgora));				
+				
+				if ( contagemDias(dataCriacao, dataAgora) ) {
 					ordemServico.setEstaExpirado(true);
 					new OrdemServicoController().expiraOrdemServico(ordemServico.getIdOrdemDeServico());
 				}
@@ -337,16 +337,29 @@ public class OrdemServicoController {
 	}
 
 	private void expiraOrdemServico(Integer idOrdemDeServico) {
-		try {
-			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+		PreparedStatement st = null;
+		try{
+			st = (PreparedStatement) conexao.prepareStatement(
 					"update ordemdeservico " + 
-				    "set estaexpirado=1" +
+				    "set estaexpirado = 1 " +
 				    "where idordemdeservico = ?;");
 			st.setInt(1, idOrdemDeServico);
 			st.execute();
+			System.out.println("Ordem "+ idOrdemDeServico +" expirado por passar de 15 dias sem ser aprovado!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public boolean contagemDias(Calendar dataCriacao, Calendar dataAgora){ 
+        int contagemDias = 0;    
+        while (dataCriacao.get(Calendar.DAY_OF_MONTH) != dataAgora.get(Calendar.DAY_OF_MONTH)){    
+        	   dataCriacao.add(Calendar.DAY_OF_MONTH, 1);    
+            contagemDias ++;    
+        }
+        if (contagemDias > 15) {
+        	return true;
+        }
+        return false;   
+    }
 }

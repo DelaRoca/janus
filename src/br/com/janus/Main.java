@@ -10,7 +10,7 @@ public class Main {
 		System.out.println("Status con : "+ Conecta.status);
 		GerenciadorDeInterface.run();
 		
-		new OrdemServicoController().expiraOrdemServico();
+		new OrdemServicoController().expiraOrdensServico();
 	}
 
 }

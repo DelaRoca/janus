@@ -58,11 +58,13 @@ public class CadastroCliente extends JPanel {
 		textFieldCNPJ.setBounds(319, 115, 179, 25);
 		textFieldCNPJ.setColumns(10);
 		add(textFieldCNPJ);
+		textFieldCNPJ.setEditable(false);
 
 		textFieldCPF = new JFormattedTextField(new MaskFormatter("###.###.###-##"));
 		textFieldCPF.setColumns(10);
 		textFieldCPF.setBounds(318, 81, 180, 25);
 		add(textFieldCPF);
+		textFieldCPF.setEditable(false);
 
 		JLabel label_2 = new JLabel("");
 		label_2.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -250,15 +252,10 @@ public class CadastroCliente extends JPanel {
 		btnVerificar.setBounds(552, 100, 89, 23);
 		btnVerificar.addActionListener(a -> {
 			String cpf = this.textFieldCPF.getText();
-			cpf = cpf.replace(".", "");
-			cpf = cpf.replace("-", "");
-			cpf = cpf.replace(" ", "");
-
 			String cnpj = this.textFieldCNPJ.getText();
-			cnpj = cnpj.replace(".", "");
-			cnpj = cnpj.replace("/", "");
-			cnpj = cnpj.replace("-", "");
-			cnpj = cnpj.replace(" ", "");
+			cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
+			cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
+			//TODO paraFabioDeFabio: reverificar e reescrever essa "lógica" -> funciona, mas tá mal organizado o código.			
 			try{
 				Long.parseLong(cpf);
 			}catch (Exception e) {
@@ -284,7 +281,6 @@ public class CadastroCliente extends JPanel {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-					System.out.println("CNPJ VALIDDD");
 				} else {
 					dadosInvalidos();
 				}
@@ -294,7 +290,6 @@ public class CadastroCliente extends JPanel {
 	}
 
 	private boolean novo(String cnpj) {
-		System.out.println("cnpj" + cnpj);
 		if (cnpj == null || cnpj.length() != 14)
 			return false;
 
@@ -340,23 +335,14 @@ public class CadastroCliente extends JPanel {
 		Integer idEndereco = new ClienteController().atualizaEndereco(endereco);
 		if (idEndereco != 0) {
 			String cpf = this.textFieldCPF.getText();
-			cpf = cpf.replace(".", "");
-			cpf = cpf.replace("-", "");
-			cpf = cpf.replace(" ","");
-
 			String cnpj = this.textFieldCNPJ.getText();
-			cnpj = cnpj.replace(".", "");
-			cnpj = cnpj.replace("/", "");
-			cnpj = cnpj.replace("-", "");
-			cnpj = cnpj.replace(" ","");
-
-			if (cpf != null || !cpf.equals("") ) {
-				System.out.println("entrando no if cpf");
+			cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
+			cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
+			
+			if ( !cpf.equals("") ) {
 				ClienteFisico cliente = constroiClienteFisico();
-				System.out.println(cliente.getCpf());
 				new ClienteController().atualizaCliente(cliente);
-			}else if(cnpj != null || !cnpj.equals("")){
-				System.out.println("entrando no else");
+			}else if( !cnpj.equals("") ){
 				ClienteJuridico cliente = constroiClienteJuridico();
 				new ClienteController().atualizaCliente(cliente);
 			}
@@ -365,10 +351,7 @@ public class CadastroCliente extends JPanel {
 
 	private ClienteJuridico constroiClienteJuridico() {
 		String cnpj = this.textFieldCNPJ.getText();
-		cnpj = cnpj.replace(".", "");
-		cnpj = cnpj.replace("/", "");
-		cnpj = cnpj.replace("-", "");
-		cnpj = cnpj.replace(" ","");
+		cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
 		
 		ClienteJuridico cliente = new ClienteJuridico();
 		cliente.setCnpj(cnpj);
@@ -390,9 +373,7 @@ public class CadastroCliente extends JPanel {
 //		    return clienteFisico;
 //		}
 		String cpf = this.textFieldCPF.getText();
-		cpf = cpf.replace(".", "");
-		cpf = cpf.replace("-", "");
-		cpf = cpf.replace(" ","");
+		cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
 		
 		ClienteFisico cliente = new ClienteFisico();
 		cliente.setCpf(cpf);
@@ -412,36 +393,48 @@ public class CadastroCliente extends JPanel {
 		}
 	}
 
+	private String limpezaCaracteresNaoNumeraisCpfCnpj(String cpfCnpj) {
+		cpfCnpj	 = cpfCnpj.replace(".", "");
+		cpfCnpj	 = cpfCnpj.replace("/", "");
+		cpfCnpj	 = cpfCnpj.replace("-", "");
+		cpfCnpj	 = cpfCnpj.replace(" ", "");
+		return cpfCnpj;
+	}
+	
 	private void novoCliente(int idEndereco) {
 		String cpf = this.textFieldCPF.getText();
-		cpf = cpf.replace(".", "");
-		cpf = cpf.replace("-", "");
-		cpf = cpf.replace(" ","");
-		
 		String cnpj = this.textFieldCNPJ.getText();
-		cnpj = cnpj.replace(".", "");
-		cnpj = cnpj.replace("/", "");
-		cnpj = cnpj.replace("-", "");
-		cnpj = cnpj.replace(" ","");
-
-		if (cpf != null || !cpf.equals("") ) {
+		cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
+		cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
+	
+		if ( !cpf.equals("") ) {
 			ClienteFisico cliente = new ClienteFisico();
+			String nome = this.textFieldNome.getText();
+			String email = this.textFieldEmail.getText();
+			String dataNasc = this.textFieldDtNasc.getText(); 
+			String telefone = this.textFieldTelefone.getText();
+			String celular = this.textFieldCelular.getText();
+			
 			cliente.setCpf(cpf);
-			cliente.setNome(this.textFieldNome.getText());
-			cliente.setEmail(this.textFieldEmail.getText());
-			cliente.setDataNascimento(this.textFieldDtNasc.getText());
-			cliente.setTelefone(this.textFieldTelefone.getText());
-			cliente.setCelular(this.textFieldCelular.getText());
+			cliente.setNome(nome);
+			cliente.setEmail(email);
+			cliente.setDataNascimento(dataNasc);
+			cliente.setTelefone(telefone);
+			cliente.setCelular(celular);
 			cliente.setEndereco(idEndereco);
 			new ClienteController().salvaCliente(cliente,idEndereco);
-						
-		}else if (cnpj != null || cnpj.equals("")){
+		} else if ( !cnpj.equals("") ) {
 			ClienteJuridico cliente = new ClienteJuridico();
+			String nome = this.textFieldNome.getText();
+			String email = this.textFieldEmail.getText();
+			String telefone = this.textFieldTelefone.getText();
+			String celular = this.textFieldCelular.getText();
+			
 			cliente.setCnpj(cnpj);
-			cliente.setNome(this.textFieldNome.getText());
-			cliente.setEmail(this.textFieldEmail.getText());
-			cliente.setTelefone(this.textFieldTelefone.getText());
-			cliente.setCelular(this.textFieldCelular.getText());
+			cliente.setNome(nome);
+			cliente.setEmail(email);
+			cliente.setTelefone(telefone);
+			cliente.setCelular(celular);
 			cliente.setEndereco(idEndereco);
 			new ClienteController().salvaCliente(cliente,idEndereco);
 		}
@@ -526,7 +519,6 @@ public class CadastroCliente extends JPanel {
 	private boolean validaCPF(String cpf) {
 		if (cpf == null || cpf.length() != 11 || isCPFPadrao(cpf))
 			return false;
-
 		try {
 			Long.parseLong(cpf);
 		} catch (NumberFormatException e) { // CPF nï¿½o possui somente nï¿½meros
@@ -617,4 +609,6 @@ public class CadastroCliente extends JPanel {
 			textFieldEstado.setText(endereco.getEstado());
 		}
 	}
+	
+	//TODO Criar dupla verificação na hora do Salvar (se o CPF gravado na variavel confere com o "atual" cpf escrito no campo!)
 }
