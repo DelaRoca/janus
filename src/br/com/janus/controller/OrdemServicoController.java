@@ -292,7 +292,6 @@ public class OrdemServicoController {
 				"select * from ordemdeservico where estaexpirado = 0 and dataaprovado is null;");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
-				System.out.println("st.getResultSet " + st.getResultSet());
 				while (result.next()) {
 					OrdemServico os = new OrdemServico();
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));

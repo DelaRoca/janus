@@ -4,6 +4,9 @@ import javax.swing.JPanel;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+import br.com.janus.controller.OrdemServicoController;
+
 import java.awt.Font;
 import java.awt.Color;
 
@@ -26,5 +29,6 @@ public class Principal extends JPanel {
 		lblMoldura.setBorder(BorderFactory.createLoweredSoftBevelBorder());
 		add(lblMoldura);
 
+		new OrdemServicoController().expiraOrdensServico();
 	}
 }

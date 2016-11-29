@@ -9,8 +9,6 @@ public class Main {
 		Conecta.conecta();
 		System.out.println("Status con : "+ Conecta.status);
 		GerenciadorDeInterface.run();
-		
-		new OrdemServicoController().expiraOrdensServico();
 	}
 
 }
