@@ -237,6 +237,7 @@ public class AcompanharOrdemServico extends JPanel {
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
+		btnSalvar.setEnabled(false);
 		
 
 		
@@ -264,8 +265,10 @@ public class AcompanharOrdemServico extends JPanel {
 
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(a -> {
-			buscaOrdemServico();
-			preencheDados();
+			if( !textFieldOrdemServico.getText().equals("") ){
+				buscaOrdemServico();
+				preencheDados();
+			}
 		});
 		btnBuscar.setBounds(221, 70, 90, 25);
 		add(btnBuscar);

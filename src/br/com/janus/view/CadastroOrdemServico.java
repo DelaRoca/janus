@@ -12,6 +12,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -71,7 +72,12 @@ public class CadastroOrdemServico extends JPanel {
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue() ) {
+            	if (Integer.parseInt(getValueAt(rowIndex, 3).toString()) < 1) {
+            		setValueAt("1", rowIndex, 3);
+            	} else {
+            		setValueAt(getValueAt(rowIndex, 3).toString(), rowIndex, 3);
+            	}
             	return selecionado[columnIndex];
             }
             else {
@@ -82,11 +88,7 @@ public class CadastroOrdemServico extends JPanel {
         
         @Override
         public Object getValueAt(int row, int column) {
-            
-//        	if (column == 5) {
-//        		preencheValorTotalOrdemServico();
-//        	}
-        	
+            //TODO TERMINAR ESSA lógica dos cliques
         	if (column == 4) {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
@@ -106,8 +108,30 @@ public class CadastroOrdemServico extends JPanel {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-        	super.setValueAt(aValue, row, column);
-        	
+        	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
+        		System.out.println(((Boolean) getValueAt(row, 0)).booleanValue());
+        		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
+        		if (testeQuantidade < 0) {
+        			setValueAt("1", row, 3);
+        		}
+        	}
+    	
+        	//Forçar a escrita ser sempre 1 caso insira 0 ou negativos.
+            if (column == 3 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade < 1){
+            		setValueAt("1", row, column);
+            	} 
+            }
+            if (column == 3 && !((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade > 0){
+            		setValueAt("0", row, column);
+            	} 	
+            } 
+
+            super.setValueAt(aValue, row, column);
+            
             preencheValorTotalOrdemServico();
 			
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
@@ -120,16 +144,24 @@ public class CadastroOrdemServico extends JPanel {
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
+            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
             	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
-                	setValueAt("1", rowIndex, 4);
-            		return selecionadoPorHora[columnIndex];
+                	if (Integer.parseInt(getValueAt(rowIndex, 4).toString()) < 1) {
+                		setValueAt("1", rowIndex, 4);
+                	} else {
+                		System.out.println((String)  getValueAt(rowIndex, 4).toString());
+                		setValueAt((String) getValueAt(rowIndex, 4).toString(), rowIndex, 4);
+                	}
+                	return selecionadoPorHora[columnIndex];
             	} else {
-                	setValueAt("1", rowIndex, 4);
+                	if (Integer.parseInt(getValueAt(rowIndex, 4).toString()) < 1) {
+                		setValueAt("1", rowIndex, 4);
+                	} else {
+                		setValueAt(getValueAt(rowIndex, 4).toString(), rowIndex, 4);
+                	}
             		return selecionado[columnIndex];
             	}
-            }
-            else {
+            } else {
             	setValueAt("0", rowIndex, 4);
             	return naoSelecionado[columnIndex];
             }
@@ -167,6 +199,28 @@ public class CadastroOrdemServico extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
+            //TODO TERMINAR ESSA lógica dos cliques
+        	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
+        		System.out.println(((Boolean) getValueAt(row, 0)).booleanValue());
+        		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
+        		if (testeQuantidade < 0) {
+        			setValueAt("1", row, 3);
+        		}
+        	}
+    	
+        	//Forçar a escrita ser sempre 1 caso insira 0 ou negativos.
+            if (column == 4 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade < 1){
+            		setValueAt("1", row, column);
+            	} 
+            }
+            if (column == 4 && !((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade > 0){
+            		setValueAt("0", row, column);
+            	} 	
+            }
             
             if (column == 3) {
             	int testePorHora = Integer.parseInt(aValue.toString());
@@ -174,6 +228,15 @@ public class CadastroOrdemServico extends JPanel {
             		setValueAt("1", row, column);
             	}
             }
+
+//            if (column == 4) {
+//	           	int testeQuantidade = Integer.parseInt(aValue.toString());
+//	           	if (testeQuantidade < 1){
+//	           		setValueAt("1", row, column);
+//	           	}
+//	        }
+        	
+            
             
             preencheValorTotalOrdemServico();
 			
@@ -255,6 +318,36 @@ public class CadastroOrdemServico extends JPanel {
 		lblCliente.setBounds(46, 101, 46, 14);
 		add(lblCliente);
 
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.addActionListener(a -> {
+			salvaOrdemServico();
+		});
+		btnSalvar.setBounds(373, 560, 89, 23);
+		add(btnSalvar);
+		btnSalvar.setEnabled(false);
+		
+		JButton btnBuscarVeiculo = new JButton("Buscar");
+		btnBuscarVeiculo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnBuscarVeiculo.setBounds(774, 150, 88, 25);
+		btnBuscarVeiculo.addActionListener(a -> {
+			try {
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
+				if (veiculoAtual != null) {
+					this.preencheDadosVeiculo(veiculoAtual);
+					btnSalvar.setEnabled(true);
+				} else {
+					textFieldModelo.setText("");
+					textFieldModelo.repaint();
+					textFieldAno.setText("");
+					textFieldAno.repaint();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+		add(btnBuscarVeiculo);
+		btnBuscarVeiculo.setEnabled(false);
+		
 		JButton btnBuscarCliente = new JButton("Buscar");
 		btnBuscarCliente.setBounds(329, 149, 90, 25);
 		btnBuscarCliente.addActionListener(a -> {
@@ -273,6 +366,7 @@ public class CadastroOrdemServico extends JPanel {
 							clienteFisicoAtual = new ClienteController().buscaDadosClienteCpf(cpf);
 							if (clienteFisicoAtual != null) {
 								preencheDadosClienteFisico(clienteFisicoAtual);
+								btnBuscarVeiculo.setEnabled(true);
 							} else {
 								textFieldTelefone.setText("");
 								textFieldTelefone.setValue("");
@@ -288,6 +382,7 @@ public class CadastroOrdemServico extends JPanel {
 						clienteJuridicoAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
 						if (clienteJuridicoAtual != null) {
 							preencheDadosClienteJuridico(clienteJuridicoAtual);
+							btnBuscarVeiculo.setEnabled(true);
 						} else {
 							textFieldTelefone.setText("");
 							textFieldTelefone.setValue("");
@@ -327,13 +422,6 @@ public class CadastroOrdemServico extends JPanel {
 		label.setBounds(532, 118, 415, 150);
 		add(label);
 
-		JButton btnSalvar = new JButton("Salvar");
-		btnSalvar.addActionListener(a -> {
-			salvaOrdemServico();
-		});
-		btnSalvar.setBounds(373, 560, 89, 23);
-		add(btnSalvar);
-
 		JLabel lblProduto = new JLabel("Produtos:");
 		lblProduto.setBounds(10, 297, 67, 14);
 		add(lblProduto);
@@ -370,26 +458,6 @@ public class CadastroOrdemServico extends JPanel {
 		});
 		btnCancelar.setBounds(541, 560, 89, 23);
 		add(btnCancelar);
-
-		JButton btnBuscarVeiculo = new JButton("Buscar");
-		btnBuscarVeiculo.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnBuscarVeiculo.setBounds(774, 150, 88, 25);
-		btnBuscarVeiculo.addActionListener(a -> {
-			try {
-				veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
-				if (veiculoAtual != null) {
-					this.preencheDadosVeiculo(veiculoAtual);
-				} else {
-					textFieldModelo.setText("");
-					textFieldModelo.repaint();
-					textFieldAno.setText("");
-					textFieldAno.repaint();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		add(btnBuscarVeiculo);
 		
 		textFieldCnpj = new JFormattedTextField(new MaskFormatter("##.###.###/####-##"));
 		textFieldCnpj.setColumns(10);
@@ -417,6 +485,7 @@ public class CadastroOrdemServico extends JPanel {
 			textFieldTelefone.repaint();
 			textFieldNome.setText("");
 			textFieldNome.repaint();
+			btnBuscarVeiculo.setEnabled(false);
 		});
 		add(rdbtnCpf);
 
@@ -434,6 +503,7 @@ public class CadastroOrdemServico extends JPanel {
 			textFieldTelefone.repaint();
 			textFieldNome.setText("");
 			textFieldNome.repaint();
+			btnBuscarVeiculo.setEnabled(false);
 		});
 		add(rdbtnCnpj);
 		
