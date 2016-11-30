@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
+//import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,11 +83,43 @@ public class OrdemServicoController {
 		}
 	}
 
+	private void atualizaOsServicos(Integer idOrdemServico, ArrayList<OsServicos> osServicos) {
+		try {
+			for (OsServicos osServico : osServicos) {
+				PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+						"update osservico set qtdporhora=?,quantidade=? "+"where idordemdeservico = ? and idservico = ? ");
+				st.setInt(1, osServico.getQtdPorHora());
+				st.setInt(2, osServico.getQuantidade());
+				st.setInt(3, idOrdemServico);
+				st.setInt(4, osServico.getIdServico());
+				st.execute();
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			e.printStackTrace();
+		}
+	}
+
+	private void atualizaOsProdutos(Integer idOrdemServico, ArrayList<OsProdutos> osProdutos) {
+		try {
+			for (OsProdutos osProduto : osProdutos) {
+				PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
+						"update osproduto set quantidade=? where idordemdeservico = ? and idproduto = ? ");
+				st.setInt(1, osProduto.getQuantidade());
+				st.setInt(2, idOrdemServico);
+				st.setInt(3, osProduto.getIdProduto());
+				st.execute();
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
+			e.printStackTrace();
+		}
+	}
+	
 	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		System.out.println(idOrdemDeServico+" chegou o id buscarOrdem");
 		try {
-			PreparedStatement st = (PreparedStatement) conexao
-					.prepareStatement("select * from ordemdeservico where idordemdeservico = ?;");
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?");
 			st.setInt(1, idOrdemDeServico);
 			ResultSet result = st.executeQuery();
 			if (result != null) {
@@ -114,8 +146,7 @@ public class OrdemServicoController {
 
 	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsProdutos> produtos = new ArrayList<OsProdutos>();
-		PreparedStatement st = (PreparedStatement) conexao
-				.prepareStatement("select * from osproduto where idordemdeservico = ?;");
+		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idordemdeservico = ?");
 		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
 		System.out.println("result set : " + result == null);
@@ -173,7 +204,6 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO
 			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
 			e.printStackTrace();
 		}
@@ -214,7 +244,7 @@ public class OrdemServicoController {
 	public boolean aprovaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String dataAprovado) {
 		PreparedStatement st = null;
 		try{
-			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+"set total = ?, dataaprovado = ? "+"where idordemdeservico = ?");
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico "+"set total = ?, dataaprovado = ? "+"where idordemdeservico = ?");
 			st.setString(1, ordemServico.getTotal());
 			st.setString(2, dataAprovado);
 			st.setInt(3,ordemServico.getIdOrdemDeServico());
@@ -271,13 +301,13 @@ public class OrdemServicoController {
 	public boolean atualizaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
 		PreparedStatement st = null;
 		try{
-			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico"+
+			st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico "+
 															  "set total = ? "+"where idordemdeservico = ?");
 			st.setString(1, ordemServico.getTotal());
-			st.setInt(2,ordemServico.getIdOrdemDeServico());
+			st.setInt(2, ordemServico.getIdOrdemDeServico());
 			st.executeUpdate();
-			salvaOsProdutos(osProdutos);
-			salvaOsServicos(osServicos);
+			atualizaOsProdutos(ordemServico.getIdOrdemDeServico(), osProdutos);
+			atualizaOsServicos(ordemServico.getIdOrdemDeServico(), osServicos);
 			return true;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -289,7 +319,7 @@ public class OrdemServicoController {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-				"select * from ordemdeservico where estaexpirado = 0 and dataaprovado is null;");
+				"select * from ordemdeservico where estaexpirado = 0 and dataaprovado is null");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
 				while (result.next()) {

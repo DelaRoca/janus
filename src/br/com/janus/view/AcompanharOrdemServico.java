@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -223,14 +222,17 @@ public class AcompanharOrdemServico extends JPanel {
 		
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
-			//TODO (FABIO - ATUALIZAR)
-//			if (comboBoxStatus.equals("Aberto"))
-//				aprovaOrdemServico();
-//			else if (comboBoxStatus.equals("Aprovado") || comboBoxStatus.equals("Execucao") )
-//				atualizaOrdemServico();
+			if ( podeAprovarOS() ) {
+				aprovaOrdemServico();
+			}
+			else if ( podeAtualizarOS() ) {
+				atualizaOrdemServico();
+			}			
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
+		
+
 		
 		JButton btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(a -> {
@@ -263,35 +265,41 @@ public class AcompanharOrdemServico extends JPanel {
 		add(btnBuscar);
 	}
 	
+	private boolean podeAprovarOS() {
+		return textFieldStatus.getText().equals("Aberto");
+	}
+	
+	public boolean podeAtualizarOS() {
+		return ( textFieldStatus.getText().equals("Aprovado") || textFieldStatus.getText().equals("Execucao") );
+	}
+	
 	private void aprovaOrdemServico() {
-//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();    TODO Testa se estado = aprovado ANTES de entrar no m�todo (sim faz, else � pra ser bloqueado o salvar e comboBox, e permitir somente atualiza��o dos OsServicos e OsProdutos)
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
-		
 		if(salvou){
-			JOptionPane.showMessageDialog(null, "Ordem de servico salva com sucesso.. ( MUDAR MENSAGEM)");
+			JOptionPane.showMessageDialog(null, "Ordem de servico aprovado com sucesso");
+			textFieldStatus.setText("Aprovado");
+			permiteAtualizarOS();
 		}else{
 			JOptionPane.showMessageDialog(null, "Não foi possível salvar a ordem de serviço.. ( MUDAR MENSAGEM)");
 		}
+		
 	}
 	
 	private void atualizaOrdemServico() {
-//    TODO Testa se estado = aprovado ANTES de entrar no m�todo (sim faz, else � pra ser bloqueado o salvar e comboBox, e permitir somente atualiza��o dos OsServicos e OsProdutos)
-//		String estadoSelecionado = (String) comboBoxStatus.getSelectedItem();
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
-		
 		if(atualizou){
-			JOptionPane.showMessageDialog(null, "Ordem de servico salva com sucesso.. ( MUDAR MENSAGEM)");
+			JOptionPane.showMessageDialog(null, "Ordem de servico atualizado com sucesso");
 		}else{
 			JOptionPane.showMessageDialog(null, "Não foi possível salvar a ordem de serviço.. ( MUDAR MENSAGEM)");
 		}
 	}
 	
 	private ArrayList<OsProdutos> constroiProdutos() {
-		 ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
+		ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
 				OsProdutos osProduto = new OsProdutos();
@@ -322,13 +330,19 @@ public class AcompanharOrdemServico extends JPanel {
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
-            	return selecionado[columnIndex];
-            }
-            else {
-            	setValueAt("0", rowIndex, 3);
-            	return naoSelecionado[columnIndex];
-            }
+        	if( podeAtualizarOS() ) {
+	        	if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
+	            	return selecionado[columnIndex];
+	            }
+	            else {
+	            	setValueAt("0", rowIndex, 3);
+	            	return naoSelecionado[columnIndex];
+	            }
+        	} else {
+            	return false;
+        	}
+            
+            
         }
         
         @Override
@@ -369,17 +383,22 @@ public class AcompanharOrdemServico extends JPanel {
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
-            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
-            		return selecionadoPorHora[columnIndex];
-            	} else {
-            		return selecionado[columnIndex];
-            	}
-            }
-            else {
-            	setValueAt("0", rowIndex, 4);
-            	return naoSelecionado[columnIndex];
-            }
+        	
+        	if ( podeAtualizarOS() ) {
+	            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
+	            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
+	            		return selecionadoPorHora[columnIndex];
+	            	} else {
+	            		return selecionado[columnIndex];
+	            	}
+	            }
+	            else {
+	            	setValueAt("0", rowIndex, 4);
+	            	return naoSelecionado[columnIndex];
+	            }
+        	} else {
+            	return false;
+        	}
         }
 	
         @Override
@@ -426,61 +445,129 @@ public class AcompanharOrdemServico extends JPanel {
         }   
 	};
 
+//	private void preencheDados() {
+//		if(ordemServico != null){
+//			textFieldDataCriacao.setText(ordemServico.getDataCriacao());
+//			textFieldTotal.setText(ordemServico.getTotal());
+//			
+//			if (clienteJuridicoAtual != null) {
+//				textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
+//				textFieldNome.setText(clienteJuridicoAtual.getNome());
+//				textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
+//			} else {
+//				textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
+//				textFieldNome.setText(clienteFisicoAtual.getNome());
+//				textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
+//			}
+//			textFieldPlaca.setText(veiculoAtual.getPlaca());
+//			textFieldModelo.setText(veiculoAtual.getModelo());
+//			textFieldAno.setText(veiculoAtual.getAno());
+//			
+//			if(ordemServico.getEstaExpirado()){
+//				textFieldStatus.setText("Expirado!");
+//				textFieldStatus.setForeground(Color.RED);
+//				bloqueiaEdicao();
+//			}else {
+//				permiteEdicao();
+//				informaStatusOrdemServico();
+//				textFieldStatus.setForeground(Color.BLACK);
+//			}
+//		}
+//
+//	}
+	
 	private void preencheDados() {
 		if(ordemServico != null){
-			textFieldDataCriacao.setText(ordemServico.getDataCriacao());
-			textFieldTotal.setText(ordemServico.getTotal());
-			
+			String dataCriacao;
+			String total;
+			String cnpj;
+			String cpf;
+			String nome;
+			String telefone;
+			String placa;
+			String modelo;
+			String ano;
+			boolean estaExpirado;
+
+			dataCriacao = ordemServico.getDataCriacao();
+			textFieldDataCriacao.setText(dataCriacao);
+
+			total = ordemServico.getTotal();
+			textFieldTotal.setText(total);
+
 			if (clienteJuridicoAtual != null) {
-				textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
-				textFieldNome.setText(clienteJuridicoAtual.getNome());
-				textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
+				cnpj = clienteJuridicoAtual.getCnpj();
+				textFieldCpfCnpj.setText(cnpj);
+				nome = clienteJuridicoAtual.getNome();
+				textFieldNome.setText(nome);
+				telefone = clienteJuridicoAtual.getTelefone();
+				textFieldTelefone.setText(telefone);
 			} else {
-				textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
-				textFieldNome.setText(clienteFisicoAtual.getNome());
-				textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
+				cpf = clienteFisicoAtual.getCpf();
+				textFieldCpfCnpj.setText(cpf);
+				nome = clienteFisicoAtual.getNome();
+				textFieldNome.setText(nome);
+				telefone = clienteFisicoAtual.getTelefone();
+				textFieldTelefone.setText(telefone);
 			}
-			textFieldPlaca.setText(veiculoAtual.getPlaca());
-			textFieldModelo.setText(veiculoAtual.getModelo());
-			textFieldAno.setText(veiculoAtual.getAno());
-			
-			if(ordemServico.getEstaExpirado()){
+			placa = veiculoAtual.getPlaca();
+			textFieldPlaca.setText(placa);
+			modelo = veiculoAtual.getModelo();
+			textFieldModelo.setText(modelo);
+			ano = veiculoAtual.getAno();
+			textFieldAno.setText(ano);
+
+			estaExpirado = ordemServico.getEstaExpirado();
+			bloqueiaEdicaoOS();
+			if(estaExpirado){
 				textFieldStatus.setText("Expirado!");
 				textFieldStatus.setForeground(Color.RED);
-					bloqueiaCampos();
-			}else{
+			}else {
 				informaStatusOrdemServico();
 				textFieldStatus.setForeground(Color.BLACK);
 			}
-		}
 
+		}
 	}
 
 	private void informaStatusOrdemServico() {
-		if(ordemServico.getDataAprovado() != null){
-			textFieldStatus.setText("Aprovado");
-		}else if (ordemServico.getDataCancelado()!= null){
+		if (ordemServico.getDataCancelado()!= null) {
 			textFieldStatus.setText("Cancelado");
-		}else if( ordemServico.getDataCriacao() != null){
-			textFieldStatus.setText("Aberto");
-		}else if ( ordemServico.getDataExecucao() != null){
-			textFieldStatus.setText("Execução");
-		}else if ( ordemServico.getDataFinalizado() != null){
+		}else if ( ordemServico.getDataFinalizado() != null) {
 			textFieldStatus.setText("Finalizado");
+		}else if ( ordemServico.getDataExecucao() != null) {
+			textFieldStatus.setText("Execu��o");
+			permiteAtualizarOS();
+		}else if(ordemServico.getDataAprovado() != null) {
+			textFieldStatus.setText("Aprovado");
+			permiteAtualizarOS();
+		}else {
+			textFieldStatus.setText("Aberto");
+			permiteAprovarOS();
 		}
 	}
 
-	private void bloqueiaCampos() {
-		// TODO bloquear todos os campos
+	private void bloqueiaEdicaoOS() {
+		btnSalvar.setText("");
 		btnSalvar.setEnabled(false);
-		
+		btnSalvar.setVisible(false);
 	}
 
+	private void permiteAtualizarOS() {
+		btnSalvar.setText("Atualizar");
+		btnSalvar.setEnabled(true);
+		btnSalvar.setVisible(true);
+	}
+	private void permiteAprovarOS() {
+		btnSalvar.setText("Aprovar OS");
+		btnSalvar.setEnabled(true);
+		btnSalvar.setVisible(true);
+	}
+	
 	private void buscaOrdemServico() {
 		try {
 			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
 			if(ordemServico != null){
-				System.out.println("ordemServico.getEstaExpirado()" + ordemServico.getEstaExpirado());
 				ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
 				populaTabelaProduto(osProdutos);
 				ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
@@ -499,26 +586,7 @@ public class AcompanharOrdemServico extends JPanel {
 		}
 	}
 
-//	private void verificaExpirou() {
-//		try {
-//			Calendar agora = Calendar.getInstance();
-//			agora.setTime(new Date());//data maior
-//			
-//			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-//			Calendar dataCriacao = Calendar.getInstance();
-//			dataCriacao.setTime(format.parse(ordemServico.getDataCriacao()));
-//			agora.add(Calendar.DATE, - dataCriacao.get(Calendar.DAY_OF_MONTH));
-//			if ( agora.get(Calendar.DAY_OF_MONTH) > 15){
-//				ordemServico.setEstaExpirado(true);
-//				new OrdemServicoController().expiraOrdemServico(ordemServico.getIdOrdemDeServico());
-//			}
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
 	public void preencheDadosVeiculo(Veiculo veiculo) {
-		System.out.println("Veiculo : " + veiculo.getIdVeiculo());
 		if (veiculo != null) {
 			this.veiculoAtual = veiculo;
 			textFieldPlaca.setText(veiculo.getPlaca());
@@ -534,8 +602,6 @@ public class AcompanharOrdemServico extends JPanel {
 				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
 				parcialStrProd = parcialStrProd.replace(",", ".");
 				parcialDoubleProduto = Double.parseDouble(parcialStrProd);
-				System.out.println("aqui no produto");
-				System.out.println("parcial: " + parcialDoubleProduto);
 				valorDoubleTotal += parcialDoubleProduto;
 			}
 		}
@@ -545,8 +611,6 @@ public class AcompanharOrdemServico extends JPanel {
 				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
 				parcialStrServ = parcialStrServ.replace(",", ".");
 				parcialDoubleServico = Double.parseDouble(parcialStrServ);
-				System.out.println("aqui no servico");
-				System.out.println("parcial: " + parcialDoubleServico);
 				valorDoubleTotal += parcialDoubleServico;	
 			}
 		}
