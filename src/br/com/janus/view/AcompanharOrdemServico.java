@@ -227,7 +227,13 @@ public class AcompanharOrdemServico extends JPanel {
 			}
 			else if ( podeAtualizarOS() ) {
 				atualizaOrdemServico();
-			}			
+			}
+			try {
+				GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);

@@ -85,13 +85,17 @@ public class OrdemServicoController {
 
 	private void atualizaOsServicos(Integer idOrdemServico, ArrayList<OsServicos> osServicos) {
 		try {
+			PreparedStatement rm = (PreparedStatement) conexao.prepareStatement(
+					"delete from osservico where idordemdeservico = ?");
+			rm.setInt(1, idOrdemServico);
+			rm.execute();	
 			for (OsServicos osServico : osServicos) {
-				PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-						"update osservico set qtdporhora=?,quantidade=? "+"where idordemdeservico = ? and idservico = ? ");
-				st.setInt(1, osServico.getQtdPorHora());
-				st.setInt(2, osServico.getQuantidade());
-				st.setInt(3, idOrdemServico);
-				st.setInt(4, osServico.getIdServico());
+				PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into osservico "
+						+ "(idordemdeservico,idservico,quantidade,qtdporhora) " + "values (?,?,?,?)");
+				st.setInt(1, idOrdemServico);
+				st.setInt(2, osServico.getIdServico());
+				st.setInt(3, osServico.getQuantidade());
+				st.setInt(4, osServico.getQtdPorHora());
 				st.execute();
 			}
 		} catch (SQLException e) {
@@ -102,12 +106,16 @@ public class OrdemServicoController {
 
 	private void atualizaOsProdutos(Integer idOrdemServico, ArrayList<OsProdutos> osProdutos) {
 		try {
+			PreparedStatement rm = (PreparedStatement) conexao.prepareStatement(
+					"delete from osproduto where idordemdeservico = ?");
+			rm.setInt(1, idOrdemServico);
+			rm.execute();
 			for (OsProdutos osProduto : osProdutos) {
 				PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
-						"update osproduto set quantidade=? where idordemdeservico = ? and idproduto = ? ");
-				st.setInt(1, osProduto.getQuantidade());
-				st.setInt(2, idOrdemServico);
-				st.setInt(3, osProduto.getIdProduto());
+						"insert into osproduto " + "(idordemdeservico,idproduto,quantidade) " + "values (?,?,?)");
+				st.setInt(1, idOrdemServico);
+				st.setInt(2, osProduto.getIdProduto());
+				st.setInt(3, osProduto.getQuantidade());
 				st.execute();
 			}
 		} catch (SQLException e) {
