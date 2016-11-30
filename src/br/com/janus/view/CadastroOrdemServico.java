@@ -55,9 +55,9 @@ public class CadastroOrdemServico extends JPanel {
 	private JTable tabelaServico;
 	private JTable tabelaProduto;
 	
-	private Double parcialDoubleServico = 0.0;
-	private Double parcialDoubleProduto = 0.0;
-	private Double valorDoubleTotal = 0.0;
+	private Float parcialFloatServico = 0.00f;
+	private Float parcialFloatProduto = 0.00f;
+	private Float valorFloatTotal = 0.00f;
 	
 	private ClienteFisico clienteFisicoAtual;
 	private ClienteJuridico clienteJuridicoAtual;
@@ -90,14 +90,14 @@ public class CadastroOrdemServico extends JPanel {
         	if (column == 4) {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
+                	float valor = Float.parseFloat(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
+                    float resultado = 0.00f;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
                     resultado = valor * quantidade;
-                    String resultadoStr = String.valueOf(resultado);
+                    String resultadoStr = String.format("%.2f", resultado);
                     resultadoStr = resultadoStr.replace(".", ",");
                     return resultadoStr;
             }
@@ -143,10 +143,10 @@ public class CadastroOrdemServico extends JPanel {
                 } else {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
+                	float valor = Float.parseFloat(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
                 	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
+                    float resultado = 0.00f;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
@@ -155,7 +155,7 @@ public class CadastroOrdemServico extends JPanel {
                     } else {
                     	resultado = valor * quantidade;
                     }
-                    String resultadoStr = String.valueOf(resultado);
+                    String resultadoStr = String.format("%.2f", resultado);
                     resultadoStr = resultadoStr.replace(".", ",");
                     return resultadoStr;
                 }
@@ -361,7 +361,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldTotal.setEditable(false);
 		textFieldTotal.setBounds(478, 525, 86, 25);
 		textFieldTotal.setColumns(10);
-		textFieldTotal.setText("0,0");
+		textFieldTotal.setText("0,00");
 		add(textFieldTotal);
 		
 		JButton btnCancelar = new JButton("Cancelar");
@@ -627,15 +627,13 @@ public class CadastroOrdemServico extends JPanel {
 	}
 	
 	public void preencheValorTotalOrdemServico() {
-        valorDoubleTotal = 0.0;
+        valorFloatTotal = 0.00f;
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
 			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
 				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
 				parcialStrProd = parcialStrProd.replace(",", ".");
-				parcialDoubleProduto = Double.parseDouble(parcialStrProd);
-				System.out.println("aqui no produto");
-				System.out.println("parcial: " + parcialDoubleProduto);
-				valorDoubleTotal += parcialDoubleProduto;
+				parcialFloatProduto = Float.parseFloat(parcialStrProd);
+				valorFloatTotal += parcialFloatProduto;
 			}
 		}
 
@@ -643,13 +641,11 @@ public class CadastroOrdemServico extends JPanel {
 			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
 				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
 				parcialStrServ = parcialStrServ.replace(",", ".");
-				parcialDoubleServico = Double.parseDouble(parcialStrServ);
-				System.out.println("aqui no servico");
-				System.out.println("parcial: " + parcialDoubleServico);
-				valorDoubleTotal += parcialDoubleServico;	
+				parcialFloatServico = Float.parseFloat(parcialStrServ);
+				valorFloatTotal += parcialFloatServico;	
 			}
 		}
-		String valorStrTotal = valorDoubleTotal.toString();
+		String valorStrTotal = String.format("%.2f", valorFloatTotal);
 		valorStrTotal = valorStrTotal.replace(".", ",");
 		textFieldTotal.setText(valorStrTotal);
 	}

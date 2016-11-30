@@ -137,7 +137,9 @@ public class GerenciarOrdemServico extends JPanel {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			tabelaModeloAprovados.addRow(new Object[]{ordemServico.getIdOrdemDeServico(), cliente.getNome()});
+			int idOrdemDeServico = ordemServico.getIdOrdemDeServico();
+			String nome = cliente.getNome();
+			tabelaModeloAprovados.addRow(new Object[]{idOrdemDeServico, nome});
 		}
 	}
 	
@@ -179,7 +181,9 @@ public class GerenciarOrdemServico extends JPanel {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			tabelaModeloExecucao.addRow(new Object[]{ordemServico.getIdOrdemDeServico(), cliente.getNome()});
+			int idOrdemDeServico = ordemServico.getIdOrdemDeServico();
+			String nome = cliente.getNome();
+			tabelaModeloExecucao.addRow(new Object[]{idOrdemDeServico, nome});
 		}
 	}
 	
