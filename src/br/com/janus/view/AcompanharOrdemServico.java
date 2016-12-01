@@ -55,9 +55,9 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
 
-	private Double parcialDoubleServico = 0.0;
-	private Double parcialDoubleProduto = 0.0;
-	private Double valorDoubleTotal = 0.0;
+	private Float parcialFloatServico = 0.00f;
+	private Float parcialFloatProduto = 0.00f;
+	private Float valorFloatTotal = 0.00f;
 	
 	private OrdemServico ordemServico;
 	private ClienteFisico clienteFisicoAtual;
@@ -166,7 +166,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("Veículo:");
+		JLabel lblVeiculo = new JLabel("Veï¿½culo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -185,7 +185,7 @@ public class AcompanharOrdemServico extends JPanel {
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		JLabel lblServico = new JLabel("Serviços:");
+		JLabel lblServico = new JLabel("Serviï¿½os:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
@@ -213,7 +213,14 @@ public class AcompanharOrdemServico extends JPanel {
 		
 		btnSalvar = new JButton("");
 		btnSalvar.addActionListener(a -> {
-			salvarAlteracoes();
+			String dataAtual = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+			salvarAlteracoes(dataAtual);
+			try {
+				GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -246,8 +253,8 @@ public class AcompanharOrdemServico extends JPanel {
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(a -> {
 			if( !textFieldOrdemServico.getText().equals("") ){
-				buscaOrdemServico();
-				preencheDados();
+				int idOrdemServico = Integer.parseInt(textFieldOrdemServico.getText());
+				buscaOrdemServico(idOrdemServico);
 			}
 		});
 		btnBuscar.setBounds(221, 70, 90, 25);
@@ -262,22 +269,17 @@ public class AcompanharOrdemServico extends JPanel {
 		return ( textFieldStatus.getText().equals("Aprovado") || textFieldStatus.getText().equals("Execucao") );
 	}
 	
-	private void aprovaOrdemServico() {
+	private void aprovaOrdemServico(String dataAtual) {
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
-		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
+		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, dataAtual);
 		if(salvou){
 			mostraMensagem("Ordem de servico aprovado com sucesso");
-			textFieldStatus.setText("Aprovado");
+			preencherCampoStatus("Aprovado");
 			permiteAtualizarOS();
 		}else{
-			mostraMensagem("Erro! Não foi possível realizar a operação");
+			mostraMensagem("Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o");
 
-		}
-		try {
-			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -292,12 +294,7 @@ public class AcompanharOrdemServico extends JPanel {
 		if(atualizou){
 			mostraMensagem("Ordem de servico atualizado com sucesso");
 		}else{
-			mostraMensagem("Erro! Não foi possível realizar a operação");
-		}
-		try {
-			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
-		} catch (Exception e) {
-			e.printStackTrace();
+			mostraMensagem("Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o");
 		}
 	}
 	
@@ -356,9 +353,9 @@ public class AcompanharOrdemServico extends JPanel {
                 } else {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
+                	float valor = Float.parseFloat(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
+                    float resultado = 0.00f;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
@@ -375,7 +372,30 @@ public class AcompanharOrdemServico extends JPanel {
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
             
-            preencheValorTotalOrdemServico();
+            
+            valorFloatTotal = 0.00f;
+    		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+    			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+    				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
+    				parcialStrProd = parcialStrProd.replace(",", ".");
+    				parcialFloatProduto = Float.parseFloat(parcialStrProd);
+    				valorFloatTotal += parcialFloatProduto;
+    			}
+    		}
+
+    		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+    			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+    				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
+    				parcialStrServ = parcialStrServ.replace(",", ".");
+    				parcialFloatServico = Float.parseFloat(parcialStrServ);
+    				valorFloatTotal += parcialFloatServico;	
+    			}
+    		}
+    		String valorStrTotal = valorFloatTotal.toString();
+    		valorStrTotal = valorStrTotal.replace(".", ",");
+    		textFieldTotal.setText(valorStrTotal);
+
+            
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
@@ -412,10 +432,10 @@ public class AcompanharOrdemServico extends JPanel {
                 } else {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
-                	double valor = Double.parseDouble(valorStr);
+                	float valor = Float.parseFloat(valorStr);
                 	Integer quantidade = Integer.parseInt(getValueAt(row, 4).toString());
                 	Integer valorPorHora = Integer.parseInt(getValueAt(row, 3).toString());
-                    double resultado = 0.0;
+                    float resultado = 0.00f;
                     if (quantidade < 0) {
                     	quantidade = 0;
                     }
@@ -443,7 +463,29 @@ public class AcompanharOrdemServico extends JPanel {
             	}
             }
             
-            preencheValorTotalOrdemServico();
+
+            valorFloatTotal = 0.00f;
+    		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+    			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+    				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
+    				parcialStrProd = parcialStrProd.replace(",", ".");
+    				parcialFloatProduto = Float.parseFloat(parcialStrProd);
+    				valorFloatTotal += parcialFloatProduto;
+    			}
+    		}
+
+    		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+    			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+    				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
+    				parcialStrServ = parcialStrServ.replace(",", ".");
+    				parcialFloatServico = Float.parseFloat(parcialStrServ);
+    				valorFloatTotal += parcialFloatServico;	
+    			}
+    		}
+    		String valorStrTotal = valorFloatTotal.toString();
+    		valorStrTotal = valorStrTotal.replace(".", ",");
+    		textFieldTotal.setText(valorStrTotal);
+
            	fireTableCellUpdated(row, 5);
         }   
 	};
@@ -495,28 +537,38 @@ public class AcompanharOrdemServico extends JPanel {
 				textFieldStatus.setText("Expirado!");
 				textFieldStatus.setForeground(Color.RED);
 			}else {
-				informaStatusOrdemServico();
+				verificaStatusOrdemServico();
+
 				textFieldStatus.setForeground(Color.BLACK);
 			}
 
 		}
 	}
 
-	private void informaStatusOrdemServico() {
-		if (ordemServico.getDataCancelado()!= null) {
-			textFieldStatus.setText("Cancelado");
-		}else if ( ordemServico.getDataFinalizado() != null) {
-			textFieldStatus.setText("Finalizado");
-		}else if ( ordemServico.getDataExecucao() != null) {
-			textFieldStatus.setText("Execução");
+	private void verificaStatusOrdemServico() {
+		boolean estaCancelado = ordemServico.getDataCancelado()!= null;
+		boolean estaFinalizado = ordemServico.getDataFinalizado() != null;
+		boolean estaExecutando = ordemServico.getDataExecucao() != null;
+		boolean estaAprovado = ordemServico.getDataAprovado() != null;
+			
+		if (estaCancelado) {
+			preencherCampoStatus("Cancelado");
+		}else if (estaFinalizado) {
+			preencherCampoStatus("Finalizado");
+		}else if (estaExecutando) {
+			preencherCampoStatus("Execuï¿½ï¿½o");
 			permiteAtualizarOS();
-		}else if(ordemServico.getDataAprovado() != null) {
-			textFieldStatus.setText("Aprovado");
+		}else if(estaAprovado) {
+			preencherCampoStatus("Aprovado");
 			permiteAtualizarOS();
 		}else {
-			textFieldStatus.setText("Aberto");
+			preencherCampoStatus("Aberto");
 			permiteAprovarOS();
 		}
+	}
+	
+	private void preencherCampoStatus(String status) {
+		textFieldStatus.setText(status);
 	}
 
 	private void bloqueiaEdicaoOS() {
@@ -525,25 +577,25 @@ public class AcompanharOrdemServico extends JPanel {
 		btnSalvar.setVisible(false);
 	}
 
+
 	private void permiteAtualizarOS() {
 		btnSalvar.setText("Atualizar");
 		btnSalvar.setEnabled(true);
 		btnSalvar.setVisible(true);
 	}
+
 	private void permiteAprovarOS() {
 		btnSalvar.setText("Aprovar OS");
 		btnSalvar.setEnabled(true);
 		btnSalvar.setVisible(true);
 	}
 	
-	public void salvarAlteracoes() {
-		boolean podeAprovar = podeAprovarOS();
 
-		
+	public void salvarAlteracoes(String dataAtual) {
+		boolean podeAprovar = podeAprovarOS();
 		if (podeAprovar) {
-			aprovaOrdemServico();
-		}
-		else {
+			aprovaOrdemServico(dataAtual);
+		} else {
 			boolean podeAtualizar = podeAtualizarOS();
 			if (podeAtualizar) {
 				atualizaOrdemServico();
@@ -551,22 +603,28 @@ public class AcompanharOrdemServico extends JPanel {
 		}
 	}
 	
-	private void buscaOrdemServico() {
+	
+
+	private void buscaOrdemServico(Integer idOrdemServico) {
 		try {
-			ordemServico = new OrdemServicoController().buscaOrdemServico(Integer.parseInt(textFieldOrdemServico.getText()));
+			ordemServico = new OrdemServicoController().buscaOrdemServico(idOrdemServico);
 			if(ordemServico != null){
-				ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(ordemServico.getIdOrdemDeServico());
+				int idOrdemDeServico = ordemServico.getIdOrdemDeServico();
+				int idCliente = ordemServico.getIdCliente();
+				int idVeiculo = ordemServico.getIdVeiculo();
+				ArrayList<OsProdutos> osProdutos = new OrdemServicoController().buscaProdutosOrdemServico(idOrdemDeServico);
+				ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(idOrdemDeServico);
 				populaTabelaProduto(osProdutos);
-				ArrayList<OsServicos> osServicos = new OrdemServicoController().buscaServicosOrdemServico(ordemServico.getIdOrdemDeServico());
 				populaTabelaServico(osServicos);
-				boolean ehClienteFisico = new ClienteController().verificaClienteFisico(ordemServico.getIdCliente());
+				boolean ehClienteFisico = new ClienteController().verificaClienteFisico(idCliente);
 				if(ehClienteFisico){
-					clienteFisicoAtual = new ClienteController().buscaDadosclienteFisicoId(ordemServico.getIdCliente());
+					clienteFisicoAtual = new ClienteController().buscaDadosclienteFisicoId(idCliente);
 				}else{
-					clienteJuridicoAtual = new ClienteController().buscaDadosclienteJuridicoId(ordemServico.getIdCliente());
+					clienteJuridicoAtual = new ClienteController().buscaDadosclienteJuridicoId(idCliente);
 				}
-				veiculoAtual = new VeiculoController().buscaDadosVeiculoId(ordemServico.getIdVeiculo());
-				informaStatusOrdemServico();
+				veiculoAtual = new VeiculoController().buscaDadosVeiculoId(idVeiculo);
+				verificaStatusOrdemServico();
+				preencheDados();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -582,29 +640,6 @@ public class AcompanharOrdemServico extends JPanel {
 		}
 	}
 
-	public void preencheValorTotalOrdemServico() {
-        valorDoubleTotal = 0.0;
-		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
-			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
-				String parcialStrProd = tabelaModeloProduto.getValueAt(i, 4).toString();
-				parcialStrProd = parcialStrProd.replace(",", ".");
-				parcialDoubleProduto = Double.parseDouble(parcialStrProd);
-				valorDoubleTotal += parcialDoubleProduto;
-			}
-		}
-
-		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
-			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
-				String parcialStrServ = tabelaModeloServico.getValueAt(i, 5).toString();
-				parcialStrServ = parcialStrServ.replace(",", ".");
-				parcialDoubleServico = Double.parseDouble(parcialStrServ);
-				valorDoubleTotal += parcialDoubleServico;	
-			}
-		}
-		String valorStrTotal = valorDoubleTotal.toString();
-		valorStrTotal = valorStrTotal.replace(".", ",");
-		textFieldTotal.setText(valorStrTotal);
-	}
 
 	private void populaTabelaProduto(ArrayList<OsProdutos> osProdutos) {
 		while (tabelaModeloProduto.getRowCount() > 0) {
