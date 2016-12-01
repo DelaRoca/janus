@@ -54,6 +54,8 @@ public class CadastroOrdemServico extends JPanel {
 	private JRadioButton rdbtnCnpj;
 	private JButton btnSalvar;
 	private JButton btnBuscarVeiculo;
+	private boolean veiculoPreenchido = false;
+	private boolean clientePreenchido = false;
 	
 	private JTable tabelaServico;
 	private JTable tabelaProduto;
@@ -321,6 +323,7 @@ public class CadastroOrdemServico extends JPanel {
 
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
+//TODO
 			salvaOrdemServico();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
@@ -331,15 +334,59 @@ public class CadastroOrdemServico extends JPanel {
 		btnBuscarVeiculo.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnBuscarVeiculo.setBounds(774, 150, 88, 25);
 		btnBuscarVeiculo.addActionListener(a -> {
-			buscarVeiculo();
+			String placa = this.textFieldPlaca.getText();
+			veiculoPreenchido = buscarVeiculo(placa);
+			if (!veiculoPreenchido) {
+				textFieldModelo.setText("");
+				textFieldModelo.repaint();
+				textFieldAno.setText("");
+				textFieldAno.repaint();
+			} else if (clientePreenchido) {
+				populaTabelaProduto();
+				populaTabelaServico();
+				btnSalvar.setEnabled(true);;
+			}
 		});
 		add(btnBuscarVeiculo);
-		btnBuscarVeiculo.setEnabled(false);
 		
 		JButton btnBuscarCliente = new JButton("Buscar");
 		btnBuscarCliente.setBounds(329, 149, 90, 25);
 		btnBuscarCliente.addActionListener(a -> {
-			buscarCliente();
+			String cpf = this.textFieldCpf.getText();
+			cpf	 = cpf.replace(".", "");
+			cpf	 = cpf.replace("/", "");
+			cpf	 = cpf.replace("-", "");
+			cpf	 = cpf.replace(" ", "");
+			try{
+				Long.parseLong(cpf);
+			}catch (Exception e) {
+				cpf = "";
+			}
+			String cnpj = this.textFieldCnpj.getText();
+			cnpj	 = cnpj.replace(".", "");
+			cnpj	 = cnpj.replace("/", "");
+			cnpj	 = cnpj.replace("-", "");
+			cnpj	 = cnpj.replace(" ", "");
+			try{
+				Long.parseLong(cnpj);
+			}catch (Exception e) {
+				cnpj = "";
+			}
+			boolean cpfPreenchido = !cpf.isEmpty();
+			boolean cnpjPreenchido = !cnpj.isEmpty();
+			clientePreenchido = buscarCliente(cpf, cpfPreenchido, cnpj, cnpjPreenchido);
+			
+			if (!clientePreenchido) {
+				textFieldTelefone.setText("");
+				textFieldTelefone.setValue("");
+				textFieldTelefone.repaint();
+				textFieldNome.setText("");
+				textFieldNome.repaint();
+			} else if(veiculoPreenchido) {
+				populaTabelaProduto();
+				populaTabelaServico();
+				btnSalvar.setEnabled(true);;
+			}
 		});
 		add(btnBuscarCliente);
 
@@ -372,12 +419,12 @@ public class CadastroOrdemServico extends JPanel {
 		lblProduto.setBounds(10, 297, 67, 14);
 		add(lblProduto);
 
-		populaTabelaProduto();
+		criaTabelaProduto();
 		JScrollPane scrollP = new JScrollPane(tabelaProduto);
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		populaTabelaServicos();
+		criaTabelaServicos();
 		JScrollPane scrollS = new JScrollPane(tabelaServico);
 		scrollS.setBounds(510, 315, 480, 196);
 		add(scrollS);
@@ -431,7 +478,6 @@ public class CadastroOrdemServico extends JPanel {
 			textFieldTelefone.repaint();
 			textFieldNome.setText("");
 			textFieldNome.repaint();
-			btnBuscarVeiculo.setEnabled(false);
 		});
 		add(rdbtnCpf);
 
@@ -449,7 +495,6 @@ public class CadastroOrdemServico extends JPanel {
 			textFieldTelefone.repaint();
 			textFieldNome.setText("");
 			textFieldNome.repaint();
-			btnBuscarVeiculo.setEnabled(false);
 		});
 		add(rdbtnCnpj);
 		
@@ -459,38 +504,11 @@ public class CadastroOrdemServico extends JPanel {
 	}
 
 	private void salvaOrdemServico() {
-		OrdemServico ordemServico =constroiOrdemServico();
+		OrdemServico ordemServico = constroiOrdemServico();
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
 		
-	}
-
-	private ArrayList<OsProdutos> constroiProdutos() {
-		 ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
-		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
-			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
-				OsProdutos osProduto = new OsProdutos();
-				osProduto.setIdProduto(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 5).toString()));
-				osProduto.setQuantidade(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 3).toString()));
-				osProdutos.add(osProduto);
-			}
-		}
-		return osProdutos;
-	}
-
-	private ArrayList<OsServicos> constroiServicos() {
-		ArrayList<OsServicos> osServicos = new ArrayList<OsServicos>();
-		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
-			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
-				OsServicos osServico = new OsServicos();
-				osServico.setQtdPorHora(Integer.parseInt(tabelaModeloServico.getValueAt(i, 3).toString()));
-				osServico.setQuantidade(Integer.parseInt(tabelaModeloServico.getValueAt(i, 4).toString()));
-				osServico.setIdServico(Integer.parseInt(tabelaModeloServico.getValueAt(i, 6).toString()));
-				osServicos.add(osServico);
-			}
-		}
-		return osServicos;
 	}
 
 	private OrdemServico constroiOrdemServico() {
@@ -505,8 +523,35 @@ public class CadastroOrdemServico extends JPanel {
 		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
 		return ordemServico;
 	}
+	
+	private ArrayList<OsServicos> constroiServicos() {
+		ArrayList<OsServicos> osServicos = new ArrayList<OsServicos>();
+		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
+			if (((Boolean) tabelaModeloServico.getValueAt(i, 0)).booleanValue()){
+				OsServicos osServico = new OsServicos();
+				osServico.setQtdPorHora(Integer.parseInt(tabelaModeloServico.getValueAt(i, 3).toString()));
+				osServico.setQuantidade(Integer.parseInt(tabelaModeloServico.getValueAt(i, 4).toString()));
+				osServico.setIdServico(Integer.parseInt(tabelaModeloServico.getValueAt(i, 6).toString()));
+				osServicos.add(osServico);
+			}
+		}
+		return osServicos;
+	}
+	
+	private ArrayList<OsProdutos> constroiProdutos() {
+		 ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
+		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
+			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
+				OsProdutos osProduto = new OsProdutos();
+				osProduto.setIdProduto(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 5).toString()));
+				osProduto.setQuantidade(Integer.parseInt(tabelaModeloProduto.getValueAt(i, 3).toString()));
+				osProdutos.add(osProduto);
+			}
+		}
+		return osProdutos;
+	}
 
-	private void populaTabelaServicos() {
+	private void criaTabelaServicos() {
 		tabelaServico = new JTable(tabelaModeloServico){
             private static final long serialVersionUID = 1L;
 
@@ -549,8 +594,18 @@ public class CadastroOrdemServico extends JPanel {
 		tabelaServico.getColumnModel().getColumn(5).setPreferredWidth(70);
 		tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
 		tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
-
-        servicos = new ServicoController().buscaServicos();
+	}
+	
+	private void limpaTabelaServico() {
+		while (tabelaModeloServico.getRowCount() > 0) {
+			tabelaModeloServico.removeRow(0);
+		}
+	}
+	
+	private void populaTabelaServico() {
+		limpaTabelaServico();
+		
+		servicos = new ServicoController().buscaServicos();
 		for (Servico servico : servicos) {
 			int porHora = 0;
 			if(servico.getPorHora()){
@@ -561,8 +616,8 @@ public class CadastroOrdemServico extends JPanel {
 			
 		}
 	}
-
-	private void populaTabelaProduto() {
+	
+	private void criaTabelaProduto() {
 		tabelaProduto = new JTable(tabelaModeloProduto){
 
             private static final long serialVersionUID = 1L;
@@ -600,27 +655,37 @@ public class CadastroOrdemServico extends JPanel {
 		tabelaProduto.getColumnModel().getColumn(4).setPreferredWidth(70);
         tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
         tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
-        
+    }
+	
+	private void limpaTabelaProduto() {
+		while (tabelaModeloProduto.getRowCount() > 0) {
+			tabelaModeloProduto.removeRow(0);
+		}
+	}
+	
+	private void populaTabelaProduto() {
+		limpaTabelaProduto();
+		
         produtos = new ProdutoController().buscaProdutos();
 		for (Produto produto : produtos) {
 			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0,00", produto.getIdProduto()});
 		}
 	}
 	
-	public void preencheDadosClienteJuridico(ClienteJuridico clienteJuridico) {
-		if (clienteJuridico != null) {
+	public boolean preencheDadosClienteJuridico(ClienteJuridico clienteJuridico) {
 			this.clienteJuridicoAtual = clienteJuridico;
 			textFieldCnpj.setText(clienteJuridico.getCnpj());
 			textFieldNome.setText(clienteJuridico.getNome());
 			textFieldTelefone.setText(clienteJuridico.getTelefone());
-		}
+			return true;
 	}
 	
-	private void preencheDadosClienteFisico(ClienteFisico clienteFisico) {
+	private boolean preencheDadosClienteFisico(ClienteFisico clienteFisico) {
 		this.clienteFisicoAtual = clienteFisico;
 		textFieldCpf.setText(clienteFisico.getCpf());
 		textFieldNome.setText(clienteFisico.getNome());
 		textFieldTelefone.setText(clienteFisico.getTelefone());
+		return true;
 	}
 	
 	public void preencheDadosVeiculo(Veiculo veiculo) {
@@ -674,66 +739,36 @@ public class CadastroOrdemServico extends JPanel {
 		return cpfCnpj;
 	}
 	
-	private void buscarCliente() {
-		String cpf = this.textFieldCpf.getText();
-		String cnpj = this.textFieldCnpj.getText();
-		cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
-		cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
-		
+	private boolean buscarCliente(String cpf, boolean cpfPreenchido, String cnpj, boolean cnpjPreenchido) {
+		boolean retorno = false;
 		try{
-			Long.parseLong(cpf);
-		}catch (Exception e) {
-			cpf = "";
-		}
-		if (!cpf.isEmpty()) {
-			try {
+			if (cpfPreenchido) {
 				clienteFisicoAtual = new ClienteController().buscaDadosClienteCpf(cpf);
 				if (clienteFisicoAtual != null) {
-					preencheDadosClienteFisico(clienteFisicoAtual);
-					btnBuscarVeiculo.setEnabled(true);
-				} else {
-					textFieldTelefone.setText("");
-					textFieldTelefone.setValue("");
-					textFieldTelefone.repaint();
-					textFieldNome.setText("");
-					textFieldNome.repaint();
+					retorno = preencheDadosClienteFisico(clienteFisicoAtual);
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else if (!cnpj.isEmpty()) {
-			try {
+			} else if (cnpjPreenchido) {
 				clienteJuridicoAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
 				if (clienteJuridicoAtual != null) {
-					preencheDadosClienteJuridico(clienteJuridicoAtual);
-					btnBuscarVeiculo.setEnabled(true);
-				} else {
-					textFieldTelefone.setText("");
-					textFieldTelefone.setValue("");
-					textFieldTelefone.repaint();
-					textFieldNome.setText("");
-					textFieldNome.repaint();
+					retorno = preencheDadosClienteJuridico(clienteJuridicoAtual);
 				}
-			} catch (SQLException e) {
+			}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+			return retorno;
 	}
 	
-	private void buscarVeiculo() {
+	private boolean buscarVeiculo(String placa) {
 		try {
-			veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
+			veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(placa);
 			if (veiculoAtual != null) {
 				this.preencheDadosVeiculo(veiculoAtual);
-				btnSalvar.setEnabled(true);
-			} else {
-				textFieldModelo.setText("");
-				textFieldModelo.repaint();
-				textFieldAno.setText("");
-				textFieldAno.repaint();
+				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 }

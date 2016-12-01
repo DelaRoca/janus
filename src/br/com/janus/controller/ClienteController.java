@@ -128,21 +128,25 @@ public class ClienteController {
 	// Cadastro de Cliente (CNPJ)
 	// Cadastro de Ordem de Serviço (CNPJ)
 	public ClienteJuridico buscaDadosClienteCnpj(String cnpj) throws SQLException{
-		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
-		st.setString(1, cnpj);
-		ResultSet result = st.executeQuery();
-		if (result != null){
-			ClienteJuridico cliente = new ClienteJuridico();
-			while(result.next()){
-				cliente.setIdCliente(Integer.parseInt(result.getString("idcliente")));
-				cliente.setNome(result.getString("nome"));
-				cliente.setCnpj(result.getString("cnpj"));
-				cliente.setEmail(result.getString("email"));
-				cliente.setTelefone(result.getString("telefone"));
-				cliente.setCelular(result.getString("celular"));
-				cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
-				return cliente;
+		try {
+			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
+			st.setString(1, cnpj);
+			ResultSet result = st.executeQuery();
+			if (result != null){
+				ClienteJuridico cliente = new ClienteJuridico();
+				while(result.next()){
+					cliente.setIdCliente(Integer.parseInt(result.getString("idcliente")));
+					cliente.setNome(result.getString("nome"));
+					cliente.setCnpj(result.getString("cnpj"));
+					cliente.setEmail(result.getString("email"));
+					cliente.setTelefone(result.getString("telefone"));
+					cliente.setCelular(result.getString("celular"));
+					cliente.setEndereco(Integer.parseInt(result.getString("idendereco")));
+					return cliente;
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
