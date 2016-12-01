@@ -195,6 +195,7 @@ public class GerenciarOrdemServico extends JPanel {
 	}
 
 	private void cancelaOSAprovada() {
+		String mensagem = "";
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
@@ -202,16 +203,21 @@ public class GerenciarOrdemServico extends JPanel {
 			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
 			if(cancelouOrdem){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdemDeServico + " cancelado com sucesso");
+				String idOS = idOrdemDeServico.toString();
+				mensagem = "Ordem de Serviço " + idOS + " cancelado com sucesso";
 			}else{
-				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
+				mensagem = "Erro! Não foi possível realizar a operação";
 			}
 		}else{
-			JOptionPane.showMessageDialog(null, "Selecione uma ordem de serviço");
+			mensagem = "Selecione uma ordem de serviço";
 		}
+		mostraMensagem(mensagem);
 	}
 
+
+	
 	private void executaOrdemServico() {
+		String mensagem = "";
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
@@ -220,36 +226,43 @@ public class GerenciarOrdemServico extends JPanel {
 			if(executou){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
 				populaTabelaExecucao();
-				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdemDeServico + " executando com sucesso");
+				String idOS = idOrdemDeServico.toString();
+				mensagem = "Ordem de Serviço " + idOS + " executando com sucesso";
 			}else{
-				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
+				mensagem = "Erro! Não foi possível realizar a operação";
 			}
 		}else{
-			JOptionPane.showMessageDialog(null, "Selecione uma ordem de serviço");
+			mensagem = "Selecione uma ordem de serviço";
 		}
+		mostraMensagem(mensagem);
 	}
 	
 	private int retornaLinhaSelecionadaExecucao() {
 		return tabelaExecucao.getSelectedRow();
 	}
+	
 	private void cancelaOSExecucao() {
+		String mensagem = "";
 		int linhaSelecionada = retornaLinhaSelecionadaExecucao();
-			if(linhaSelecionada >= 0){
+		if(linhaSelecionada >= 0) {
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
 			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
 			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
 			if(cancelouOrdem){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de Serviço " + idOrdemDeServico + " cancelado com sucesso");
+				String idOS = idOrdemDeServico.toString();
+				mensagem = "Ordem de Serviço " + idOS + " cancelado com sucesso";
 			}else{
-				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
+				mensagem = "Erro! Não foi possível realizar a operação";
 			}
 		}else{
-			JOptionPane.showMessageDialog(null, "Selecione uma ordem de serviço");
+			mensagem = "Selecione uma ordem de serviço";
 		}
+		mostraMensagem(mensagem);
 	}
 
 	private void finalizaOrdemServico() {
+		String mensagem = "";
 		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
@@ -257,12 +270,18 @@ public class GerenciarOrdemServico extends JPanel {
 			boolean finalizou = new OrdemServicoController().finalizaOrdemServico(idOrdemDeServico, dataFinalizado);
 			if(finalizou){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				JOptionPane.showMessageDialog(null, "Ordem de serviço " + idOrdemDeServico + " finalizado com sucesso");
+				String idOS = idOrdemDeServico.toString();
+				mensagem = "Ordem de Serviço " + idOS + " finalizado com sucesso";
 			}else{
-				JOptionPane.showMessageDialog(null, "Erro de dados??? (pensar msg) ");
+				mensagem = "Erro! Não foi possível realizar a operação";
 			}
 		}else{
-			JOptionPane.showMessageDialog(null, "Selecione uma ordem de serviço");
+			mensagem = "Selecione uma ordem de serviço";
 		}
+		mostraMensagem(mensagem);
+	}
+	
+	private void  mostraMensagem(String mensagem) {
+		JOptionPane.showMessageDialog(null, mensagem);
 	}
 }

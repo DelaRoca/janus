@@ -52,6 +52,8 @@ public class CadastroOrdemServico extends JPanel {
 	private JTextField textFieldTotal;
 	private JRadioButton rdbtnCpf;
 	private JRadioButton rdbtnCnpj;
+	private JButton btnSalvar;
+	private JButton btnBuscarVeiculo;
 	
 	private JTable tabelaServico;
 	private JTable tabelaProduto;
@@ -305,10 +307,9 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setBounds(101, 65, 85, 25);
 		add(textFieldData);
 		textFieldData.setColumns(10);
-		
 		textFieldData.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviï¿½o");
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -318,7 +319,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblCliente.setBounds(46, 101, 46, 14);
 		add(lblCliente);
 
-		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			salvaOrdemServico();
 		});
@@ -326,24 +327,11 @@ public class CadastroOrdemServico extends JPanel {
 		add(btnSalvar);
 		btnSalvar.setEnabled(false);
 		
-		JButton btnBuscarVeiculo = new JButton("Buscar");
+		btnBuscarVeiculo = new JButton("Buscar");
 		btnBuscarVeiculo.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnBuscarVeiculo.setBounds(774, 150, 88, 25);
 		btnBuscarVeiculo.addActionListener(a -> {
-			try {
-				veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
-				if (veiculoAtual != null) {
-					this.preencheDadosVeiculo(veiculoAtual);
-					btnSalvar.setEnabled(true);
-				} else {
-					textFieldModelo.setText("");
-					textFieldModelo.repaint();
-					textFieldAno.setText("");
-					textFieldAno.repaint();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			buscarVeiculo();
 		});
 		add(btnBuscarVeiculo);
 		btnBuscarVeiculo.setEnabled(false);
@@ -351,49 +339,7 @@ public class CadastroOrdemServico extends JPanel {
 		JButton btnBuscarCliente = new JButton("Buscar");
 		btnBuscarCliente.setBounds(329, 149, 90, 25);
 		btnBuscarCliente.addActionListener(a -> {
-			String cpf = this.textFieldCpf.getText();
-			String cnpj = this.textFieldCnpj.getText();
-			cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
-			cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
-			
-			try{
-				Long.parseLong(cpf);
-			}catch (Exception e) {
-				cpf = "";
-			}
-			if (!cpf.isEmpty()) {
-						try {
-							clienteFisicoAtual = new ClienteController().buscaDadosClienteCpf(cpf);
-							if (clienteFisicoAtual != null) {
-								preencheDadosClienteFisico(clienteFisicoAtual);
-								btnBuscarVeiculo.setEnabled(true);
-							} else {
-								textFieldTelefone.setText("");
-								textFieldTelefone.setValue("");
-								textFieldTelefone.repaint();
-								textFieldNome.setText("");
-								textFieldNome.repaint();
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-			} else if (!cnpj.isEmpty()) {
-					try {
-						clienteJuridicoAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
-						if (clienteJuridicoAtual != null) {
-							preencheDadosClienteJuridico(clienteJuridicoAtual);
-							btnBuscarVeiculo.setEnabled(true);
-						} else {
-							textFieldTelefone.setText("");
-							textFieldTelefone.setValue("");
-							textFieldTelefone.repaint();
-							textFieldNome.setText("");
-							textFieldNome.repaint();
-						}
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-			} 
+			buscarCliente();
 		});
 		add(btnBuscarCliente);
 
@@ -413,7 +359,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeculo = new JLabel("Ve\u00EDculo:");
+		JLabel lblVeculo = new JLabel("Veículo:");
 		lblVeculo.setBounds(532, 101, 46, 14);
 		add(lblVeculo);
 
@@ -441,7 +387,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblTotal.setBounds(410, 525, 60, 25);
 		add(lblTotal);
 
-		JLabel lblServico = new JLabel("ServiÃ§os:");
+		JLabel lblServico = new JLabel("Serviços:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 
@@ -726,5 +672,68 @@ public class CadastroOrdemServico extends JPanel {
 		cpfCnpj	 = cpfCnpj.replace("-", "");
 		cpfCnpj	 = cpfCnpj.replace(" ", "");
 		return cpfCnpj;
+	}
+	
+	private void buscarCliente() {
+		String cpf = this.textFieldCpf.getText();
+		String cnpj = this.textFieldCnpj.getText();
+		cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
+		cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
+		
+		try{
+			Long.parseLong(cpf);
+		}catch (Exception e) {
+			cpf = "";
+		}
+		if (!cpf.isEmpty()) {
+			try {
+				clienteFisicoAtual = new ClienteController().buscaDadosClienteCpf(cpf);
+				if (clienteFisicoAtual != null) {
+					preencheDadosClienteFisico(clienteFisicoAtual);
+					btnBuscarVeiculo.setEnabled(true);
+				} else {
+					textFieldTelefone.setText("");
+					textFieldTelefone.setValue("");
+					textFieldTelefone.repaint();
+					textFieldNome.setText("");
+					textFieldNome.repaint();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else if (!cnpj.isEmpty()) {
+			try {
+				clienteJuridicoAtual = new ClienteController().buscaDadosClienteCnpj(cnpj);
+				if (clienteJuridicoAtual != null) {
+					preencheDadosClienteJuridico(clienteJuridicoAtual);
+					btnBuscarVeiculo.setEnabled(true);
+				} else {
+					textFieldTelefone.setText("");
+					textFieldTelefone.setValue("");
+					textFieldTelefone.repaint();
+					textFieldNome.setText("");
+					textFieldNome.repaint();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void buscarVeiculo() {
+		try {
+			veiculoAtual = new VeiculoController().buscaDadosVeiculoPlaca(this.textFieldPlaca.getText());
+			if (veiculoAtual != null) {
+				this.preencheDadosVeiculo(veiculoAtual);
+				btnSalvar.setEnabled(true);
+			} else {
+				textFieldModelo.setText("");
+				textFieldModelo.repaint();
+				textFieldAno.setText("");
+				textFieldAno.repaint();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

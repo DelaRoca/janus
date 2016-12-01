@@ -27,6 +27,7 @@ public class OrdemServicoController {
 	private Integer idOrdemServico;
 
 	public void salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
+		String mensagem = "";
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
 					"insert into ordemdeservico " + "(idcliente,idveiculo,total,datacriacao) " + "values (?,?,?,?)");
@@ -40,12 +41,14 @@ public class OrdemServicoController {
 				idOrdemServico = rs.getInt("id");
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			mensagem = "Erro! Não foi possível realizar a operação";
 			e.printStackTrace();
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		JOptionPane.showMessageDialog(null, "Ordem de serviï¿½o de nï¿½mero " + idOrdemServico + " criada com sucesso!");
+		String idOS = idOrdemServico.toString();
+		mensagem =  "Ordem de serviço " + idOS + " criada com sucesso";
+		mostraMensagem(mensagem);
 		GerenciadorDeInterface.setPanel(new Principal());
 	}
 
@@ -62,7 +65,8 @@ public class OrdemServicoController {
 			}
 
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 	}
@@ -78,7 +82,8 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 	}
@@ -99,7 +104,8 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 	}
@@ -119,13 +125,13 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 	}
 	
 	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
-		System.out.println(idOrdemDeServico+" chegou o id buscarOrdem");
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?");
 			st.setInt(1, idOrdemDeServico);
@@ -157,7 +163,6 @@ public class OrdemServicoController {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idordemdeservico = ?");
 		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " + result == null);
 		if (result != null) {
 			while (result.next()) {
 				OsProdutos os = new OsProdutos();
@@ -175,7 +180,6 @@ public class OrdemServicoController {
 				.prepareStatement("select * from osservico where idordemdeservico = ?;");
 		st.setInt(1, idOrdemDeServico);
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " + result == null);
 		if (result != null) {
 			while (result.next()) {
 				OsServicos os = new OsServicos();
@@ -195,7 +199,6 @@ public class OrdemServicoController {
 				"select * from ordemdeservico where dataaprovado is not null and dataexecucao is null and datacancelado is null;");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
-				System.out.println("st.getResultSet " + st.getResultSet());
 				while (result.next()) {
 					OrdemServico os = new OrdemServico();
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
@@ -212,7 +215,8 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 		return ordens;
@@ -226,7 +230,6 @@ public class OrdemServicoController {
 				"select * from ordemdeservico where dataexecucao is not null and datafinalizado is null and datacancelado is null;");
 			ResultSet result = st.executeQuery();
 			if (result != null) {
-				System.out.println("st.getResultSet " + st.getResultSet());
 				while (result.next()) {
 					OrdemServico os = new OrdemServico();
 					os.setIdOrdemDeServico(result.getInt("idordemdeservico"));
@@ -243,7 +246,8 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 		return ordens;
@@ -346,7 +350,8 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "PENSAR MENSAGEM!!");
+			String mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
 		verificaExpirou(ordens);
@@ -382,7 +387,7 @@ public class OrdemServicoController {
 				    "where idordemdeservico = ?;");
 			st.setInt(1, idOrdemDeServico);
 			st.execute();
-			System.out.println("Ordem "+ idOrdemDeServico +" expirado por passar de 15 dias sem ser aprovado!");
+						System.out.println("Ordem "+ idOrdemDeServico +" expirado por passar de 15 dias sem ser aprovado!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -399,4 +404,8 @@ public class OrdemServicoController {
         }
         return false;   
     }
+	
+	private void  mostraMensagem(String mensagem) {
+		JOptionPane.showMessageDialog(null, mensagem);
+	}
 }

@@ -51,7 +51,6 @@ public class AcompanharOrdemServico extends JPanel {
 	private JTextField textFieldTotal;
 	private JTextField textFieldStatus;
 	private JButton btnSalvar;
-	private JButton btnAprovar;
 	
 	private JTable tabelaProduto;
 	private JTable tabelaServico;
@@ -66,14 +65,6 @@ public class AcompanharOrdemServico extends JPanel {
 	private Veiculo veiculoAtual;
 	private ArrayList<Produto> produtos;
 	private ArrayList<Servico> servicos;
-	
-//	e é pra mudar o botão Salvar no Acompanhar para "aprovar" ou "atualizar" dependendo do retorno da busca
-//	3 condições, vai ter botão, nas outras 3 condições, o botão some (não fica visivel ou bloqueado mesmo)
-//	entendeu a ideia geral né ?
-//	se tiver em aberto: botão aprovar (sem poder alterar a OsServicos/OsProdutos
-//	Dificultou...
-//	se tiver em aprovado ou execução:
-//	botão atualizar (alterando somente o total e OsServicos/OsProdutos)
 	
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
@@ -175,7 +166,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("Ve�culo:");
+		JLabel lblVeiculo = new JLabel("Ve�culo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -194,7 +185,7 @@ public class AcompanharOrdemServico extends JPanel {
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		JLabel lblServico = new JLabel("Servi�os:");
+		JLabel lblServico = new JLabel("Servi�os:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
@@ -220,20 +211,9 @@ public class AcompanharOrdemServico extends JPanel {
 		add(textFieldTotal);
 		textFieldTotal.setColumns(10);
 		
-		btnSalvar = new JButton("Salvar");
+		btnSalvar = new JButton("");
 		btnSalvar.addActionListener(a -> {
-			if ( podeAprovarOS() ) {
-				aprovaOrdemServico();
-			}
-			else if ( podeAtualizarOS() ) {
-				atualizaOrdemServico();
-			}
-			try {
-				GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			salvarAlteracoes();
 		});
 		btnSalvar.setBounds(373, 560, 89, 23);
 		add(btnSalvar);
@@ -283,27 +263,45 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void aprovaOrdemServico() {
+		String mensagem = "";
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
 		if(salvou){
-			JOptionPane.showMessageDialog(null, "Ordem de servico aprovado com sucesso");
+			mensagem = "Ordem de servico aprovado com sucesso";
 			textFieldStatus.setText("Aprovado");
 			permiteAtualizarOS();
 		}else{
-			JOptionPane.showMessageDialog(null, "Não foi possível salvar a ordem de serviço.. ( MUDAR MENSAGEM)");
+			mensagem = "Erro! N�o foi poss�vel realizar a opera��o";
+
 		}
-		
+		mostraMensagem(mensagem);
+		try {
+			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void  mostraMensagem(String mensagem) {
+		JOptionPane.showMessageDialog(null, mensagem);
 	}
 	
 	private void atualizaOrdemServico() {
+		String mensagem = "";
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
 		if(atualizou){
-			JOptionPane.showMessageDialog(null, "Ordem de servico atualizado com sucesso");
+			mensagem = "Ordem de servico atualizado com sucesso";
 		}else{
-			JOptionPane.showMessageDialog(null, "Não foi possível salvar a ordem de serviço.. ( MUDAR MENSAGEM)");
+			mensagem = "Erro! N�o foi poss�vel realizar a opera��o";
+		}
+		mostraMensagem(mensagem);
+		try {
+			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -453,37 +451,6 @@ public class AcompanharOrdemServico extends JPanel {
            	fireTableCellUpdated(row, 5);
         }   
 	};
-
-//	private void preencheDados() {
-//		if(ordemServico != null){
-//			textFieldDataCriacao.setText(ordemServico.getDataCriacao());
-//			textFieldTotal.setText(ordemServico.getTotal());
-//			
-//			if (clienteJuridicoAtual != null) {
-//				textFieldCpfCnpj.setText(clienteJuridicoAtual.getCnpj());
-//				textFieldNome.setText(clienteJuridicoAtual.getNome());
-//				textFieldTelefone.setText(clienteJuridicoAtual.getTelefone());
-//			} else {
-//				textFieldCpfCnpj.setText(clienteFisicoAtual.getCpf());
-//				textFieldNome.setText(clienteFisicoAtual.getNome());
-//				textFieldTelefone.setText(clienteFisicoAtual.getTelefone());
-//			}
-//			textFieldPlaca.setText(veiculoAtual.getPlaca());
-//			textFieldModelo.setText(veiculoAtual.getModelo());
-//			textFieldAno.setText(veiculoAtual.getAno());
-//			
-//			if(ordemServico.getEstaExpirado()){
-//				textFieldStatus.setText("Expirado!");
-//				textFieldStatus.setForeground(Color.RED);
-//				bloqueiaEdicao();
-//			}else {
-//				permiteEdicao();
-//				informaStatusOrdemServico();
-//				textFieldStatus.setForeground(Color.BLACK);
-//			}
-//		}
-//
-//	}
 	
 	private void preencheDados() {
 		if(ordemServico != null){
@@ -571,6 +538,15 @@ public class AcompanharOrdemServico extends JPanel {
 		btnSalvar.setText("Aprovar OS");
 		btnSalvar.setEnabled(true);
 		btnSalvar.setVisible(true);
+	}
+	
+	public void salvarAlteracoes() {
+		if ( podeAprovarOS() ) {
+			aprovaOrdemServico();
+		}
+		else if ( podeAtualizarOS() ) {
+			atualizaOrdemServico();
+		}
 	}
 	
 	private void buscaOrdemServico() {
