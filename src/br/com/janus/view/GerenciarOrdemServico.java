@@ -203,7 +203,6 @@ public class GerenciarOrdemServico extends JPanel {
 	}
 
 	private void cancelaOSAprovada() {
-		String mensagem = "";
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
@@ -212,20 +211,18 @@ public class GerenciarOrdemServico extends JPanel {
 			if(cancelouOrdem){
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
 				String idOS = idOrdemDeServico.toString();
-				mensagem = "Ordem de Serviço " + idOS + " cancelado com sucesso";
+				mostraMensagem("Ordem de Serviço " + idOS + " cancelado com sucesso");
 			}else{
-				mensagem = "Erro! Não foi possível realizar a operação";
+				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
 		}else{
-			mensagem = "Selecione uma ordem de serviço";
+			mostraMensagem("Selecione uma ordem de serviço");
 		}
-		mostraMensagem(mensagem);
 	}
 
 
 	
 	private void executaOrdemServico() {
-		String mensagem = "";
 		int linhaSelecionada = tabelaAprovados.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
@@ -235,18 +232,16 @@ public class GerenciarOrdemServico extends JPanel {
 				tabelaModeloAprovados.removeRow(linhaSelecionada);
 				populaTabelaExecucao();
 				String idOS = idOrdemDeServico.toString();
-				mensagem = "Ordem de Serviço " + idOS + " executando com sucesso";
+				mostraMensagem("Ordem de Serviço " + idOS + " executando com sucesso");
 			}else{
-				mensagem = "Erro! Não foi possível realizar a operação";
+				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
 		}else{
-			mensagem = "Selecione uma ordem de serviço";
+			mostraMensagem("Selecione uma ordem de serviço");
 		}
-		mostraMensagem(mensagem);
 	}
 
 	private void cancelaOSExecucao() {
-		String mensagem = "";
 		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 		if(linhaSelecionada >= 0) {
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
@@ -255,18 +250,16 @@ public class GerenciarOrdemServico extends JPanel {
 			if(cancelouOrdem){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
 				String idOS = idOrdemDeServico.toString();
-				mensagem = "Ordem de Serviço " + idOS + " cancelado com sucesso";
+				mostraMensagem("Ordem de Serviço " + idOS + " cancelado com sucesso");
 			}else{
-				mensagem = "Erro! Não foi possível realizar a operação";
+				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
 		}else{
-			mensagem = "Selecione uma ordem de serviço";
+			mostraMensagem("Selecione uma ordem de serviço");
 		}
-		mostraMensagem(mensagem);
 	}
 
 	private void finalizaOrdemServico() {
-		String mensagem = "";
 		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 		if(linhaSelecionada >= 0){
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
@@ -275,14 +268,13 @@ public class GerenciarOrdemServico extends JPanel {
 			if(finalizou){
 				tabelaModeloExecucao.removeRow(linhaSelecionada);
 				String idOS = idOrdemDeServico.toString();
-				mensagem = "Ordem de Serviço " + idOS + " finalizado com sucesso";
+				mostraMensagem("Ordem de Serviço " + idOS + " finalizado com sucesso");
 			}else{
-				mensagem = "Erro! Não foi possível realizar a operação";
+				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
 		}else{
-			mensagem = "Selecione uma ordem de serviço";
+			mostraMensagem("Selecione uma ordem de serviço");
 		}
-		mostraMensagem(mensagem);
 	}
 	
 	private void  mostraMensagem(String mensagem) {

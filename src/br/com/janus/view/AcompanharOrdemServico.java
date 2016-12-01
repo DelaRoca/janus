@@ -263,19 +263,17 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void aprovaOrdemServico() {
-		String mensagem = "";
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, this.textFieldDataCriacao.getText());
 		if(salvou){
-			mensagem = "Ordem de servico aprovado com sucesso";
+			mostraMensagem("Ordem de servico aprovado com sucesso");
 			textFieldStatus.setText("Aprovado");
 			permiteAtualizarOS();
 		}else{
-			mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 
 		}
-		mostraMensagem(mensagem);
 		try {
 			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
 		} catch (Exception e) {
@@ -288,16 +286,14 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void atualizaOrdemServico() {
-		String mensagem = "";
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
 		if(atualizou){
-			mensagem = "Ordem de servico atualizado com sucesso";
+			mostraMensagem("Ordem de servico atualizado com sucesso");
 		}else{
-			mensagem = "Erro! Não foi possível realizar a operação";
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 		}
-		mostraMensagem(mensagem);
 		try {
 			GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
 		} catch (Exception e) {
