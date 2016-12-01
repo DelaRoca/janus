@@ -27,7 +27,7 @@ public class OrdemServicoController {
 	private Integer idOrdemServico;
 
 	public int salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
-		int idOrdemServico = -1;
+		int idOrdemDeServico = -1;
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
 					"insert into ordemdeservico " + "(idcliente,idveiculo,total,datacriacao) " + "values (?,?,?,?)");
@@ -39,13 +39,14 @@ public class OrdemServicoController {
 			ResultSet rs = st.executeQuery("SELECT MAX(idordemdeservico) as id FROM ordemdeservico");
 			while (rs.next()) {
 				idOrdemServico = rs.getInt("id");
+				idOrdemDeServico = idOrdemServico;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		return idOrdemServico;
+		return idOrdemDeServico;
 	}
 
 	private void salvaOsServicos(ArrayList<OsServicos> osServicos) {
@@ -61,7 +62,7 @@ public class OrdemServicoController {
 			}
 
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -78,7 +79,7 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -100,7 +101,7 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -121,7 +122,7 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -211,7 +212,7 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -242,7 +243,7 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -346,7 +347,7 @@ public class OrdemServicoController {
 				}
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Não foi possível realizar a operação";
+			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
