@@ -128,6 +128,10 @@ public class GerenciarOrdemServico extends JPanel {
 	
 	private void populaTabelaAprovados() {
 		limpaTabelaAprovados();
+		preencheTabelaAprovados();
+	}
+	
+	private void preencheTabelaAprovados() {
 		ordensAprovadas = new OrdemServicoController().buscaOrdensServicoAprovadas();
 		for (OrdemServico ordemServico : ordensAprovadas) {
 			Cliente cliente = new Cliente();
@@ -172,6 +176,10 @@ public class GerenciarOrdemServico extends JPanel {
 	
 	private void populaTabelaExecucao(){
 		limpaTabelaExecucao();
+		preencheTabelaExecucao();
+	}
+	
+	private void preencheTabelaExecucao() {
 		ordensExecutadas = new OrdemServicoController().buscaOrdensServicoExecutadas();
 		for (OrdemServico ordemServico : ordensExecutadas) {
 			Cliente cliente = new Cliente();
