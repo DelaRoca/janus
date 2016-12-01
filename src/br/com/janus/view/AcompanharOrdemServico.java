@@ -537,11 +537,17 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	public void salvarAlteracoes() {
-		if ( podeAprovarOS() ) {
+		boolean podeAprovar = podeAprovarOS();
+
+		
+		if (podeAprovar) {
 			aprovaOrdemServico();
 		}
-		else if ( podeAtualizarOS() ) {
-			atualizaOrdemServico();
+		else {
+			boolean podeAtualizar = podeAtualizarOS();
+			if (podeAtualizar) {
+				atualizaOrdemServico();
+			}
 		}
 	}
 	
