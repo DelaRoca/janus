@@ -68,28 +68,52 @@ public class GerenciarOrdemServico extends JPanel {
 		
 		JButton btnCancelarOSAprovados = new JButton("Cancelar OS");
 		btnCancelarOSAprovados.addActionListener(a -> {
-			cancelaOSAprovada();
+			int linhaSelecionada = tabelaAprovados.getSelectedRow();
+			if(linhaSelecionada >= 0){
+				Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+				String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+				cancelaOrdemServico(idOrdemDeServico, dataCancelado);
+				tabelaModeloAprovados.removeRow(linhaSelecionada);
+			}
 		});
 		btnCancelarOSAprovados.setBounds(242, 480, 105, 25);
 		add(btnCancelarOSAprovados);
 		
 		JButton btnExecutarOSAprovados = new JButton("Executar");
 		btnExecutarOSAprovados.addActionListener(a -> {
-			executaOrdemServico();
+			int linhaSelecionada = tabelaAprovados.getSelectedRow();
+			if(linhaSelecionada >= 0){
+				Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
+				String dataExecucao = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+				executaOrdemServico(idOrdemDeServico, dataExecucao);
+				tabelaModeloAprovados.removeRow(linhaSelecionada);
+			}
 		});
 		btnExecutarOSAprovados.setBounds(353, 480, 86, 25);
 		add(btnExecutarOSAprovados);
 		
 		JButton btnCancelarOsExecucao = new JButton("Cancelar OS");
 		btnCancelarOsExecucao.addActionListener(a -> {
-			cancelaOSExecucao();
+			int linhaSelecionada = tabelaExecucao.getSelectedRow();
+			if(linhaSelecionada >= 0) {
+				Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
+				String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+				cancelaOrdemServico(idOrdemDeServico, dataCancelado);
+				tabelaModeloExecucao.removeRow(linhaSelecionada);
+			}
 		});
 		btnCancelarOsExecucao.setBounds(740, 480, 105, 25);
 		add(btnCancelarOsExecucao);
 		
 		JButton btnFinalizarOSExecucao = new JButton("Finalizar");
 		btnFinalizarOSExecucao.addActionListener(a -> {
-			finalizaOrdemServico();
+			int linhaSelecionada = tabelaExecucao.getSelectedRow();
+			if(linhaSelecionada >= 0){
+				Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
+				String dataFinalizado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+				finalizaOrdemServico(idOrdemDeServico, dataFinalizado);
+				tabelaModeloExecucao.removeRow(linhaSelecionada);
+			}
 		});
 		btnFinalizarOSExecucao.setBounds(851, 480, 86, 25);
 		add(btnFinalizarOSExecucao);
@@ -202,70 +226,31 @@ public class GerenciarOrdemServico extends JPanel {
 		}
 	}
 
-	private void cancelaOSAprovada() {
-		int linhaSelecionada = tabelaAprovados.getSelectedRow();
-		if(linhaSelecionada >= 0){
-			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
-			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
-			if(cancelouOrdem){
-				tabelaModeloAprovados.removeRow(linhaSelecionada);
-				String idOS = idOrdemDeServico.toString();
-				mostraMensagem("Ordem de Serviço " + idOS + " cancelado com sucesso");
-			}else{
-				mostraMensagem("Erro! Não foi possível realizar a operação");
-			}
+	private void cancelaOrdemServico(Integer idOrdemDeServico, String dataCancelado) {
+		boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
+		if(cancelouOrdem){
+			mostraMensagem("Ordem de Serviço " + idOrdemDeServico + " cancelado com sucesso");
+		}else{
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 		}
 	}
-
-
 	
-	private void executaOrdemServico() {
-		int linhaSelecionada = tabelaAprovados.getSelectedRow();
-		if(linhaSelecionada >= 0){
-			Integer idOrdemDeServico = (Integer) tabelaAprovados.getValueAt(linhaSelecionada, 0);
-			String dataExecucao = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean executou = new OrdemServicoController().executaOrdemServico(idOrdemDeServico, dataExecucao);
-			if(executou){
-				tabelaModeloAprovados.removeRow(linhaSelecionada);
-				populaTabelaExecucao();
-				String idOS = idOrdemDeServico.toString();
-				mostraMensagem("Ordem de Serviço " + idOS + " executando com sucesso");
-			}else{
-				mostraMensagem("Erro! Não foi possível realizar a operação");
-			}
+	private void executaOrdemServico(Integer idOrdemDeServico, String dataExecucao) {
+		boolean executou = new OrdemServicoController().executaOrdemServico(idOrdemDeServico, dataExecucao);
+		if(executou){
+			populaTabelaExecucao();
+			mostraMensagem("Ordem de Serviço " + idOrdemDeServico + " executando com sucesso");
+		}else{
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 		}
 	}
 
-	private void cancelaOSExecucao() {
-		int linhaSelecionada = tabelaExecucao.getSelectedRow();
-		if(linhaSelecionada >= 0) {
-			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
-			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean cancelouOrdem = new OrdemServicoController().cancelaOrdemServico(idOrdemDeServico, dataCancelado);
-			if(cancelouOrdem){
-				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				String idOS = idOrdemDeServico.toString();
-				mostraMensagem("Ordem de Serviço " + idOS + " cancelado com sucesso");
-			}else{
-				mostraMensagem("Erro! Não foi possível realizar a operação");
-			}
-		}
-	}
-
-	private void finalizaOrdemServico() {
-		int linhaSelecionada = tabelaExecucao.getSelectedRow();
-		if(linhaSelecionada >= 0){
-			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
-			String dataFinalizado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-			boolean finalizou = new OrdemServicoController().finalizaOrdemServico(idOrdemDeServico, dataFinalizado);
-			if(finalizou){
-				tabelaModeloExecucao.removeRow(linhaSelecionada);
-				String idOS = idOrdemDeServico.toString();
-				mostraMensagem("Ordem de Serviço " + idOS + " finalizado com sucesso");
-			}else{
-				mostraMensagem("Erro! Não foi possível realizar a operação");
-			}
+	private void finalizaOrdemServico(Integer idOrdemDeServico, String dataFinalizado) {
+		boolean finalizou = new OrdemServicoController().finalizaOrdemServico(idOrdemDeServico, dataFinalizado);
+		if(finalizou){
+			mostraMensagem("Ordem de Serviço " + idOrdemDeServico + " finalizado com sucesso");
+		}else{
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 		}
 	}
 	
