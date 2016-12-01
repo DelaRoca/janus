@@ -244,14 +244,10 @@ public class GerenciarOrdemServico extends JPanel {
 		}
 		mostraMensagem(mensagem);
 	}
-	
-	private int retornaLinhaSelecionadaExecucao() {
-		return tabelaExecucao.getSelectedRow();
-	}
-	
+
 	private void cancelaOSExecucao() {
 		String mensagem = "";
-		int linhaSelecionada = retornaLinhaSelecionadaExecucao();
+		int linhaSelecionada = tabelaExecucao.getSelectedRow();
 		if(linhaSelecionada >= 0) {
 			Integer idOrdemDeServico = (Integer) tabelaExecucao.getValueAt(linhaSelecionada, 0);
 			String dataCancelado = java.text.DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
