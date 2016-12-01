@@ -215,8 +215,6 @@ public class GerenciarOrdemServico extends JPanel {
 			}else{
 				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
-		}else{
-			mostraMensagem("Selecione uma ordem de serviço");
 		}
 	}
 
@@ -236,8 +234,6 @@ public class GerenciarOrdemServico extends JPanel {
 			}else{
 				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
-		}else{
-			mostraMensagem("Selecione uma ordem de serviço");
 		}
 	}
 
@@ -254,8 +250,6 @@ public class GerenciarOrdemServico extends JPanel {
 			}else{
 				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
-		}else{
-			mostraMensagem("Selecione uma ordem de serviço");
 		}
 	}
 
@@ -272,8 +266,6 @@ public class GerenciarOrdemServico extends JPanel {
 			}else{
 				mostraMensagem("Erro! Não foi possível realizar a operação");
 			}
-		}else{
-			mostraMensagem("Selecione uma ordem de serviço");
 		}
 	}
 	
