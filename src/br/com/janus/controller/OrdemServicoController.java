@@ -26,8 +26,8 @@ public class OrdemServicoController {
 	private Connection conexao = new Conecta().getConnection();
 	private Integer idOrdemServico;
 
-	public void salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
-		String mensagem = "";
+	public int salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
+		int idOrdemServico = -1;
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
 					"insert into ordemdeservico " + "(idcliente,idveiculo,total,datacriacao) " + "values (?,?,?,?)");
@@ -41,15 +41,11 @@ public class OrdemServicoController {
 				idOrdemServico = rs.getInt("id");
 			}
 		} catch (SQLException e) {
-			mensagem = "Erro! Não foi possível realizar a operação";
 			e.printStackTrace();
 		}
 		salvaOsProdutos(osProdutos);
 		salvaOsServicos(osServicos);
-		String idOS = idOrdemServico.toString();
-		mensagem =  "Ordem de serviço " + idOS + " criada com sucesso";
-		mostraMensagem(mensagem);
-		GerenciadorDeInterface.setPanel(new Principal());
+		return idOrdemServico;
 	}
 
 	private void salvaOsServicos(ArrayList<OsServicos> osServicos) {
