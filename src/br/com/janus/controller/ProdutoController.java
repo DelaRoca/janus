@@ -18,7 +18,7 @@ import br.com.janus.view.Principal;
 public class ProdutoController {
 	
 	private Connection conexao = new Conecta().getConnection();
-	//		
+			
 	public void salvaProduto(Produto produto){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into produto " +
@@ -31,11 +31,11 @@ public class ProdutoController {
 			JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados inv√°lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inv·lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	//
+	
 	public ArrayList<Produto> buscaProdutos() {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from produto");
@@ -57,7 +57,7 @@ public class ProdutoController {
 		}
 		return null;
 	}
-	//
+	
 	public ArrayList<Produto> buscaProdutos(ArrayList<OsProdutos> osProdutos) {
 		try{
 			for (OsProdutos osProduto : osProdutos) {

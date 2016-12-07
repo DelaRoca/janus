@@ -69,7 +69,7 @@ public class AcompanharOrdemServico extends JPanel {
 	public AcompanharOrdemServico() throws ParseException {
 		setLayout(null);
 
-		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Serviï¿½o");
+		JLabel lblRegistroOrdemServico = new JLabel("Acompanhar Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -166,7 +166,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeiculo = new JLabel("Veï¿½culo:");
+		JLabel lblVeiculo = new JLabel("Veículo:");
 		lblVeiculo.setBounds(532, 142, 46, 14);
 		add(lblVeiculo);
 
@@ -185,7 +185,7 @@ public class AcompanharOrdemServico extends JPanel {
 		scrollP.setBounds(10, 315, 480, 196);
 		add(scrollP);
 		
-		JLabel lblServico = new JLabel("Serviï¿½os:");
+		JLabel lblServico = new JLabel("Serviços:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 		
@@ -218,7 +218,6 @@ public class AcompanharOrdemServico extends JPanel {
 			try {
 				GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -240,7 +239,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
-		JLabel lblNDaOs = new JLabel("N\u00BA da OS:");
+		JLabel lblNDaOs = new JLabel("Número OS:");
 		lblNDaOs.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNDaOs.setBounds(20, 70, 60, 25);
 		add(lblNDaOs);
@@ -278,7 +277,7 @@ public class AcompanharOrdemServico extends JPanel {
 			preencherCampoStatus("Aprovado");
 			permiteAtualizarOS();
 		}else{
-			mostraMensagem("Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o");
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 
 		}
 	}
@@ -294,7 +293,7 @@ public class AcompanharOrdemServico extends JPanel {
 		if(atualizou){
 			mostraMensagem("Ordem de servico alterada com sucesso");
 		}else{
-			mostraMensagem("Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o");
+			mostraMensagem("Erro! Não foi possível realizar a operação");
 		}
 	}
 	
@@ -556,7 +555,7 @@ public class AcompanharOrdemServico extends JPanel {
 		}else if (estaFinalizado) {
 			preencherCampoStatus("Finalizado");
 		}else if (estaExecutando) {
-			preencherCampoStatus("Execuï¿½ï¿½o");
+			preencherCampoStatus("Execução");
 			permiteAtualizarOS();
 		}else if(estaAprovado) {
 			preencherCampoStatus("Aprovado");

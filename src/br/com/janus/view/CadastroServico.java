@@ -67,13 +67,13 @@ public class CadastroServico extends JPanel {
 					if (verificarCampoValor()) {		
 					salvaServico();
 					} else {
-						JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+						JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos");
+					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos");
 				}
 			} catch( Exception e){
-				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+				 JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			}
 		});
 		btnSalvar.setBounds(375, 522, 89, 23);
@@ -102,13 +102,12 @@ public class CadastroServico extends JPanel {
 		add(label_1);
 	}
 	
-	//
+	
 	private void salvaServico() {
-		System.out.println("salvar serviï¿½o");
 		Servico servico = constroiServico();
 		new ServicoController().salvaServico(servico);
 	}
-	//
+	
 	private Servico constroiServico() {
 		Servico servico = new Servico();
 		String nome;
@@ -131,14 +130,14 @@ public class CadastroServico extends JPanel {
 		servico.setEstaAtivo(true);
 		return servico;
 	}
-	//
+	
 	private boolean verificaCamposValidos() {
 		if (this.textFieldNome.getText().equals("") || this.textFieldValor.getText().equals("")) {
 			return false;
 		}
 		return true;
 	}
-	//
+	
     private boolean verificarCampoValor() {
         String[] valoresPartidos = textFieldValor.getText().split(",", 2);
 		try {

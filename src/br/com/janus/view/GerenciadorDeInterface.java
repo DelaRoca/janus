@@ -9,8 +9,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import br.com.janus.controller.OrdemServicoController;
-
 public class GerenciadorDeInterface {
 	private static Frame frame;
 

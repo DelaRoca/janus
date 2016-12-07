@@ -19,7 +19,7 @@ import br.com.janus.view.Principal;
 public class ClienteController {
 	
 	private Connection conexao = new Conecta().getConnection();
-	//
+	
 	public Cliente buscaDadosclienteId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -38,7 +38,7 @@ public class ClienteController {
 		}
 		return null;
 	}
-	//
+	
 	public ClienteFisico buscaDadosclienteFisicoId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -60,7 +60,7 @@ public class ClienteController {
 		}
 		return null;
 	}
-	//
+	
 	public ClienteJuridico buscaDadosclienteJuridicoId(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -81,7 +81,7 @@ public class ClienteController {
 		}
 		return null;
 	}
-	//
+	
 	public boolean verificaClienteFisico(Integer idCliente) throws SQLException {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where idcliente = ?;");
@@ -97,7 +97,7 @@ public class ClienteController {
 		}
 		return false;
 	}
-	//
+	
 	public ClienteFisico buscaDadosClienteCpf(String cpf) throws SQLException{
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cpf = ?;");
 		st.setString(1, cpf);
@@ -118,7 +118,7 @@ public class ClienteController {
 		}
 		return null;
 	}
-	//
+	
 	public ClienteJuridico buscaDadosClienteCnpj(String cnpj) throws SQLException{
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from cliente where cnpj = ?;");
@@ -142,7 +142,7 @@ public class ClienteController {
 		}
 		return null;
 	}
-	//
+	
 	public void salvaCliente(ClienteFisico clienteFisico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
@@ -159,11 +159,11 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	//
+	
 	public void salvaCliente(ClienteJuridico clienteJuridico, Integer idEndereco){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into cliente " +
@@ -179,11 +179,11 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	//
+	
 	public void atualizaCliente(ClienteFisico clienteFisico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
@@ -199,11 +199,11 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	//
+	
 	public void atualizaCliente(ClienteJuridico clienteJuridico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update cliente " +
@@ -219,11 +219,11 @@ public class ClienteController {
 			JOptionPane.showMessageDialog(null, "cliente cadastrado com sucesso!");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	//
+	
 	public String salvaEndereco(Endereco endereco) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into endereco " +
@@ -243,12 +243,12 @@ public class ClienteController {
 		    }
 		    		    
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 		return "0";
 	}
-	//
+	
 	public Integer atualizaEndereco(Endereco endereco) {
 		try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update endereco " +
@@ -264,7 +264,7 @@ public class ClienteController {
 				return endereco.getIdEndereco();
 			}
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Dados invï¿½lidos, tente novamente");
+			JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			e.printStackTrace();
 		}
 		return 0;

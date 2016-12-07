@@ -1,12 +1,6 @@
 package br.com.janus.view;
 
 import java.awt.Font;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -57,7 +51,7 @@ public class CadastroProduto extends JPanel {
 		add(textFieldValor);
 		textFieldValor.setColumns(10);
 		
-		JLabel lblDescricao = new JLabel("Descri\u00E7\u00E3o:");
+		JLabel lblDescricao = new JLabel("Descrição:");
 		lblDescricao.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblDescricao.setBounds(318, 318, 120, 25);
 		add(lblDescricao);
@@ -76,13 +70,13 @@ public class CadastroProduto extends JPanel {
 					if (verificarCampoValor() ) {
 						salvaProduto();
 					} else {
-						JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+						JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos");
+					JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos");
 				}
 			} catch( Exception e){
-				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
+				 JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 			}
 		});
 		btnSalvar.setBounds(384, 551, 89, 23);
@@ -107,7 +101,6 @@ public class CadastroProduto extends JPanel {
 	
 	//
 	private void salvaProduto() {
-		System.out.println("salvar produto");
 		Produto produto = constroiProduto();
 		new ProdutoController().salvaProduto(produto);
 	}

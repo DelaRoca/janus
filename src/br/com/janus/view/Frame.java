@@ -27,7 +27,6 @@ public class Frame extends JFrame {
 			try {
 				GerenciadorDeInterface.setPanel(new CadastroCliente());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -36,7 +35,6 @@ public class Frame extends JFrame {
 			try {
 				GerenciadorDeInterface.setPanel(new CadastroVeiculo());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -57,7 +55,6 @@ public class Frame extends JFrame {
 			try {
 				GerenciadorDeInterface.setPanel(new CadastroOrdemServico());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -66,7 +63,6 @@ public class Frame extends JFrame {
 			try {
 				GerenciadorDeInterface.setPanel(new AcompanharOrdemServico());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});

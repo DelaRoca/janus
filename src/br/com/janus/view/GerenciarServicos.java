@@ -32,7 +32,7 @@ public class GerenciarServicos extends JPanel {
 	public GerenciarServicos() {
 		setLayout(null);
 		
-		JLabel lblTitulo = new JLabel("Gerenciar ServiÃ§os");
+		JLabel lblTitulo = new JLabel("Gerenciar Serviços");
 		lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setBounds(10, 11, 980, 58);
@@ -95,7 +95,7 @@ public class GerenciarServicos extends JPanel {
 		tabelaModelo.addColumn("Nome");
 		tabelaModelo.addColumn("Valor (R$)");
 		tabelaModelo.addColumn("Por Hora");
-		tabelaModelo.addColumn("Descriï¿½ï¿½o");
+		tabelaModelo.addColumn("Descrição");
 		tabelaModelo.setNumRows(0);
 		tabelaServico.getTableHeader().setReorderingAllowed(false);
 		tabelaServico.getColumnModel().getColumn(0).setPreferredWidth(30);
@@ -110,7 +110,7 @@ public class GerenciarServicos extends JPanel {
 			if(servico.getPorHora()){
 				porHora = "Sim";
 			}else{
-				porHora = "Nï¿½o";
+				porHora = "Não";
 			}
 			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), porHora, servico.getDescricao()});
 		}

@@ -113,7 +113,6 @@ public class CadastroOrdemServico extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int column) {
         	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
-        		System.out.println(((Boolean) getValueAt(row, 0)).booleanValue());
         		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
         		if (testeQuantidade < 0) {
         			setValueAt("1", row, 3);
@@ -174,7 +173,6 @@ public class CadastroOrdemServico extends JPanel {
                 	if (Integer.parseInt(getValueAt(rowIndex, 4).toString()) < 1) {
                 		setValueAt("1", rowIndex, 4);
                 	} else {
-                		System.out.println((String)  getValueAt(rowIndex, 4).toString());
                 		setValueAt((String) getValueAt(rowIndex, 4).toString(), rowIndex, 4);
                 	}
                 	return selecionadoPorHora[columnIndex];
@@ -226,7 +224,6 @@ public class CadastroOrdemServico extends JPanel {
             super.setValueAt(aValue, row, column);
             //TODO TERMINAR ESSA lï¿½gica dos cliques
         	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
-        		System.out.println(((Boolean) getValueAt(row, 0)).booleanValue());
         		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
         		if (testeQuantidade < 0) {
         			setValueAt("1", row, 3);
@@ -289,7 +286,7 @@ public class CadastroOrdemServico extends JPanel {
            	fireTableCellUpdated(row, 5);
         }   
 	};
-	//
+	
 	public CadastroOrdemServico() throws ParseException {
 
 		setLayout(null);
@@ -353,7 +350,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldData.setColumns(10);
 		textFieldData.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
 		
-		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviï¿½o");
+		JLabel lblRegistroOrdemServico = new JLabel("Registro de Ordem de Serviço");
 		lblRegistroOrdemServico.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRegistroOrdemServico.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblRegistroOrdemServico.setBounds(10, 11, 980, 48);
@@ -452,7 +449,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblCaixaCliente.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(lblCaixaCliente);
 
-		JLabel lblVeculo = new JLabel("Veï¿½culo:");
+		JLabel lblVeculo = new JLabel("Veículo:");
 		lblVeculo.setBounds(532, 101, 46, 14);
 		add(lblVeculo);
 
@@ -480,7 +477,7 @@ public class CadastroOrdemServico extends JPanel {
 		lblTotal.setBounds(410, 525, 60, 25);
 		add(lblTotal);
 
-		JLabel lblServico = new JLabel("Serviï¿½os:");
+		JLabel lblServico = new JLabel("Serviços:");
 		lblServico.setBounds(509, 297, 67, 14);
 		add(lblServico);
 
@@ -548,20 +545,20 @@ public class CadastroOrdemServico extends JPanel {
 	    grupoRadios.add(rdbtnCpf);
 	    grupoRadios.add(rdbtnCnpj);
 	}
-	//
+	
 	private boolean salvaOrdemServico(String dataCriacao, String valorTotal) {
 		OrdemServico ordemServico = constroiOrdemServico(dataCriacao, valorTotal);
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		int idOrdemDeServico = new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
 		if(idOrdemDeServico >= 0){
-			mostraMensagem("Ordem de Serviï¿½o numero " + idOrdemDeServico + " cadastrada com sucesso");
+			mostraMensagem("Ordem de Serviço número " + idOrdemDeServico + " cadastrada com sucesso");
 			return true;
 		}
-		mostraMensagem("Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o");
+		mostraMensagem("Erro! Não foi possível realizar a operação");
 		return false;
 	}
-	//
+	
 	private OrdemServico constroiOrdemServico(String dataCriacao, String valorTotal) {
 		OrdemServico ordemServico = new OrdemServico();
 		ordemServico.setDataCriacao(dataCriacao);
@@ -574,7 +571,7 @@ public class CadastroOrdemServico extends JPanel {
 		ordemServico.setIdVeiculo(veiculoAtual.getIdVeiculo());
 		return ordemServico;
 	}
-	//
+	
 	private ArrayList<OsServicos> constroiServicos() {
 		ArrayList<OsServicos> osServicos = new ArrayList<OsServicos>();
 		for(int i=0; i < tabelaModeloServico.getRowCount(); i++){
@@ -588,7 +585,7 @@ public class CadastroOrdemServico extends JPanel {
 		}
 		return osServicos;
 	}
-	//
+	
 	private ArrayList<OsProdutos> constroiProdutos() {
 		ArrayList<OsProdutos> osProdutos = new ArrayList<OsProdutos>();
 		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
@@ -601,7 +598,7 @@ public class CadastroOrdemServico extends JPanel {
 		}
 		return osProdutos;
 	}
-	//
+	
 	private void criaTabelaServico() {
 		tabelaServico = new JTable(tabelaModeloServico){
             private static final long serialVersionUID = 1L;
@@ -646,13 +643,13 @@ public class CadastroOrdemServico extends JPanel {
 		tabelaServico.getColumnModel().getColumn(6).setMinWidth(0);
 		tabelaServico.getColumnModel().getColumn(6).setMaxWidth(0);
 	}
-	//
+	
 	private void limpaTabelaServico() {
 		while (tabelaModeloServico.getRowCount() > 0) {
 			tabelaModeloServico.removeRow(0);
 		}
 	}
-	//
+	
 	private void populaTabelaServicos() {
 		limpaTabelaServico();
 		
@@ -667,7 +664,7 @@ public class CadastroOrdemServico extends JPanel {
 			
 		}
 	}
-	//
+	
 	private void criaTabelaProduto() {
 		tabelaProduto = new JTable(tabelaModeloProduto){
 
@@ -707,13 +704,13 @@ public class CadastroOrdemServico extends JPanel {
         tabelaProduto.getColumnModel().getColumn(5).setMinWidth(0);
         tabelaProduto.getColumnModel().getColumn(5).setMaxWidth(0);
     }
-	//
+	
 	private void limpaTabelaProduto() {
 		while (tabelaModeloProduto.getRowCount() > 0) {
 			tabelaModeloProduto.removeRow(0);
 		}
 	}
-	//
+	
 	private void populaTabelaProduto() {
 		limpaTabelaProduto();
 		
@@ -722,7 +719,7 @@ public class CadastroOrdemServico extends JPanel {
 			tabelaModeloProduto.addRow(new Object[]{false, produto.getNome(), produto.getValor(), "0", "0,00", produto.getIdProduto()});
 		}
 	}
-	//
+	
 	private boolean preencheDadosClienteJuridico(ClienteJuridico clienteJuridico) {
 		this.clienteJuridicoAtual = clienteJuridico;
 		textFieldCnpj.setText(clienteJuridico.getCnpj());
@@ -730,7 +727,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldTelefone.setText(clienteJuridico.getTelefone());
 		return true;
 	}
-	//
+	
 	private boolean preencheDadosClienteFisico(ClienteFisico clienteFisico) {
 		this.clienteFisicoAtual = clienteFisico;
 		textFieldCpf.setText(clienteFisico.getCpf());
@@ -738,7 +735,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldTelefone.setText(clienteFisico.getTelefone());
 		return true;
 	}
-	//
+	
 	private boolean preencheDadosVeiculo(Veiculo veiculo) {
 		String placa;
 		String modelo;
@@ -756,7 +753,7 @@ public class CadastroOrdemServico extends JPanel {
 		textFieldAno.setText(ano);
 		return true;
 	}
-	//
+	
 	private boolean buscarCliente(String cpf, boolean cpfPreenchido, String cnpj, boolean cnpjPreenchido) {
 		boolean retorno = false;
 		try{
@@ -776,7 +773,7 @@ public class CadastroOrdemServico extends JPanel {
 			}
 			return retorno;
 	}
-	//
+	
 	private boolean buscarVeiculo(String placa) {
 		boolean retorno = false;
 		try {
@@ -789,7 +786,7 @@ public class CadastroOrdemServico extends JPanel {
 		}
 		return retorno;
 	}
-	//
+	
 	private void  mostraMensagem(String mensagem) {
 		JOptionPane.showMessageDialog(null, mensagem);
 	}

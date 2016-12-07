@@ -17,7 +17,6 @@ public class EnderecoController {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from endereco where idEndereco = ?;");
 		st.setString(1, idEndereco.toString());
 		ResultSet result = st.executeQuery();
-		System.out.println("result set : " +result == null);
 		if (result != null){
 			Endereco endereco = new Endereco();
 			while(result.next()){
