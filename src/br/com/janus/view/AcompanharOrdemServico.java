@@ -239,7 +239,7 @@ public class AcompanharOrdemServico extends JPanel {
 		lblStatus.setBounds(20, 106, 58, 25);
 		add(lblStatus);
 
-		JLabel lblNDaOs = new JLabel("Número OS:");
+		JLabel lblNDaOs = new JLabel("Núm. OS:");
 		lblNDaOs.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNDaOs.setBounds(20, 70, 60, 25);
 		add(lblNDaOs);
@@ -461,7 +461,7 @@ public class AcompanharOrdemServico extends JPanel {
             		setValueAt("1", row, column);
             	}
             }
-            
+            //TODO TA DANDO PAU POR AQUI - RESOLVER
 
             valorFloatTotal = 0.00f;
     		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){

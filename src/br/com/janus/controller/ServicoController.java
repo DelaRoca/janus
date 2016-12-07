@@ -55,7 +55,6 @@ public class ServicoController {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from servico");
 			ResultSet result = st.executeQuery();
-			System.out.println("result set : " +result == null);
 			if (result != null){
 				ArrayList<Servico> servicos = new ArrayList<Servico>();
 				while(result.next()){
