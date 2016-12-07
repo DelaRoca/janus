@@ -89,7 +89,7 @@ public class ClienteController {
 			ResultSet result = st.executeQuery();
 			if (result != null){
 				while(result.next()){
-					return result.getString("cpf") != null || result.getString("cpf").equals("");
+					return result.getString("cpf") != null;
 				}
 			}
 		}catch (Exception e) {
