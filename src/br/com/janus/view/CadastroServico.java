@@ -63,14 +63,14 @@ public class CadastroServico extends JPanel {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			try{
-				if (!verificarCampoValor()) {
-					 JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
-				} else {
-					if (verificaCamposValidos()) {
-						salvaServico();
+				if (verificaCamposValidos()) {
+					if (verificarCampoValor()) {		
+					salvaServico();
 					} else {
-						JOptionPane.showMessageDialog(null, "Campos obrigat�rios n�o preenchidos.");
+						JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
 					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Campos obrigat�rios n�o preenchidos");
 				}
 			} catch( Exception e){
 				 JOptionPane.showMessageDialog(null, "Dados inválidos, tente novamente");
@@ -102,14 +102,13 @@ public class CadastroServico extends JPanel {
 		add(label_1);
 	}
 	
-	
+	//
 	private void salvaServico() {
 		System.out.println("salvar servi�o");
 		Servico servico = constroiServico();
 		new ServicoController().salvaServico(servico);
 	}
-	
-
+	//
 	private Servico constroiServico() {
 		Servico servico = new Servico();
 		String nome;
@@ -132,18 +131,14 @@ public class CadastroServico extends JPanel {
 		servico.setEstaAtivo(true);
 		return servico;
 	}
-	
+	//
 	private boolean verificaCamposValidos() {
-		System.out.println("aqui nos verifica campos ");
-		System.out.println("this.textFieldNome" + this.textFieldNome.getText().equals(""));
-		System.out.println("this.textFieldValor " + this.textFieldValor.getText().equals(""));
-
 		if (this.textFieldNome.getText().equals("") || this.textFieldValor.getText().equals("")) {
 			return false;
 		}
 		return true;
 	}
-	
+	//
     private boolean verificarCampoValor() {
         String[] valoresPartidos = textFieldValor.getText().split(",", 2);
 		try {

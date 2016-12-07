@@ -1,6 +1,5 @@
 package br.com.janus;
 
-import br.com.janus.controller.OrdemServicoController;
 import br.com.janus.view.GerenciadorDeInterface;
 
 public class Main {

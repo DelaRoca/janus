@@ -241,7 +241,7 @@ public class CadastroCliente extends JPanel {
 					salvaCliente();
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos.");
+				JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos");
 			}
 		});
 		btnSalvar.setBounds(412, 529, 89, 23);
@@ -255,7 +255,7 @@ public class CadastroCliente extends JPanel {
 			String cnpj = this.textFieldCNPJ.getText();
 			cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
 			cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
-			//TODO paraFabioDeFabio: reverificar e reescrever essa "lógica" -> funciona, mas tá mal organizado o código.			
+			//TODO paraFabioDeFabio: reverificar e reescrever essa "lï¿½gica" -> funciona, mas tï¿½ mal organizado o cï¿½digo.			
 			try{
 				Long.parseLong(cpf);
 			}catch (Exception e) {
@@ -288,7 +288,7 @@ public class CadastroCliente extends JPanel {
 		});
 		add(btnVerificar);
 	}
-
+	//
 	private boolean novo(String cnpj) {
 		if (cnpj == null || cnpj.length() != 14)
 			return false;
@@ -329,7 +329,7 @@ public class CadastroCliente extends JPanel {
 
 		return cnpj.equals(cnpj_calc);
 	}
-
+	//
 	private void atualizaCliente() {
 		Endereco endereco = constroiEndereco();
 		Integer idEndereco = new ClienteController().atualizaEndereco(endereco);
@@ -348,7 +348,7 @@ public class CadastroCliente extends JPanel {
 			}
 		}
 	}
-
+	//
 	private ClienteJuridico constroiClienteJuridico() {
 		String cnpj = this.textFieldCNPJ.getText();
 		cnpj = limpezaCaracteresNaoNumeraisCpfCnpj( cnpj );
@@ -361,17 +361,8 @@ public class CadastroCliente extends JPanel {
 		cliente.setCelular(this.textFieldCelular.getText());
 		return cliente;
 	}
-	
+	//
 	private ClienteFisico constroiClienteFisico() {
-//		if (clienteFisico != null) {
-//			clienteFisico.setCpf(this.textFieldCPF.getText());           
-//			clienteFisico.setNome(this.textFieldNome.getText());             
-//			clienteFisico.setEmail(this.textFieldEmail.getText());           
-//			clienteFisico.setDataNascimento(this.textFieldDtNasc.getText()); 
-//			clienteFisico.setTelefone(this.textFieldTelefone.getText());     
-//		    clienteFisico.setCelular(this.textFieldCelular.getText());
-//		    return clienteFisico;
-//		}
 		String cpf = this.textFieldCPF.getText();
 		cpf = limpezaCaracteresNaoNumeraisCpfCnpj( cpf );
 		
@@ -384,7 +375,7 @@ public class CadastroCliente extends JPanel {
 		cliente.setCelular(this.textFieldCelular.getText());
 		return cliente;
 }
-
+	//
 	private void salvaCliente() {
 		Endereco endereco = constroiEndereco();
 		String idEndereco = new ClienteController().salvaEndereco(endereco);
@@ -392,7 +383,7 @@ public class CadastroCliente extends JPanel {
 			novoCliente(Integer.parseInt(idEndereco));
 		}
 	}
-
+	//
 	private String limpezaCaracteresNaoNumeraisCpfCnpj(String cpfCnpj) {
 		cpfCnpj	 = cpfCnpj.replace(".", "");
 		cpfCnpj	 = cpfCnpj.replace("/", "");
@@ -400,7 +391,7 @@ public class CadastroCliente extends JPanel {
 		cpfCnpj	 = cpfCnpj.replace(" ", "");
 		return cpfCnpj;
 	}
-	
+	//
 	private void novoCliente(int idEndereco) {
 		String cpf = this.textFieldCPF.getText();
 		String cnpj = this.textFieldCNPJ.getText();
@@ -439,7 +430,7 @@ public class CadastroCliente extends JPanel {
 			new ClienteController().salvaCliente(cliente,idEndereco);
 		}
 	}
-
+	//
 	private Endereco constroiEndereco() {
 		if (enderecoAtual != null) {
 			enderecoAtual.setRua(this.textFieldRua.getText());
@@ -456,15 +447,15 @@ public class CadastroCliente extends JPanel {
 		endereco.setIdEndereco(0);
 		return endereco;
 	}
-
+	//
 	private boolean verificaCamposValidos() {
-		if (this.textFieldNome.getText().equals("") || this.textFieldTelefone.getText().equals("")
+		if (this.textFieldNome.getText().equals("") || this.textFieldTelefone.getText().equals("") || this.textFieldTelefone.getText().equals("(  )     -    ")
 				|| (this.textFieldCPF.getText().equals("") && this.textFieldCNPJ.getText().equals(""))) {
 			return false;
 		}
 		return true;
 	}
-
+	//
 	private void cpfValido(String cpf) {
 		if (validaCPF(cpf)) {
 			try {
@@ -484,7 +475,7 @@ public class CadastroCliente extends JPanel {
 			dadosInvalidos();
 		}
 	}
-
+	//
 	private void limpaCampos() {
 		textFieldRua.setText("");
 		textFieldRua.repaint();
@@ -511,11 +502,11 @@ public class CadastroCliente extends JPanel {
 		lblCadastroDeClientes.setText("Cadastro de Clientes");
 		lblCadastroDeClientes.repaint();
 	}
-
+	//
 	private void dadosInvalidos() {
 		JOptionPane.showMessageDialog(null, "CPF/CNPJ invï¿½lido! Por favor, tente novamente.");
 	}
-
+	//
 	private boolean validaCPF(String cpf) {
 		if (cpf == null || cpf.length() != 11 || isCPFPadrao(cpf))
 			return false;
@@ -527,7 +518,7 @@ public class CadastroCliente extends JPanel {
 
 		return calcDigVerif(cpf.substring(0, 9)).equals(cpf.substring(9, 11));
 	}
-
+	//
 	private boolean isCPFPadrao(String cpf) {
 		if (cpf.equals("00000000000") || cpf.equals("11111111111") || cpf.equals("22222222222")
 				|| cpf.equals("33333333333") || cpf.equals("44444444444") || cpf.equals("55555555555")
@@ -539,7 +530,7 @@ public class CadastroCliente extends JPanel {
 
 		return false;
 	}
-
+	//
 	private Object calcDigVerif(String num) {
 		Integer primDig, segDig;
 		int soma = 0, peso = 10;
@@ -564,7 +555,7 @@ public class CadastroCliente extends JPanel {
 
 		return primDig.toString() + segDig.toString();
 	}
-
+	//
 	public void preencheDadosCliente(ClienteJuridico cliente, Endereco endereco) {
 		if (cliente != null) {
 			lblCadastroDeClientes.setText("Ediï¿½ï¿½o de Cliente");
@@ -586,7 +577,7 @@ public class CadastroCliente extends JPanel {
 			textFieldEstado.setText(endereco.getEstado());
 		}
 	}
-	
+	//
 	public void preencheDadosCliente(ClienteFisico cliente, Endereco endereco) {
 		if (cliente != null) {
 			lblCadastroDeClientes.setText("Ediï¿½ï¿½o de Cliente");
@@ -610,5 +601,4 @@ public class CadastroCliente extends JPanel {
 		}
 	}
 	
-	//TODO Criar dupla verificação na hora do Salvar (se o CPF gravado na variavel confere com o "atual" cpf escrito no campo!)
 }

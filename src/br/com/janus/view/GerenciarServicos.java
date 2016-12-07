@@ -38,7 +38,6 @@ public class GerenciarServicos extends JPanel {
 		lblTitulo.setBounds(10, 11, 980, 58);
 		add(lblTitulo);
 		
-		criaTabela();
 		populaTabela();
 
 		JScrollPane scrollS = new JScrollPane(tabelaServico);
@@ -61,7 +60,6 @@ public class GerenciarServicos extends JPanel {
 	}
 
 	private void salvaServicos() {
-		System.out.println(tabelaModelo.getRowCount());
 		for (int count = 0; count < tabelaModelo.getRowCount(); count++){
 			boolean estaAtivo = Boolean.parseBoolean(tabelaModelo.getValueAt(count, 0).toString());
 			servicos.get(count).setEstaAtivo(estaAtivo);
@@ -70,19 +68,7 @@ public class GerenciarServicos extends JPanel {
 	}
 
 	private void populaTabela() {
-		servicos = new ServicoController().buscaServicos();
-		for (Servico servico : servicos) {
-			String porHora = "";
-			if(servico.getPorHora()){
-				porHora = "Sim";
-			}else{
-				porHora = "N�o";
-			}
-			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), porHora, servico.getDescricao()});
-		}
-	}
-	
-	private void criaTabela() {
+		
 		tabelaServico = new JTable(tabelaModelo){
 
             private static final long serialVersionUID = 1L;
@@ -117,5 +103,17 @@ public class GerenciarServicos extends JPanel {
 		tabelaServico.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tabelaServico.getColumnModel().getColumn(3).setPreferredWidth(50);
 		tabelaServico.getColumnModel().getColumn(4).setPreferredWidth(235);
+		
+		servicos = new ServicoController().buscaServicos();
+		for (Servico servico : servicos) {
+			String porHora = "";
+			if(servico.getPorHora()){
+				porHora = "Sim";
+			}else{
+				porHora = "N�o";
+			}
+			tabelaModelo.addRow(new Object[]{servico.getEstaAtivo(), servico.getNome(), servico.getValor(), porHora, servico.getDescricao()});
+		}
 	}
+	
 }

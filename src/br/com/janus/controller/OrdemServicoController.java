@@ -25,7 +25,7 @@ public class OrdemServicoController {
 
 	private Connection conexao = new Conecta().getConnection();
 	private Integer idOrdemServico;
-
+	//
 	public int salva(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
 		int idOrdemDeServico = -1;
 		try {
@@ -48,7 +48,7 @@ public class OrdemServicoController {
 		salvaOsServicos(osServicos);
 		return idOrdemDeServico;
 	}
-
+	//
 	private void salvaOsServicos(ArrayList<OsServicos> osServicos) {
 		try {
 			for (OsServicos osServico : osServicos) {
@@ -67,7 +67,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-
+	//
 	private void salvaOsProdutos(ArrayList<OsProdutos> osProdutos) {
 		try {
 			for (OsProdutos osProduto : osProdutos) {
@@ -84,7 +84,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-
+	//
 	private void atualizaOsServicos(Integer idOrdemServico, ArrayList<OsServicos> osServicos) {
 		try {
 			PreparedStatement rm = (PreparedStatement) conexao.prepareStatement(
@@ -106,7 +106,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-
+	//
 	private void atualizaOsProdutos(Integer idOrdemServico, ArrayList<OsProdutos> osProdutos) {
 		try {
 			PreparedStatement rm = (PreparedStatement) conexao.prepareStatement(
@@ -127,7 +127,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-	
+	//
 	public OrdemServico buscaOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from ordemdeservico where idordemdeservico = ?");
@@ -154,7 +154,7 @@ public class OrdemServicoController {
 		}
 		return null;
 	}
-
+	//	
 	public ArrayList<OsProdutos> buscaProdutosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsProdutos> produtos = new ArrayList<OsProdutos>();
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from osproduto where idordemdeservico = ?");
@@ -170,7 +170,7 @@ public class OrdemServicoController {
 		}
 		return produtos;
 	}
-
+	//
 	public ArrayList<OsServicos> buscaServicosOrdemServico(Integer idOrdemDeServico) throws SQLException {
 		ArrayList<OsServicos> servicos = new ArrayList<OsServicos>();
 		PreparedStatement st = (PreparedStatement) conexao
@@ -188,7 +188,7 @@ public class OrdemServicoController {
 		}
 		return servicos;
 	}
-
+	//
 	public ArrayList<OrdemServico> buscaOrdensServicoAprovadas() {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 		try {
@@ -218,7 +218,7 @@ public class OrdemServicoController {
 		}
 		return ordens;
 	}
-	
+	//
 	public ArrayList<OrdemServico> buscaOrdensServicoExecutadas() {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 
@@ -249,7 +249,7 @@ public class OrdemServicoController {
 		}
 		return ordens;
 	}
-	
+	//
 	public boolean aprovaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos, String dataAprovado) {
 		PreparedStatement st = null;
 		try{
@@ -266,7 +266,7 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
-
+	//
 	public boolean executaOrdemServico(Integer idOrdemDeServico, String dataExecucao) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico "
@@ -279,7 +279,7 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
-
+	//
 	public boolean finalizaOrdemServico(Integer idOrdemDeServico, String dataFinalizado) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement(
@@ -293,7 +293,7 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
-
+	//
 	public boolean cancelaOrdemServico(Integer idOrdemDeServico, String dataCancelado) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update ordemdeservico "
@@ -306,7 +306,7 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
-
+	//
 	public boolean atualizaOrdemServico(OrdemServico ordemServico, ArrayList<OsServicos> osServicos, ArrayList<OsProdutos> osProdutos) {
 		PreparedStatement st = null;
 		try{
@@ -323,7 +323,7 @@ public class OrdemServicoController {
 		}
 		return false;
 	}
-
+	//
 	public void expiraOrdensServico() {
 		ArrayList<OrdemServico> ordens = new ArrayList<OrdemServico>();
 		try {
@@ -353,7 +353,7 @@ public class OrdemServicoController {
 		}
 		verificaExpirou(ordens);
 	}
-
+	//
 	private void verificaExpirou(ArrayList<OrdemServico> ordens) {
 		try{
 			for (OrdemServico ordemServico : ordens) {
@@ -374,7 +374,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-
+	//
 	private void expiraOrdemServico(Integer idOrdemDeServico) {
 		PreparedStatement st = null;
 		try{
@@ -389,7 +389,7 @@ public class OrdemServicoController {
 			e.printStackTrace();
 		}
 	}
-	
+	//
 	public boolean contagemDias(Calendar dataCriacao, Calendar dataAgora){ 
         int contagemDias = 0;    
         while (dataCriacao.get(Calendar.DAY_OF_MONTH) != dataAgora.get(Calendar.DAY_OF_MONTH)){    
@@ -401,7 +401,7 @@ public class OrdemServicoController {
         }
         return false;   
     }
-	
+	//
 	private void  mostraMensagem(String mensagem) {
 		JOptionPane.showMessageDialog(null, mensagem);
 	}

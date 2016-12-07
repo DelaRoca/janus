@@ -274,7 +274,7 @@ public class AcompanharOrdemServico extends JPanel {
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean salvou = new OrdemServicoController().aprovaOrdemServico(ordemServico,osServicos,osProdutos, dataAtual);
 		if(salvou){
-			mostraMensagem("Ordem de servico aprovado com sucesso");
+			mostraMensagem("Ordem de servico aprovada com sucesso");
 			preencherCampoStatus("Aprovado");
 			permiteAtualizarOS();
 		}else{
@@ -292,7 +292,7 @@ public class AcompanharOrdemServico extends JPanel {
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
 		if(atualizou){
-			mostraMensagem("Ordem de servico atualizado com sucesso");
+			mostraMensagem("Ordem de servico alterada com sucesso");
 		}else{
 			mostraMensagem("Erro! N�o foi poss�vel realizar a opera��o");
 		}
@@ -602,8 +602,6 @@ public class AcompanharOrdemServico extends JPanel {
 			}
 		}
 	}
-	
-	
 
 	private void buscaOrdemServico(Integer idOrdemServico) {
 		try {

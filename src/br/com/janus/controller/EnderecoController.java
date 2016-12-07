@@ -12,8 +12,7 @@ import br.com.janus.model.Endereco;
 public class EnderecoController {
 	
 	private Connection conexao = new Conecta().getConnection();
-
-
+	//
 	public Endereco buscaEndereco(Integer idEndereco) throws SQLException {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from endereco where idEndereco = ?;");
 		st.setString(1, idEndereco.toString());

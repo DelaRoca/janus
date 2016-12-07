@@ -72,14 +72,14 @@ public class CadastroProduto extends JPanel {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
 			try{
-				if (!verificarCampoValor()) {
-					 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
-				} else {
-					if (verificaCamposValidos()) {
+				if (verificaCamposValidos()) {
+					if (verificarCampoValor() ) {
 						salvaProduto();
 					} else {
-						JOptionPane.showMessageDialog(null, "Campos obrigatórios não preenchidos.");
+						JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Campos obrigatï¿½rios nï¿½o preenchidos");
 				}
 			} catch( Exception e){
 				 JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
@@ -105,14 +105,14 @@ public class CadastroProduto extends JPanel {
 
 	}
 	
-	
+	//
 	private void salvaProduto() {
 		System.out.println("salvar produto");
 		Produto produto = constroiProduto();
 		new ProdutoController().salvaProduto(produto);
 	}
 	
-
+	//
 	private Produto constroiProduto() {
 		Produto produto = new Produto();
 		produto.setNome(this.textFieldNome.getText());
@@ -121,18 +121,14 @@ public class CadastroProduto extends JPanel {
 		produto.setIdProduto(0);
 		return produto;
 	}
-
+//
 	private boolean verificaCamposValidos() {
-		System.out.println("aqui nos verifica campos ");
-		System.out.println("this.textFieldNome" + this.textFieldNome.getText().equals(""));
-		System.out.println("this.textFieldValor " + this.textFieldValor.getText().equals(""));
 		if (this.textFieldNome.getText().equals("") || this.textFieldValor.getText().equals("")) {
 			return false;
 		}
 		return true;
 	}
-
-	 
+	 //
     private boolean verificarCampoValor() {
         String[] valoresPartidos = textFieldValor.getText().split(",", 2);
 		try {

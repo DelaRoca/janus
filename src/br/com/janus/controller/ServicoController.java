@@ -17,7 +17,7 @@ import br.com.janus.view.Principal;
 public class ServicoController {
 	
 	private Connection conexao = new Conecta().getConnection();
-	
+	//
 	public void salvaServico(Servico servico){
 	    try {
 	    	PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into servico " +
@@ -25,32 +25,32 @@ public class ServicoController {
 	                "values (?,?,?,?,?)");
 	    	st.setString(1,servico.getDescricao());
 			st.setString(2,servico.getNome());
-			st.setString(3,setPortHora(servico));
+			st.setString(3,setPorHora(servico));
 			st.setString(4,servico.getValor());
-			st.setString(5,setEstatAtivo(servico));
+			st.setString(5,setEstaAtivo(servico));
 			st.execute();
-			JOptionPane.showMessageDialog(null, "serviÃ§o cadastrado com sucesso!");
+			JOptionPane.showMessageDialog(null, "ServiÃ§o cadastrado com sucesso");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Dados invÃ¡lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-
-	private String setPortHora(Servico servico) {
+	//
+	private String setPorHora(Servico servico) {
 		if(servico.getPorHora()){
 			return "1";
 		}
 		return "0";
 	}
-	
-	private String setEstatAtivo(Servico servico) {
+	//
+	private String setEstaAtivo(Servico servico) {
 		if(servico.getEstaAtivo()){
 			return "1";
 		}
 		return "0";
 	}
-
+	//
 	public ArrayList<Servico> buscaServicos() {
 		try{
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from servico");
@@ -84,7 +84,7 @@ public class ServicoController {
 		return null;
 		
 	}
-
+	//
 	public void atualizaServicos(ArrayList<Servico> servicos) {
 		for (Servico servico : servicos) {
 			try {
@@ -99,17 +99,15 @@ public class ServicoController {
 				st.setInt(2,servico.getIdServico());
 				st.execute();
 			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(null, "Não foi possível salvar as alterações. Por favor, tente novamente");
+				JOptionPane.showMessageDialog(null, "Nï¿½o foi possï¿½vel salvar as alteraï¿½ï¿½es. Por favor, tente novamente");
 				GerenciadorDeInterface.setPanel(new Principal());
 				e.printStackTrace();
 				
 			}
 		}
-		JOptionPane.showMessageDialog(null, "Alteração salva com sucesso");
+		JOptionPane.showMessageDialog(null, "Alteraï¿½ï¿½o salvo com sucesso");
 		GerenciadorDeInterface.setPanel(new Principal());
 		
 	}
-
-	
 
 }

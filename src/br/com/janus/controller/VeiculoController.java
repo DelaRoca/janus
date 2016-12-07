@@ -16,11 +16,11 @@ import br.com.janus.view.Principal;
 public class VeiculoController {
 
 	private Connection conexao = new Conecta().getConnection();
-
+	//
 	public boolean verificaVeiculo (String placa) throws Exception {
 		return buscaDadosVeiculoPlaca(placa) != null;
 	}
-
+	//
 	public Veiculo buscaDadosVeiculoId(Integer idVeiculo) throws SQLException {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from veiculo where idveiculo = ?;");
 		st.setInt(1, idVeiculo);
@@ -38,7 +38,7 @@ public class VeiculoController {
 		}
 		return null;
 	}
-	
+	//
 	public Veiculo buscaDadosVeiculoPlaca(String placa) throws SQLException {
 		PreparedStatement st = (PreparedStatement) conexao.prepareStatement("select * from veiculo where placa = ?;");
 		st.setString(1, placa);
@@ -56,7 +56,7 @@ public class VeiculoController {
 		}
 		return null;
 	}
-
+	//
 	public void salvaVeiculo(Veiculo veiculo) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("insert into veiculo "
@@ -67,15 +67,14 @@ public class VeiculoController {
 			st.setString(4, veiculo.getPlaca());
 			
 			st.execute();
-			JOptionPane.showMessageDialog(null, "Veiculo cadastrado com sucesso!");
+			JOptionPane.showMessageDialog(null, "Veiculo cadastrado com sucesso");
 			GerenciadorDeInterface.setPanel(new Principal());
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Dados inv�lidos, tente novamente");
 			e.printStackTrace();
 		}
 	}
-	
-
+	//
 	public void atualizaVeiculo(Veiculo veiculo) {
 		try {
 			PreparedStatement st = (PreparedStatement) conexao.prepareStatement("update veiculo "
