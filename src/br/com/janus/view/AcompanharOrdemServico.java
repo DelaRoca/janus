@@ -265,7 +265,7 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	public boolean podeAtualizarOS() {
-		return ( textFieldStatus.getText().equals("Aprovado") || textFieldStatus.getText().equals("Execucao") );
+		return ( textFieldStatus.getText().equals("Aprovado") || textFieldStatus.getText().equals("Execução") );
 	}
 	
 	private void aprovaOrdemServico(String dataAtual) {
@@ -290,6 +290,7 @@ public class AcompanharOrdemServico extends JPanel {
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
+		System.out.println(atualizou);
 		if(atualizou){
 			mostraMensagem("Ordem de servico alterada com sucesso");
 		}else{
@@ -327,29 +328,29 @@ public class AcompanharOrdemServico extends JPanel {
 	private DefaultTableModel tabelaModeloProduto = new DefaultTableModel() {
         boolean[] selecionado = new boolean[]{true, false, false, true, false};
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false};
+        boolean[] bloqueado = new boolean[]{false, false, false, false, false};
                 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-        	if( podeAtualizarOS() ) {
-	        	if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
+        	if (podeAtualizarOS()) {
+	        	if (((Boolean) getValueAt(rowIndex, 0)).booleanValue() ) {
+	            	if (Integer.parseInt(getValueAt(rowIndex, 3).toString()) < 1) {
+	            		setValueAt("1", rowIndex, 3);
+	            	} else {
+	            		setValueAt(getValueAt(rowIndex, 3).toString(), rowIndex, 3);
+	            	}
 	            	return selecionado[columnIndex];
 	            }
 	            else {
-	            	setValueAt("0", rowIndex, 3);
 	            	return naoSelecionado[columnIndex];
 	            }
         	} else {
-            	return false;
+        		return bloqueado[columnIndex];
         	}
-            
-            
         }
         
         @Override
         public Object getValueAt(int row, int column) {
-            if (column == 4) {
-                if (getValueAt(row, 2).equals("") && getValueAt(row, 3).equals("")){
-                    return super.getValueAt(row, column);
-                } else {
+        	if (column == 4) {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
                 	float valor = Float.parseFloat(valorStr);
@@ -359,18 +360,30 @@ public class AcompanharOrdemServico extends JPanel {
                     	quantidade = 0;
                     }
                     resultado = valor * quantidade;
-                    String resultadoStr = String.valueOf(resultado);
+                    String resultadoStr = String.format("%.2f", resultado);
                     resultadoStr = resultadoStr.replace(".", ",");
                     return resultadoStr;
-                }
             }
             return super.getValueAt(row, column);
         }
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            super.setValueAt(aValue, row, column);
+        	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
+        		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
+        		if (testeQuantidade < 0) {
+        			setValueAt("1", row, 3);
+        		}
+        	}
+    	
+            if (column == 3 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade < 1){
+            		setValueAt("1", row, column);
+            	} 
+            }
             
+            super.setValueAt(aValue, row, column);
             
             valorFloatTotal = 0.00f;
     		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
@@ -390,11 +403,10 @@ public class AcompanharOrdemServico extends JPanel {
     				valorFloatTotal += parcialFloatServico;	
     			}
     		}
-    		String valorStrTotal = valorFloatTotal.toString();
+    		String valorStrTotal = String.format("%.2f", valorFloatTotal);
     		valorStrTotal = valorStrTotal.replace(".", ",");
     		textFieldTotal.setText(valorStrTotal);
-
-            
+			
             tabelaModeloProduto.fireTableCellUpdated(row, 4);
         }
 	};
@@ -403,23 +415,31 @@ public class AcompanharOrdemServico extends JPanel {
         boolean[] selecionado = new boolean[]{true, false, false, false, true, false};
         boolean[] selecionadoPorHora = new boolean[]{true, false, false, true, true, false};
         boolean[] naoSelecionado = new boolean[]{true, false, false, false, false, false};
-                
+        boolean[] bloqueado = new boolean[]{false, false, false, false, false, false};
+                        
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-        	
-        	if ( podeAtualizarOS() ) {
-	            if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) { 
+        	if (podeAtualizarOS()) {
+	        	if (((Boolean) getValueAt(rowIndex, 0)).booleanValue()) {
 	            	if ( Integer.parseInt(getValueAt(rowIndex, 3).toString()) > 0  ) {
-	            		return selecionadoPorHora[columnIndex];
+	                	if (Integer.parseInt(getValueAt(rowIndex, 4).toString()) < 1) {
+	                		setValueAt("1", rowIndex, 4);
+	                	} else {
+	                		setValueAt((String) getValueAt(rowIndex, 4).toString(), rowIndex, 4);
+	                	}
+	                	return selecionadoPorHora[columnIndex];
 	            	} else {
+	                	if (Integer.parseInt(getValueAt(rowIndex, 4).toString()) < 1) {
+	                		setValueAt("1", rowIndex, 4);
+	                	} else {
+	                		setValueAt(getValueAt(rowIndex, 4).toString(), rowIndex, 4);
+	                	}
 	            		return selecionado[columnIndex];
 	            	}
-	            }
-	            else {
-	            	setValueAt("0", rowIndex, 4);
+	            } else {
 	            	return naoSelecionado[columnIndex];
 	            }
         	} else {
-            	return false;
+        		return bloqueado[columnIndex];
         	}
         }
 	
@@ -443,17 +463,31 @@ public class AcompanharOrdemServico extends JPanel {
                     } else {
                     	resultado = valor * quantidade;
                     }
-                    String resultadoStr = String.valueOf(resultado);
+                    String resultadoStr = String.format("%.2f", resultado);
                     resultadoStr = resultadoStr.replace(".", ",");
                     return resultadoStr;
                 }
             }
+            
             return super.getValueAt(row, column);
         }
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
+        	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
+        		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
+        		if (testeQuantidade < 0) {
+        			setValueAt("1", row, 3);
+        		}
+        	}
+    	
+            if (column == 4 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
+            	int testeQuantidade = Integer.parseInt(aValue.toString());
+            	if (testeQuantidade < 1){
+            		setValueAt("1", row, column);
+            	} 
+            }
             
             if (column == 3) {
             	int testePorHora = Integer.parseInt(aValue.toString());
@@ -461,7 +495,6 @@ public class AcompanharOrdemServico extends JPanel {
             		setValueAt("1", row, column);
             	}
             }
-            //TODO TA DANDO PAU POR AQUI - RESOLVER
 
             valorFloatTotal = 0.00f;
     		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
@@ -481,10 +514,10 @@ public class AcompanharOrdemServico extends JPanel {
     				valorFloatTotal += parcialFloatServico;	
     			}
     		}
-    		String valorStrTotal = valorFloatTotal.toString();
+    		String valorStrTotal = String.format("%.2f", valorFloatTotal);
     		valorStrTotal = valorStrTotal.replace(".", ",");
     		textFieldTotal.setText(valorStrTotal);
-
+			
            	fireTableCellUpdated(row, 5);
         }   
 	};
@@ -574,6 +607,7 @@ public class AcompanharOrdemServico extends JPanel {
 		btnSalvar.setText("");
 		btnSalvar.setEnabled(false);
 		btnSalvar.setVisible(false);
+		//colocar false na tabela!
 	}
 
 

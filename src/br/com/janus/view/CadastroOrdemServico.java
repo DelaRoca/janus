@@ -85,14 +85,12 @@ public class CadastroOrdemServico extends JPanel {
             	return selecionado[columnIndex];
             }
             else {
-            	setValueAt("0", rowIndex, 3);
             	return naoSelecionado[columnIndex];
             }
         }
         
         @Override
         public Object getValueAt(int row, int column) {
-            //TODO TERMINAR ESSA l�gica dos cliques
         	if (column == 4) {
                 	String valorStr = getValueAt(row, 2).toString();
                 	valorStr = valorStr.replace(",", ".");
@@ -119,23 +117,15 @@ public class CadastroOrdemServico extends JPanel {
         		}
         	}
     	
-        	//For�ar a escrita ser sempre 1 caso insira 0 ou negativos.
             if (column == 3 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
             	int testeQuantidade = Integer.parseInt(aValue.toString());
             	if (testeQuantidade < 1){
             		setValueAt("1", row, column);
             	} 
             }
-            if (column == 3 && !((Boolean) getValueAt(row, 0)).booleanValue()) {
-            	int testeQuantidade = Integer.parseInt(aValue.toString());
-            	if (testeQuantidade > 0){
-            		setValueAt("0", row, column);
-            	} 	
-            } 
-
+            
             super.setValueAt(aValue, row, column);
             
-//            preencheValorTotalOrdemServico();
             valorFloatTotal = 0.00f;
     		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
     			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
@@ -185,7 +175,6 @@ public class CadastroOrdemServico extends JPanel {
             		return selecionado[columnIndex];
             	}
             } else {
-            	setValueAt("0", rowIndex, 4);
             	return naoSelecionado[columnIndex];
             }
         }
@@ -222,7 +211,6 @@ public class CadastroOrdemServico extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int column) {
             super.setValueAt(aValue, row, column);
-            //TODO TERMINAR ESSA l�gica dos cliques
         	if ( ((Boolean) getValueAt(row, 0)).booleanValue() ) {
         		int testeQuantidade = Integer.parseInt(getValueAt(row, 3).toString());
         		if (testeQuantidade < 0) {
@@ -230,18 +218,11 @@ public class CadastroOrdemServico extends JPanel {
         		}
         	}
     	
-        	//For�ar a escrita ser sempre 1 caso insira 0 ou negativos.
             if (column == 4 && ((Boolean) getValueAt(row, 0)).booleanValue()) {
             	int testeQuantidade = Integer.parseInt(aValue.toString());
             	if (testeQuantidade < 1){
             		setValueAt("1", row, column);
             	} 
-            }
-            if (column == 4 && !((Boolean) getValueAt(row, 0)).booleanValue()) {
-            	int testeQuantidade = Integer.parseInt(aValue.toString());
-            	if (testeQuantidade > 0){
-            		setValueAt("0", row, column);
-            	} 	
             }
             
             if (column == 3) {
@@ -251,16 +232,6 @@ public class CadastroOrdemServico extends JPanel {
             	}
             }
 
-//            if (column == 4) {
-//	           	int testeQuantidade = Integer.parseInt(aValue.toString());
-//	           	if (testeQuantidade < 1){
-//	           		setValueAt("1", row, column);
-//	           	}
-//	        }
-        	
-            
-            
-//            preencheValorTotalOrdemServico();
             valorFloatTotal = 0.00f;
     		for(int i=0; i < tabelaModeloProduto.getRowCount(); i++){
     			if (((Boolean) tabelaModeloProduto.getValueAt(i, 0)).booleanValue()){
