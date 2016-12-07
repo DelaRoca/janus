@@ -333,6 +333,7 @@ public class CadastroOrdemServico extends JPanel {
 
 		btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(a -> {
+			
 			String dataCriacao = textFieldData.getText();
 			String valorTotal = textFieldTotal.getText();
 			boolean salvou = salvaOrdemServico(dataCriacao, valorTotal);
@@ -521,11 +522,22 @@ public class CadastroOrdemServico extends JPanel {
 		OrdemServico ordemServico = constroiOrdemServico(dataCriacao, valorTotal);
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
-		int idOrdemDeServico = new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
-		if(idOrdemDeServico >= 0){
-			mostraMensagem("Ordem de Serviço número " + idOrdemDeServico + " cadastrada com sucesso");
-			return true;
+		
+		boolean produtoSelecionado = !osProdutos.isEmpty();
+		boolean servicoSelecionado = !osServicos.isEmpty();
+		if (produtoSelecionado || servicoSelecionado) {
+			
+			int idOrdemDeServico = new OrdemServicoController().salva(ordemServico,osServicos,osProdutos);
+			if(idOrdemDeServico >= 0){
+				mostraMensagem("Ordem de Serviço número " + idOrdemDeServico + " cadastrada com sucesso");
+				return true;
+			}
+			
+		} else {
+			mostraMensagem("Algum item deve ser selecionado");
+			return false;
 		}
+		
 		mostraMensagem("Erro! Não foi possível realizar a operação");
 		return false;
 	}
