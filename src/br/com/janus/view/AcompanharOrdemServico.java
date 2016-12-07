@@ -290,7 +290,6 @@ public class AcompanharOrdemServico extends JPanel {
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
-		System.out.println(atualizou);
 		if(atualizou){
 			mostraMensagem("Ordem de servico alterada com sucesso");
 		}else{
