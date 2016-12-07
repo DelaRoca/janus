@@ -41,7 +41,7 @@ public class CadastroProduto extends JPanel {
 		add(textFieldNome);
 		textFieldNome.setColumns(10);
 		
-		lblValor = new JLabel("Valor (R$):");
+		lblValor = new JLabel("Valor (R$ 0,00):");
 		lblValor.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblValor.setBounds(318, 279, 120, 30);
 		add(lblValor);

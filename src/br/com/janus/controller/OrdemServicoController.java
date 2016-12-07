@@ -59,7 +59,7 @@ public class OrdemServicoController {
 			}
 
 		} catch (SQLException e) {
-			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
+			String mensagem = "Erro! Não foi possível realizar a operação";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -98,7 +98,7 @@ public class OrdemServicoController {
 				st.execute();
 			}
 		} catch (SQLException e) {
-			String mensagem = "Erro! Nï¿½o foi possï¿½vel realizar a operaï¿½ï¿½o";
+			String mensagem = "Erro! Não foi possível realizar a operação";
 			mostraMensagem(mensagem);
 			e.printStackTrace();
 		}
@@ -255,8 +255,8 @@ public class OrdemServicoController {
 			st.setString(2, dataAprovado);
 			st.setInt(3,ordemServico.getIdOrdemDeServico());
 			st.executeUpdate();
-			salvaOsProdutos(osProdutos);
-			salvaOsServicos(osServicos);
+//			salvaOsProdutos(osProdutos);
+//			salvaOsServicos(osServicos);
 			return true;
 		}catch (Exception e) {
 			e.printStackTrace();

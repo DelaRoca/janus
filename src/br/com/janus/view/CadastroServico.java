@@ -41,7 +41,7 @@ public class CadastroServico extends JPanel {
 		lblDescrio.setBounds(290, 309, 120, 25);
 		add(lblDescrio);
 		
-		JLabel lblValor = new JLabel("Valor (R$):");
+		JLabel lblValor = new JLabel("Valor (R$ 0,00):");
 		lblValor.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblValor.setBounds(290, 273, 120, 25);
 		add(lblValor);
