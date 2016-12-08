@@ -287,6 +287,7 @@ public class AcompanharOrdemServico extends JPanel {
 	}
 	
 	private void atualizaOrdemServico() {
+		ordemServico.setTotal(textFieldTotal.getText());
 		ArrayList<OsServicos> osServicos = constroiServicos();
 		ArrayList<OsProdutos> osProdutos = constroiProdutos();
 		boolean atualizou = new OrdemServicoController().atualizaOrdemServico(ordemServico,osServicos,osProdutos);
